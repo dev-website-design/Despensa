@@ -6,32 +6,46 @@
   <title>Mi Despensa PWA</title>
   <link rel="manifest" href="assets/manifest.json">
   <link rel="stylesheet" href="assets/styles.css">
+  <meta name="theme-color" content="#2d6a4f">
 </head>
 <body>
-
   <header>
     <h1>Mi Despensa</h1>
-    <button class="add-btn" onclick="agregarCategoria()">+</button>
+    <div class="header-actions">
+      <!-- Botón para instalar la PWA (se muestra cuando el navegador lo permite) -->
+      <button id="btn-instalar" class="install-btn hidden">📲 Instalar</button>
+      <button class="add-btn" onclick="mostrarModal()">+</button>
+    </div>
   </header>
 
   <main>
     <section id="categorias" class="grid-container">
-      <div class="categoria">Cocina</div>
-      <div class="categoria">Habitación</div>
-      <div class="categoria">Baño</div>
-      <div class="categoria">Sala</div>
-      <div class="categoria">Comedor</div>
+      <div class="categoria"><span>Cocina</span></div>
+      <div class="categoria"><span>Habitación</span></div>
+      <div class="categoria"><span>Baño</span></div>
+      <div class="categoria"><span>Sala</span></div>
+      <div class="categoria"><span>Comedor</span></div>
     </section>
-
-    <div id="grid-productos" class="grid-container">
-      <!-- Los productos se cargarán dinámicamente -->
-    </div>
   </main>
 
-  <nav class="bottom-nav">
-    <button class="nav-item active">Despensa</button>
-    <button class="nav-item" onclick="solicitarNotificaciones()">Notificaciones 🔔</button>
-  </nav>
+  <!-- Modal para agregar nueva categoría -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Agregar Nueva Categoría</h2>
+      <form id="form-categoria">
+        <label for="nombre-categoria">Nombre:</label>
+        <input type="text" id="nombre-categoria" placeholder="Ej: Oficina" required>
+        
+        <label for="imagen-categoria">Imagen (URL u opcional):</label>
+        <input type="text" id="imagen-categoria" placeholder="Ej: https://example.com/icon.png">
+        
+        <div class="modal-buttons">
+          <button type="submit" class="btn-primary">Agregar</button>
+          <button type="button" class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>
