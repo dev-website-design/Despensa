@@ -24,6 +24,18 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+// --- CAMBIO DINÁMICO DEL INDICADOR EN LA BARRA FLOTANTE ---
+const dockItems = document.querySelectorAll('.dock-item');
+
+dockItems.forEach(item => {
+  item.addEventListener('click', () => {
+    // Quita la clase activa de todos los demás botones
+    dockItems.forEach(btn => btn.classList.remove('active'));
+    // Agrega el fondo rosado al botón presionado
+    item.classList.add('active');
+  });
+});
+
 // --- FUNCIONES DEL MODAL (GLOBALES) ---
 window.mostrarModal = function() {
   const modal = document.getElementById('modal');
@@ -99,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
             fecha: new Date()
           });
 
-          // Reducido a 200ms (la mitad del tiempo anterior)
+          // Cierre rápido en 200ms
           await new Promise(resolve => setTimeout(resolve, 200));
 
           if (btnSubmit) btnSubmit.style.transform = '';
