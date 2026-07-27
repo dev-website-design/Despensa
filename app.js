@@ -3,7 +3,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
 import { getFirestore, collection, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // 2. CONFIGURACIÓN DE TU PROYECTO FIREBASE
-// (Pega aquí tus datos reales copiados de Firebase Console)
 const firebaseConfig = {
   apiKey: "AIzaSyDfIQXFFDGoBMvTIOT52nZGVUc-pFJGFs4",
   authDomain: "hogar-e266a.firebaseapp.com",
@@ -88,22 +87,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const nombreInput = document.getElementById('nombre-categoria');
       const imagenInput = document.getElementById('imagen-categoria');
+      const btnSubmit = form.querySelector('.btn-primary');
 
       const nombre = nombreInput ? nombreInput.value.trim() : '';
       const imagen = imagenInput ? imagenInput.value.trim() : '';
 
       if (nombre) {
         try {
-          // Guardar directamente en la colección de Firebase
+          // 1. Feedback táctil inmediato al presionar el botón
+          if (btnSubmit) btnSubmit.style.transform = 'scale(0.92)';
+
+          // 2. Guardar en Firebase
           await addDoc(collection(db, "categorias"), {
             nombre: nombre,
             imagen: imagen,
             fecha: new Date()
           });
 
+          // 3. Pausa de 400ms para que se aprecie la animación antes de cerrar
+          await new Promise(resolve => setTimeout(resolve, 400));
+
+          if (btnSubmit) btnSubmit.style.transform = '';
           window.cerrarModal();
           form.reset();
         } catch (err) {
+          if (btnSubmit) btnSubmit.style.transform = '';
           console.error("Error al guardar en Firebase:", err);
           alert("Error al guardar en la nube: " + err.message);
         }
