@@ -38,11 +38,10 @@ window.cerrarModal = function() {
 // --- LEER EN TIEMPO REAL DESDE FIREBASE ---
 const categoriasContainer = document.getElementById('categorias');
 
-// onSnapshot escucha los cambios en la nube al instante
 onSnapshot(collection(db, "categorias"), (snapshot) => {
   if (!categoriasContainer) return;
 
-  categoriasContainer.innerHTML = ''; // Limpiar pantalla
+  categoriasContainer.innerHTML = '';
 
   if (snapshot.empty) {
     categoriasContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #888;">No hay categorías aún. ¡Agrega una con el botón +!</p>';
@@ -72,14 +71,12 @@ onSnapshot(collection(db, "categorias"), (snapshot) => {
 
 // --- GUARDAR NUEVA CATEGORÍA EN FIREBASE ---
 document.addEventListener('DOMContentLoaded', () => {
-  // Eventos para abrir/cerrar modal
   const btnAbrir = document.getElementById('btn-abrir-modal');
   if (btnAbrir) btnAbrir.addEventListener('click', window.mostrarModal);
 
   const btnCerrar = document.getElementById('btn-cerrar-modal');
   if (btnCerrar) btnCerrar.addEventListener('click', window.cerrarModal);
 
-  // Formulario de agregar categoría
   const form = document.getElementById('form-categoria');
   if (form) {
     form.addEventListener('submit', async (e) => {
@@ -94,17 +91,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (nombre) {
         try {
-          // 1. Feedback táctil inmediato al presionar el botón
           if (btnSubmit) btnSubmit.style.transform = 'scale(0.92)';
 
-          // 2. Guardar en Firebase
           await addDoc(collection(db, "categorias"), {
             nombre: nombre,
             imagen: imagen,
             fecha: new Date()
           });
 
-          // 3. Pausa de 400ms para que se aprecie la animación antes de cerrar
           await new Promise(resolve => setTimeout(resolve, 400));
 
           if (btnSubmit) btnSubmit.style.transform = '';
