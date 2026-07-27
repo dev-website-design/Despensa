@@ -1,8 +1,8 @@
 {
-  "id": "/",
+  "id": "../",
   "name": "Nuestro Hogar PWA",
   "short_name": "Nuestro Hogar",
-  "start_url": "./index.html",
+  "start_url": "../index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2d6a4f",
