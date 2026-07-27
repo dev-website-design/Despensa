@@ -13,14 +13,13 @@
     <h1>Nuestro Hogar</h1>
     <div class="header-actions">
       <button id="btn-instalar" class="install-btn hidden">📲 Instalar</button>
-      <!-- Agregado id="btn-abrir-modal" y removido onclick -->
-      <button id="btn-abrir-modal" class="add-btn">+</button>
+      <button id="btn-abrir-modal" class="add-btn" onclick="mostrarModal()">+</button>
     </div>
   </header>
 
   <main>
     <section id="categorias" class="grid-container">
-      <!-- Las categorías se cargarán desde app.js -->
+      <!-- Carga dinámicamente desde app.js -->
     </section>
   </main>
 
@@ -37,8 +36,7 @@
         
         <div class="modal-buttons">
           <button type="submit" class="btn-primary">Agregar</button>
-          <!-- Agregado id="btn-cerrar-modal" y removido onclick -->
-          <button type="button" id="btn-cerrar-modal" class="btn-secondary">Cancelar</button>
+          <button type="button" id="btn-cerrar-modal" class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
         </div>
       </form>
     </div>
