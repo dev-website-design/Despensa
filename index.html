@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Despensa PWA</title>
+  <link rel="manifest" href="assets/manifest.json">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+  <header>
+    <h1>Mi Despensa</h1>
+    <button class="add-btn" onclick="agregarCategoria()">+</button>
+  </header>
+
+  <main>
+    <section id="categorias" class="grid-container">
+      <div class="categoria">Cocina</div>
+      <div class="categoria">Habitación</div>
+      <div class="categoria">Baño</div>
+      <div class="categoria">Sala</div>
+      <div class="categoria">Comedor</div>
+    </section>
+
+    <div id="grid-productos" class="grid-container">
+      <!-- Los productos se cargarán dinámicamente -->
+    </div>
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="nav-item active">Despensa</button>
+    <button class="nav-item" onclick="solicitarNotificaciones()">Notificaciones 🔔</button>
+  </nav>
+
+  <script src="app.js"></script>
+</body>
+</html>
