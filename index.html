@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nuestro Hogar PWA</title>
 
-  <!-- Compatibilidad con iOS / Safari -->
+  <!-- Compatibilidad iOS / Apple -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Nuestro Hogar">
@@ -23,7 +23,7 @@
     </section>
   </main>
 
-  <!-- DOCK FLOTANTE INFERIOR ESTILO CÁPSULA (COMO LA REFERENCIA) -->
+  <!-- DOCK FLOTANTE INFERIOR ESTILO CÁPSULA GLASS -->
   <nav class="floating-dock">
     <button class="dock-item active" aria-label="Inicio">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -33,7 +33,7 @@
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z"/></svg>
     </button>
 
-    <!-- BOTÓN CENTRAL (+) DESTACADO -->
+    <!-- BOTÓN CENTRAL (+) -->
     <button id="btn-abrir-modal" class="dock-add-btn" aria-label="Agregar">+</button>
 
     <button id="btn-instalar" class="dock-item hidden" aria-label="Instalar App">
@@ -41,11 +41,11 @@
     </button>
 
     <button class="dock-item" aria-label="Perfil o Ajustes">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
     </button>
   </nav>
 
-  <!-- Modal para agregar categoría -->
+  <!-- MODAL POPUP CON ANIMACIÓN SPRING -->
   <div id="modal" class="modal hidden">
     <div class="modal-content">
       <h2>Agregar Nueva Categoría</h2>
