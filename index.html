@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nuestro Hogar PWA</title>
 
-  <!-- Compatibilidad para iOS / Apple -->
+  <!-- Compatibilidad con iOS / Safari -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Nuestro Hogar">
@@ -19,19 +19,33 @@
 
   <main>
     <section id="categorias" class="grid-container">
-      <!-- Carga dinámicamente desde Firebase -->
+      <!-- Se carga automáticamente desde Firebase -->
     </section>
   </main>
 
-  <!-- BARRA NAVEGACIÓN INFERIOR (FIJA) -->
-  <nav class="bottom-bar">
-    <div class="bottom-actions">
-      <button id="btn-instalar" class="install-btn hidden">📲 Instalar</button>
-      <button id="btn-abrir-modal" class="add-btn" onclick="mostrarModal()">+</button>
-    </div>
+  <!-- DOCK FLOTANTE INFERIOR ESTILO CÁPSULA (COMO LA REFERENCIA) -->
+  <nav class="floating-dock">
+    <button class="dock-item active" aria-label="Inicio">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    </button>
+
+    <button class="dock-item" aria-label="Categorías">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z"/></svg>
+    </button>
+
+    <!-- BOTÓN CENTRAL (+) DESTACADO -->
+    <button id="btn-abrir-modal" class="dock-add-btn" aria-label="Agregar">+</button>
+
+    <button id="btn-instalar" class="dock-item hidden" aria-label="Instalar App">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+    </button>
+
+    <button class="dock-item" aria-label="Perfil o Ajustes">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+    </button>
   </nav>
 
-  <!-- Modal -->
+  <!-- Modal para agregar categoría -->
   <div id="modal" class="modal hidden">
     <div class="modal-content">
       <h2>Agregar Nueva Categoría</h2>
@@ -44,7 +58,7 @@
         
         <div class="modal-buttons">
           <button type="submit" class="btn-primary">Agregar</button>
-          <button type="button" id="btn-cerrar-modal" class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+          <button type="button" id="btn-cerrar-modal" class="btn-secondary">Cancelar</button>
         </div>
       </form>
     </div>
