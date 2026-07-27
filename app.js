@@ -4,6 +4,7 @@ import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstati
 
 // 👇👇👇 PEGA AQUÍ TU firebaseConfig QUE COPIASTE DE FIREBASE 👇👇👇
 const firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyDfIQXFFDGoBMvTIOT52nZGVUc-pFJGFs4",
   authDomain: "hogar-e266a.firebaseapp.com",
   projectId: "hogar-e266a",
