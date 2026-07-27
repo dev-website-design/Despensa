@@ -1,86 +1,105 @@
+// --- IMPORTAMOS FIREBASE DESDE LA NUBE ---
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+// 👇👇👇 PEGA AQUÍ TU firebaseConfig QUE COPIASTE DE FIREBASE 👇👇👇
+const firebaseConfig = {
+  apiKey: "AIzaSyDfIQXFFDGoBMvTIOT52nZGVUc-pFJGFs4",
+  authDomain: "hogar-e266a.firebaseapp.com",
+  projectId: "hogar-e266a",
+  storageBucket: "hogar-e266a.firebasestorage.app",
+  messagingSenderId: "534168977173",
+  appId: "1:534168977173:web:f3900fae93c7dd520b331c"
+};
+// 👆👆👆 ======================================================== 👆👆👆
+
+// Inicializamos Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 // --- REGISTRO Y GESTIÓN DE PWA ---
 let diferirInstalacion;
 const btnInstalar = document.getElementById('btn-instalar');
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker
-      .register('./sw.js')
-      .then(reg => console.log('Service Worker registrado con éxito:', reg))
-      .catch(err => console.error('Error registrando Service Worker:', err));
+    navigator.serviceWorker.register('./sw.js')
+      .catch(err => console.error('Error SW:', err));
   });
 }
 
-// Captura el evento del navegador que permite instalar la app
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   diferirInstalacion = e;
-  if (btnInstalar) {
-    btnInstalar.classList.remove('hidden');
-  }
+  if (btnInstalar) btnInstalar.classList.remove('hidden');
 });
 
 if (btnInstalar) {
   btnInstalar.addEventListener('click', async () => {
     if (diferirInstalacion) {
       diferirInstalacion.prompt();
-      const { outcome } = await diferirInstalacion.userChoice;
-      if (outcome === 'accepted') {
-        console.log('El usuario aceptó la instalación.');
-      }
       diferirInstalacion = null;
       btnInstalar.classList.add('hidden');
     }
   });
 }
 
-// --- LÓGICA DEL MODAL Y CATEGORÍAS ---
-function mostrarModal() {
-  const modal = document.getElementById('modal');
-  if (modal) {
-    modal.classList.remove('hidden');
-  }
+// --- LÓGICA DE CATEGORÍAS (EN TIEMPO REAL CON FIREBASE) ---
+
+// Funciones del Modal
+window.mostrarModal = function() { // Usamos window para que el HTML la encuentre
+  document.getElementById('modal').classList.remove('hidden');
+}
+window.cerrarModal = function() {
+  document.getElementById('modal').classList.add('hidden');
 }
 
-function cerrarModal() {
-  const modal = document.getElementById('modal');
-  if (modal) {
-    modal.classList.add('hidden');
-  }
-}
+// Escuchar cambios en la base de datos EN TIEMPO REAL
+const categoriasRef = collection(db, "categorias");
 
-// Evento submit para agregar nueva categoría
+onSnapshot(categoriasRef, (snapshot) => {
+  const categoriasContainer = document.getElementById('categorias');
+  if (!categoriasContainer) return;
+  
+  categoriasContainer.innerHTML = ''; // Limpiamos la pantalla
+
+  snapshot.forEach((doc) => {
+    const cat = doc.data(); // Aquí vienen los datos de Firebase
+    
+    const div = document.createElement('div');
+    div.classList.add('categoria');
+    
+    if (cat.imagen) {
+      div.innerHTML = `
+        <img src="${cat.imagen}" alt="${cat.nombre}" style="width: 40px; height: 40px; margin-bottom: 8px; object-fit: contain;">
+        <span>${cat.nombre}</span>
+      `;
+    } else {
+      div.innerHTML = `<span>${cat.nombre}</span>`;
+    }
+
+    categoriasContainer.appendChild(div);
+  });
+});
+
+// Guardar nueva categoría en Firebase
 document.addEventListener('DOMContentLoaded', () => {
   const formCategoria = document.getElementById('form-categoria');
   
   if (formCategoria) {
-    formCategoria.addEventListener('submit', function (e) {
+    formCategoria.addEventListener('submit', async function (e) {
       e.preventDefault();
 
-      const nombreInput = document.getElementById('nombre-categoria');
-      const imagenInput = document.getElementById('imagen-categoria');
-      
-      const nombre = nombreInput ? nombreInput.value.trim() : '';
-      const imagen = imagenInput ? imagenInput.value.trim() : '';
+      const nombre = document.getElementById('nombre-categoria').value.trim();
+      const imagen = document.getElementById('imagen-categoria').value.trim();
 
       if (nombre) {
-        const categoriasContainer = document.getElementById('categorias');
-
-        if (categoriasContainer) {
-          const nuevaCategoria = document.createElement('div');
-          nuevaCategoria.classList.add('categoria');
-          
-          if (imagen) {
-            nuevaCategoria.innerHTML = `
-              <img src="${imagen}" alt="${nombre}" style="width: 40px; height: 40px; margin-bottom: 8px; object-fit: contain;">
-              <span>${nombre}</span>
-            `;
-          } else {
-            nuevaCategoria.innerHTML = `<span>${nombre}</span>`;
-          }
-
-          categoriasContainer.appendChild(nuevaCategoria);
-        }
+        // Subimos la categoría a Firebase
+        await addDoc(collection(db, "categorias"), {
+          nombre: nombre,
+          imagen: imagen,
+          fecha: new Date() // Guardamos la fecha por si luego queremos ordenarlas
+        });
 
         cerrarModal();
         formCategoria.reset();
