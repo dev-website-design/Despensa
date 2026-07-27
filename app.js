@@ -5,12 +5,12 @@ import { getFirestore, collection, onSnapshot, addDoc } from "https://www.gstati
 // 2. CONFIGURACIÓN DE TU PROYECTO FIREBASE
 // (Pega aquí tus datos reales copiados de Firebase Console)
 const firebaseConfig = {
-  apiKey: "TU_API_KEY_REAL",
-  authDomain: "TU_PROYECTO.firebaseapp.com",
-  projectId: "TU_PROYECTO_ID",
-  storageBucket: "TU_PROYECTO.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdef"
+  apiKey: "AIzaSyDfIQXFFDGoBMvTIOT52nZGVUc-pFJGFs4",
+  authDomain: "hogar-e266a.firebaseapp.com",
+  projectId: "hogar-e266a",
+  storageBucket: "hogar-e266a.firebasestorage.app",
+  messagingSenderId: "534168977173",
+  appId: "1:534168977173:web:f3900fae93c7dd520b331c"
 };
 
 // Inicializar la base de datos en la nube
