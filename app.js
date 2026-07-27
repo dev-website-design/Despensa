@@ -99,7 +99,8 @@ document.addEventListener('DOMContentLoaded', () => {
             fecha: new Date()
           });
 
-          await new Promise(resolve => setTimeout(resolve, 400));
+          // Reducido a 200ms (la mitad del tiempo anterior)
+          await new Promise(resolve => setTimeout(resolve, 200));
 
           if (btnSubmit) btnSubmit.style.transform = '';
           window.cerrarModal();
