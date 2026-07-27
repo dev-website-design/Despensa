@@ -15,9 +15,58 @@ body {
   box-sizing: border-box;
 }
 
-/* Espacio en la parte inferior para no tapar contenido */
 main {
+  padding-top: 20px;
   padding-bottom: 120px;
+}
+
+/* --- GRILLA RESTRINGIDA A MÁXIMO 2 FILAS (SCROLL HORIZONTAL) --- */
+.grid-container {
+  display: grid;
+  grid-template-rows: repeat(2, auto);        /* Fuerza un máximo de 2 filas */
+  grid-auto-flow: column;                      /* Expande columnas hacia la derecha */
+  grid-auto-columns: minmax(110px, 130px);     /* Ancho de cada tarjeta */
+  gap: 16px;
+  padding: 10px 20px;
+  
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ocultar barra de scroll estética */
+.grid-container::-webkit-scrollbar {
+  display: none;
+}
+.grid-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* CARDS DE CATEGORÍAS */
+.categoria {
+  scroll-snap-align: start;
+  background-color: var(--white);
+  border-radius: 18px;
+  padding: 18px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(42, 12, 27, 0.05);
+  border: 1px solid rgba(190, 44, 85, 0.12);
+  transition: transform 0.2s ease;
+}
+
+.categoria:active {
+  transform: translateY(-2px);
+}
+
+.categoria span {
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: center;
+  color: var(--black-cherry);
 }
 
 /* --- BARRA FLOTANTE TIPO CÁPSULA (EFECTO GLASS) --- */
@@ -28,11 +77,14 @@ main {
   transform: translateX(-50%);
   width: min(88%, 340px);
   height: 62px;
+
+  /* Glassmorphism */
   background: rgba(42, 12, 27, 0.75);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   backdrop-filter: blur(16px) saturate(180%);
   border: 1px solid rgba(255, 224, 235, 0.25);
   border-radius: 40px;
+
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -64,6 +116,7 @@ main {
   transform: scale(0.9);
 }
 
+/* BOTÓN CENTRAL (+) */
 .dock-add-btn {
   background-color: var(--white);
   color: var(--black-cherry);
@@ -87,39 +140,7 @@ main {
   background-color: var(--carousel-pink);
 }
 
-/* GRILLA DE CATEGORÍAS */
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: 16px;
-  padding: 24px 20px;
-}
-
-.categoria {
-  background-color: var(--white);
-  border-radius: 18px;
-  padding: 18px 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 14px rgba(42, 12, 27, 0.05);
-  border: 1px solid rgba(190, 44, 85, 0.12);
-  transition: transform 0.2s ease;
-}
-
-.categoria:active {
-  transform: translateY(-2px);
-}
-
-.categoria span {
-  font-weight: 600;
-  font-size: 0.95rem;
-  text-align: center;
-  color: var(--black-cherry);
-}
-
-/* MODAL Y FORMULARIO */
+/* --- MODAL Y FORMULARIO --- */
 .modal {
   position: fixed;
   top: 0;
@@ -184,7 +205,7 @@ form input:focus {
   margin-top: 22px;
 }
 
-/* BOTÓN "AGREGAR" ANIMADO */
+/* BOTÓN "AGREGAR" CON ANIMACIÓN DE MICRO-INTERACCIÓN */
 .btn-primary {
   position: relative;
   background-color: var(--perfect-rose);
