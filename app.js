@@ -1,55 +1,57 @@
-// --- REGISTRO DE SERVICE WORKER ---
+// 1. IMPORTAR MÓDULOS DE FIREBASE
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+// 2. CONFIGURACIÓN DE TU PROYECTO FIREBASE
+// (Pega aquí tus datos reales copiados de Firebase Console)
+const firebaseConfig = {
+  apiKey: "TU_API_KEY_REAL",
+  authDomain: "TU_PROYECTO.firebaseapp.com",
+  projectId: "TU_PROYECTO_ID",
+  storageBucket: "TU_PROYECTO.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:abcdef"
+};
+
+// Inicializar la base de datos en la nube
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// --- REGISTRO DE SERVICE WORKER (PWA) ---
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker
-      .register('./sw.js')
-      .then(reg => console.log('Service Worker registrado:', reg))
-      .catch(err => console.error('Error al registrar Service Worker:', err));
+    navigator.serviceWorker.register('./sw.js')
+      .catch(err => console.error('Error SW:', err));
   });
 }
 
-// --- BOTÓN DE INSTALACIÓN PWA ---
-let diferirInstalacion;
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  diferirInstalacion = e;
-  const btnInstalar = document.getElementById('btn-instalar');
-  if (btnInstalar) btnInstalar.classList.remove('hidden');
-});
-
-// --- FUNCIONES DEL MODAL (GLOBALES PARA EVITAR ERRORES DE ALCANCE) ---
+// --- FUNCIONES DEL MODAL (GLOBALES) ---
 window.mostrarModal = function() {
   const modal = document.getElementById('modal');
-  if (modal) {
-    modal.classList.remove('hidden');
-  } else {
-    alert("Error: No se encontró el modal en el HTML.");
-  }
+  if (modal) modal.classList.remove('hidden');
 };
 
 window.cerrarModal = function() {
   const modal = document.getElementById('modal');
-  if (modal) {
-    modal.classList.add('hidden');
-  }
+  if (modal) modal.classList.add('hidden');
 };
 
-// --- ALMACENAMIENTO DE CATEGORÍAS (LOCALSTORAGE) ---
-let categorias = JSON.parse(localStorage.getItem('mis-categorias')) || [
-  { nombre: 'Cocina', imagen: '' },
-  { nombre: 'Habitación', imagen: '' },
-  { nombre: 'Baño', imagen: '' },
-  { nombre: 'Sala', imagen: '' },
-  { nombre: 'Comedor', imagen: '' }
-];
+// --- LEER EN TIEMPO REAL DESDE FIREBASE ---
+const categoriasContainer = document.getElementById('categorias');
 
-function renderCategorias() {
-  const container = document.getElementById('categorias');
-  if (!container) return;
+// onSnapshot escucha los cambios en la nube al instante
+onSnapshot(collection(db, "categorias"), (snapshot) => {
+  if (!categoriasContainer) return;
 
-  container.innerHTML = '';
+  categoriasContainer.innerHTML = ''; // Limpiar pantalla
 
-  categorias.forEach(cat => {
+  if (snapshot.empty) {
+    categoriasContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #888;">No hay categorías aún. ¡Agrega una con el botón +!</p>';
+    return;
+  }
+
+  snapshot.forEach((doc) => {
+    const cat = doc.data();
     const div = document.createElement('div');
     div.classList.add('categoria');
 
@@ -62,38 +64,28 @@ function renderCategorias() {
       div.innerHTML = `<span>${cat.nombre}</span>`;
     }
 
-    container.appendChild(div);
+    categoriasContainer.appendChild(div);
   });
-}
+}, (error) => {
+  console.error("Error al conectar con Firestore:", error);
+  alert("Error de permisos o conexión en Firebase: " + error.message);
+});
 
-// --- INICIALIZACIÓN Y EVENTOS ---
+// --- GUARDAR NUEVA CATEGORÍA EN FIREBASE ---
 document.addEventListener('DOMContentLoaded', () => {
-  renderCategorias();
-
-  // Escuchar el botón de instalar
-  const btnInstalar = document.getElementById('btn-instalar');
-  if (btnInstalar) {
-    btnInstalar.addEventListener('click', async () => {
-      if (diferirInstalacion) {
-        diferirInstalacion.prompt();
-        diferirInstalacion = null;
-        btnInstalar.classList.add('hidden');
-      }
-    });
-  }
-
-  // Vincular eventos del modal
+  // Eventos para abrir/cerrar modal
   const btnAbrir = document.getElementById('btn-abrir-modal');
   if (btnAbrir) btnAbrir.addEventListener('click', window.mostrarModal);
 
   const btnCerrar = document.getElementById('btn-cerrar-modal');
   if (btnCerrar) btnCerrar.addEventListener('click', window.cerrarModal);
 
-  // Formulario para guardar categoría
+  // Formulario de agregar categoría
   const form = document.getElementById('form-categoria');
   if (form) {
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
+
       const nombreInput = document.getElementById('nombre-categoria');
       const imagenInput = document.getElementById('imagen-categoria');
 
@@ -101,11 +93,20 @@ document.addEventListener('DOMContentLoaded', () => {
       const imagen = imagenInput ? imagenInput.value.trim() : '';
 
       if (nombre) {
-        categorias.push({ nombre, imagen });
-        localStorage.setItem('mis-categorias', JSON.stringify(categorias));
-        renderCategorias();
-        window.cerrarModal();
-        form.reset();
+        try {
+          // Guardar directamente en la colección de Firebase
+          await addDoc(collection(db, "categorias"), {
+            nombre: nombre,
+            imagen: imagen,
+            fecha: new Date()
+          });
+
+          window.cerrarModal();
+          form.reset();
+        } catch (err) {
+          console.error("Error al guardar en Firebase:", err);
+          alert("Error al guardar en la nube: " + err.message);
+        }
       }
     });
   }
