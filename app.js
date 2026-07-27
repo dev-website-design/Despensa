@@ -28,10 +28,9 @@ if ('serviceWorker' in navigator) {
 const dockItems = document.querySelectorAll('.dock-item');
 
 dockItems.forEach(item => {
-  item.addEventListener('click', () => {
-    // Quita la clase activa de todos los demás botones
+  item.addEventListener('click', (e) => {
+    // Si el elemento es un enlace <a> hacia index.html y ya estamos ahí, evitamos comportamientos raros
     dockItems.forEach(btn => btn.classList.remove('active'));
-    // Agrega el fondo rosado al botón presionado
     item.classList.add('active');
   });
 });
