@@ -1,8 +1,9 @@
 {
-  "id": "../",
+  "id": "nuestro-hogar-pwa",
   "name": "Nuestro Hogar PWA",
   "short_name": "Nuestro Hogar",
-  "start_url": "../index.html",
+  "start_url": "https://dev-website-design.github.io/index.html",
+  "scope": "https://dev-website-design.github.io/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2d6a4f",
@@ -18,19 +19,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "https://placehold.co/1280x720/2d6a4f/ffffff/png?text=Nuestro+Hogar+Desktop",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide"
-    },
-    {
-      "src": "https://placehold.co/750x1334/2d6a4f/ffffff/png?text=Nuestro+Hogar+Mobile",
-      "sizes": "750x1334",
-      "type": "image/png"
     }
   ]
 }
