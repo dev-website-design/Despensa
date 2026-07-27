@@ -28,8 +28,7 @@ if ('serviceWorker' in navigator) {
 const dockItems = document.querySelectorAll('.dock-item');
 
 dockItems.forEach(item => {
-  item.addEventListener('click', (e) => {
-    // Si el elemento es un enlace <a> hacia index.html y ya estamos ahí, evitamos comportamientos raros
+  item.addEventListener('click', () => {
     dockItems.forEach(btn => btn.classList.remove('active'));
     item.classList.add('active');
   });
@@ -66,7 +65,7 @@ onSnapshot(collection(db, "categorias"), (snapshot) => {
 
     if (cat.imagen) {
       div.innerHTML = `
-        <img src="${cat.imagen}" alt="${cat.nombre}" style="width: 40px; height: 40px; margin-bottom: 8px; object-fit: contain;">
+        <img src="${cat.imagen}" alt="${cat.nombre}">
         <span>${cat.nombre}</span>
       `;
     } else {
