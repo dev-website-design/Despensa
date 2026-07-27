@@ -43,7 +43,7 @@ main {
   scrollbar-width: none;
 }
 
-/* CARDS DE CATEGORÍAS */
+/* TARJETAS DE CATEGORÍA */
 .categoria {
   scroll-snap-align: start;
   background-color: var(--white);
@@ -205,7 +205,7 @@ form input:focus {
   margin-top: 22px;
 }
 
-/* BOTÓN "AGREGAR" CON ANIMACIÓN DE MICRO-INTERACCIÓN */
+/* --- BOTÓN "AGREGAR" CON ANIMACIÓN DE MICRO-INTERACCIÓN --- */
 .btn-primary {
   position: relative;
   background-color: var(--perfect-rose);
@@ -216,49 +216,40 @@ form input:focus {
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
-  outline: none;
+  overflow: hidden;
   z-index: 1;
-  transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
-              background-color 0.3s ease, 
-              box-shadow 0.3s ease;
+
+  /* Animación constante de pulso */
+  animation: pulse-glow 2.2s infinite;
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s ease;
 }
 
-.btn-primary::before {
+/* DESTELLO LUMINOSO QUE CRUZA EL BOTÓN */
+.btn-primary::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: inherit;
-  background-color: var(--perfect-rose);
-  z-index: -1;
-  animation: pulse-ring-btn 2.6s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 70%
+  );
+  transform: rotate(25deg);
+  animation: shine-sweep 3.5s infinite ease-in-out;
+  pointer-events: none;
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 8px 22px rgba(190, 44, 85, 0.45);
+  transform: translateY(-2px) scale(1.04);
+  background-color: #d13462;
 }
 
 .btn-primary:active {
   transform: translateY(0) scale(0.95);
-  box-shadow: 0 2px 8px rgba(190, 44, 85, 0.3);
-}
-
-@keyframes pulse-ring-btn {
-  0% {
-    transform: scale(1);
-    opacity: 0.6;
-  }
-  50% {
-    transform: scale(1.12, 1.28);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0;
-  }
 }
 
 .btn-secondary {
@@ -269,4 +260,29 @@ form input:focus {
   border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
+}
+
+/* ANIMACIONES */
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(190, 44, 85, 0.75);
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgba(190, 44, 85, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(190, 44, 85, 0);
+  }
+}
+
+@keyframes shine-sweep {
+  0% {
+    transform: translateX(-120%) rotate(25deg);
+  }
+  25% {
+    transform: translateX(120%) rotate(25deg);
+  }
+  100% {
+    transform: translateX(120%) rotate(25deg);
+  }
 }
