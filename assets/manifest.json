@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "Mi Despensa PWA",
-  "short_name": "Despensa",
+  "name": "Nuestro Hogar PWA",
+  "short_name": "Nuestro Hogar",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -22,13 +22,13 @@
   ],
   "screenshots": [
     {
-      "src": "https://placehold.co/1280x720/2d6a4f/ffffff/png?text=Mi+Despensa+Desktop",
+      "src": "https://placehold.co/1280x720/2d6a4f/ffffff/png?text=Nuestro+Hogar+Desktop",
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide"
     },
     {
-      "src": "https://placehold.co/750x1334/2d6a4f/ffffff/png?text=Mi+Despensa+Mobile",
+      "src": "https://placehold.co/750x1334/2d6a4f/ffffff/png?text=Nuestro+Hogar+Mobile",
       "sizes": "750x1334",
       "type": "image/png"
     }
