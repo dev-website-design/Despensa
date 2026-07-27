@@ -20,7 +20,7 @@ main {
   padding-bottom: 120px;
 }
 
-/* --- BARRA FLOTANTE TIPO CÁPSULA (DOCK) --- */
+/* --- BARRA FLOTANTE TIPO CÁPSULA (EFECTO GLASS) --- */
 .floating-dock {
   position: fixed;
   bottom: calc(20px + env(safe-area-inset-bottom, 0px));
@@ -28,21 +28,31 @@ main {
   transform: translateX(-50%);
   width: min(88%, 340px);
   height: 62px;
-  background-color: var(--black-cherry);
+
+  /* Color base traslúcido */
+  background: rgba(42, 12, 27, 0.75);
+
+  /* Desenfoque del contenido que pasa por detrás */
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(180%);
+
+  /* Borde de cristal */
+  border: 1px solid rgba(255, 224, 235, 0.25);
   border-radius: 40px;
+
   display: flex;
   align-items: center;
   justify-content: space-around;
   padding: 0 12px;
-  box-shadow: 0 12px 28px rgba(42, 12, 27, 0.4);
-  z-index: 9999; /* Garantiza que siempre esté al frente */
+  box-shadow: 0 10px 30px rgba(42, 12, 27, 0.3);
+  z-index: 9999;
   box-sizing: border-box;
 }
 
 .dock-item {
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.55);
   cursor: pointer;
   display: flex;
   align-items: center;
