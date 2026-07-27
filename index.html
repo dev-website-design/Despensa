@@ -4,24 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nuestro Hogar PWA</title>
+
+  <!-- Compatibilidad para iOS / Apple -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nuestro Hogar">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3081/3081559.png">
+
   <link rel="manifest" href="assets/manifest.json">
   <link rel="stylesheet" href="assets/styles.css">
   <meta name="theme-color" content="#2A0C1B">
 </head>
 <body>
-  <header>
-    <h1>Nuestro Hogar</h1>
-    <div class="header-actions">
-      <button id="btn-instalar" class="install-btn hidden">📲 Instalar</button>
-      <button id="btn-abrir-modal" class="add-btn" onclick="mostrarModal()">+</button>
-    </div>
-  </header>
 
   <main>
     <section id="categorias" class="grid-container">
-      <!-- Carga dinámicamente desde app.js -->
+      <!-- Carga dinámicamente desde Firebase -->
     </section>
   </main>
+
+  <!-- BARRA NAVEGACIÓN INFERIOR (FIJA) -->
+  <nav class="bottom-bar">
+    <div class="bottom-actions">
+      <button id="btn-instalar" class="install-btn hidden">📲 Instalar</button>
+      <button id="btn-abrir-modal" class="add-btn" onclick="mostrarModal()">+</button>
+    </div>
+  </nav>
 
   <!-- Modal -->
   <div id="modal" class="modal hidden">
@@ -42,7 +50,6 @@
     </div>
   </div>
 
-   <!-- ATENCIÓN: type="module" es necesario para Firebase -->
   <script type="module" src="app.js"></script>
 </body>
 </html>
