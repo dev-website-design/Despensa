@@ -1,4 +1,4 @@
-const CACHE_NAME = 'despensa-v3';
+const CACHE_NAME = 'Nuestro Hogar-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
