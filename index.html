@@ -18,30 +18,44 @@
 <body>
 
   <main>
+    <!-- GRILLA EN 2 COLUMNAS -->
     <section id="categorias" class="grid-container">
       <!-- Se carga automáticamente desde Firebase -->
     </section>
   </main>
 
-  <!-- DOCK FLOTANTE INFERIOR ESTILO CÁPSULA GLASS -->
+  <!-- DOCK FLOTANTE INFERIOR CON INDICADOR DINÁMICO -->
   <nav class="floating-dock">
-    <button class="dock-item active" aria-label="Inicio">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    <button class="dock-item active" data-section="inicio" aria-label="Inicio">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+      </svg>
     </button>
 
-    <button class="dock-item" aria-label="Categorías">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z"/></svg>
+    <button class="dock-item" data-section="cuadritos" aria-label="Categorías Vista Grid">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z" />
+      </svg>
     </button>
 
     <!-- BOTÓN CENTRAL (+) -->
     <button id="btn-abrir-modal" class="dock-add-btn" aria-label="Agregar">+</button>
 
-    <button id="btn-instalar" class="dock-item hidden" aria-label="Instalar App">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+    <button class="dock-item" data-section="lista" aria-label="Vista Lista">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="8" y1="6" x2="21" y2="6"></line>
+        <line x1="8" y1="12" x2="21" y2="12"></line>
+        <line x1="8" y1="18" x2="21" y2="18"></line>
+        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+      </svg>
     </button>
 
-    <button class="dock-item" aria-label="Perfil o Ajustes">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+    <button class="dock-item" data-section="perfil" aria-label="Perfil o Ajustes">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+      </svg>
     </button>
   </nav>
 
