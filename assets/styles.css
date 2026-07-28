@@ -26,7 +26,7 @@
 
 * {
   box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent; /* Sin recuadro azul de toque en móviles */
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -151,7 +151,7 @@ body {
   gap: 16px;
 }
 
-/* --- TARJETAS DE CATEGORÍA (TEXTO CENTRADO) --- */
+/* --- TARJETAS DE CATEGORÍA --- */
 .categoria {
   position: relative;
   background: var(--white);
@@ -202,7 +202,7 @@ body {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
-/* --- DOCK FLOTANTE CÁPSULA --- */
+/* --- DOCK FLOTANTE CON INDICADOR DESLIZANTE --- */
 .floating-dock {
   position: fixed;
   bottom: calc(16px + env(safe-area-inset-bottom, 0px));
@@ -223,7 +223,25 @@ body {
   z-index: 9999;
 }
 
+/* INDICADOR FLUIDO DE FONDO */
+.dock-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: var(--carousel-pink);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              height 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.2s ease;
+}
+
 .dock-item {
+  position: relative;
+  z-index: 2;
   background: transparent;
   border: none;
   color: rgba(255, 255, 255, 0.5);
@@ -237,17 +255,18 @@ body {
   text-decoration: none;
   outline: none;
   -webkit-tap-highlight-color: transparent;
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: color 0.3s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .dock-item.active {
-  background-color: var(--carousel-pink);
   color: var(--black-cherry);
   transform: scale(1.08);
 }
 
-/* ANIMACIÓN EN EL BOTÓN + */
+/* BOTÓN CENTRAL (+) */
 .dock-add-btn {
+  position: relative;
+  z-index: 2;
   background-color: var(--perfect-rose);
   color: var(--white);
   border: none;
@@ -270,7 +289,7 @@ body {
   transform: scale(0.85) rotate(90deg);
 }
 
-/* --- MODAL Y FORMULARIO (ANIMACIÓN +10% MÁS LENTA) --- */
+/* --- MODAL Y FORMULARIO (+10% MÁS LENTO) --- */
 .modal {
   position: fixed;
   top: 0;
@@ -345,7 +364,6 @@ form input:focus {
   margin-top: 20px;
 }
 
-/* BOTÓN DE GUARDAR (PULSO Y DESTELLO) */
 .btn-primary {
   position: relative;
   background-color: var(--perfect-rose);
@@ -397,7 +415,7 @@ form input:focus {
   outline: none;
 }
 
-/* --- KEYFRAMES DE ANIMACIONES --- */
+/* KEYFRAMES */
 @keyframes modalSpringPop {
   0% { opacity: 0; transform: scale(0.65) translateY(40px); }
   70% { opacity: 1; transform: scale(1.04) translateY(-4px); }
