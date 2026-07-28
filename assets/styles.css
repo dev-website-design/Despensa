@@ -29,7 +29,7 @@ main {
   box-sizing: border-box;
 }
 
-/* --- TARJETAS CUADRADAS / VERTICALES --- */
+/* --- TARJETAS CUADRADAS DE CATEGORÍA --- */
 .categoria {
   background-color: var(--white);
   border-radius: 22px;
@@ -39,9 +39,16 @@ main {
   align-items: center;
   justify-content: center;
   
-  /* ASPECT-RATIO 1/1 GARANTIZA QUE SEAN TOTALMENTE CUADRADAS */
+  /* Mantener forma cuadrada */
   aspect-ratio: 1 / 1;
   box-sizing: border-box;
+  
+  /* Ajustes para imagen de fondo */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  overflow: hidden;
   
   box-shadow: 0 6px 18px rgba(42, 12, 27, 0.06);
   border: 1px solid rgba(190, 44, 85, 0.12);
@@ -52,19 +59,35 @@ main {
   transform: scale(0.96);
 }
 
-.categoria img {
-  width: 48px;
-  height: 48px;
-  margin-bottom: 10px;
-  object-fit: contain;
-}
-
 .categoria span {
   font-weight: 600;
   font-size: 0.95rem;
   text-align: center;
   color: var(--black-cherry);
   word-break: break-word;
+  z-index: 2; /* Asegura que el texto esté por encima del fondo */
+}
+
+/* --- ESTILOS ESPECIALES CUANDO TIENE IMAGEN DE FONDO --- */
+.categoria.con-imagen {
+  justify-content: flex-end; /* Alinea el texto en la parte inferior */
+  padding: 14px;
+  border: none;
+}
+
+/* Capa sombreada inferior para legibilidad del texto */
+.categoria.con-imagen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(42, 12, 27, 0.85) 0%, rgba(42, 12, 27, 0.2) 65%, transparent 100%);
+  z-index: 1;
+}
+
+.categoria.con-imagen span {
+  color: var(--white);
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 /* --- BARRA FLOTANTE TIPO CÁPSULA (GLASSMORPHISM) --- */
@@ -76,7 +99,6 @@ main {
   width: min(88%, 360px);
   height: 64px;
 
-  /* Glassmorphism */
   background: rgba(42, 12, 27, 0.78);
   -webkit-backdrop-filter: blur(18px) saturate(180%);
   backdrop-filter: blur(18px) saturate(180%);
@@ -92,7 +114,6 @@ main {
   box-sizing: border-box;
 }
 
-/* ESTADO NORMAL DE LOS ICONOS DE NAVEGACIÓN */
 .dock-item {
   background: transparent;
   border: none;
@@ -115,7 +136,6 @@ main {
   box-sizing: border-box;
 }
 
-/* ESTADO SELECCIONADO / ACTIVO */
 .dock-item.active {
   background-color: var(--carousel-pink);
   color: var(--black-cherry);
@@ -127,7 +147,6 @@ main {
   transform: scale(0.92);
 }
 
-/* BOTÓN CENTRAL (+) DE LA BARRA */
 .dock-add-btn {
   background-color: var(--white);
   color: var(--black-cherry);
@@ -153,7 +172,7 @@ main {
   background-color: var(--carousel-pink);
 }
 
-/* --- MODAL Y FORMULARIO (ANIMACIÓN SPRING POP-UP) --- */
+/* --- MODAL Y FORMULARIO --- */
 .modal {
   position: fixed;
   top: 0;
@@ -226,7 +245,6 @@ form input:focus {
   margin-top: 22px;
 }
 
-/* BOTÓN "AGREGAR" DENTRO DEL MODAL */
 .btn-primary {
   position: relative;
   background-color: var(--perfect-rose);
@@ -280,51 +298,26 @@ form input:focus {
   cursor: pointer;
 }
 
-/* --- KEYFRAMES --- */
+/* ANIMACIONES */
 @keyframes modalSpringPop {
-  0% {
-    opacity: 0;
-    transform: scale(0.65) translateY(40px);
-  }
-  70% {
-    opacity: 1;
-    transform: scale(1.04) translateY(-4px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+  0% { opacity: 0; transform: scale(0.65) translateY(40px); }
+  70% { opacity: 1; transform: scale(1.04) translateY(-4px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 @keyframes fadeInBackdrop {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes pulse-glow {
-  0% {
-    box-shadow: 0 0 0 0 rgba(190, 44, 85, 0.75);
-  }
-  70% {
-    box-shadow: 0 0 0 14px rgba(190, 44, 85, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(190, 44, 85, 0);
-  }
+  0% { box-shadow: 0 0 0 0 rgba(190, 44, 85, 0.75); }
+  70% { box-shadow: 0 0 0 14px rgba(190, 44, 85, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(190, 44, 85, 0); }
 }
 
 @keyframes shine-sweep {
-  0% {
-    transform: translateX(-120%) rotate(25deg);
-  }
-  25% {
-    transform: translateX(120%) rotate(25deg);
-  }
-  100% {
-    transform: translateX(120%) rotate(25deg);
-  }
+  0% { transform: translateX(-120%) rotate(25deg); }
+  25% { transform: translateX(120%) rotate(25deg); }
+  100% { transform: translateX(120%) rotate(25deg); }
 }
