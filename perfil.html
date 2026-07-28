@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil</title>
+  <!-- Tipografía Montserrat -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #121212;
+      font-family: 'Montserrat', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    /* Contenedor estilo Pantalla Móvil */
+    .mobile-card {
+      width: 100%;
+      max-width: 380px;
+      height: 750px;
+      background: radial-gradient(circle at center, #1a1c23 0%, #08090c 100%);
+      border-radius: 40px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+      position: relative;
+      padding: 30px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center; /* Centrado vertical para 2 perfiles */
+      overflow: hidden;
+    }
+
+    /* Botón Cerrar (X) */
+    .close-btn {
+      position: absolute;
+      top: 25px;
+      left: 20px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(5px);
+      border: none;
+      color: #ffffff;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      z-index: 10;
+    }
+
+    .close-btn:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Encabezado */
+    .header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .header h1 {
+      color: #ffffff;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+
+    .header p {
+      color: #9e9e9e;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    /* Grid de Perfiles (2 Columnas) */
+    .profiles-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .profile-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    /* Anillo exterior del avatar */
+    .avatar-ring {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    /* Borde temático Rosa */
+    .theme-pink .avatar-ring {
+      border: 3px solid #e91e63;
+    }
+
+    /* Borde temático Azul */
+    .theme-blue .avatar-ring {
+      border: 3px solid #2196f3;
+    }
+
+    /* Estado Seleccionado (Efecto Glow) */
+    .profile-item.selected .avatar-ring {
+      border: 3px solid #00f0ff;
+      box-shadow: 0 0 25px #00d2ff, inset 0 0 15px #00d2ff;
+      transform: scale(1.05);
+    }
+
+    /* Círculo interior con la ilustración */
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Nombre de Perfil */
+    .profile-name {
+      margin-top: 14px;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .profile-item:hover .profile-name {
+      color: #00f0ff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mobile-card">
+    <!-- Botón Cerrar -->
+    <button class="close-btn" aria-label="Cerrar">&times;</button>
+
+    <!-- Título y Subtítulo -->
+    <div class="header">
+      <h1>Selecciona tu perfil</h1>
+      <p>Que tengas un bonito dia..</p>
+    </div>
+
+    <!-- Rejilla de Perfiles -->
+    <div class="profiles-grid">
+      
+      <!-- MARÍA -->
+      <div class="profile-item theme-pink" onclick="selectProfile(this)">
+        <div class="avatar-ring">
+          <div class="avatar-img">
+            <svg viewBox="0 0 120 120" width="100%" height="100%">
+              <circle cx="60" cy="60" r="60" fill="#e91e63"/>
+              <!-- Cabello posterior -->
+              <path d="M 35 45 C 35 25, 85 25, 85 45 C 85 65, 85 85, 85 85 L 35 85 Z" fill="#5a2a27"/>
+              <!-- Rostro -->
+              <ellipse cx="60" cy="58" rx="22" ry="24" fill="#ffd0b0"/>
+              <!-- Cabello superior -->
+              <path d="M 36 48 C 38 30, 82 30, 84 48 C 70 38, 50 38, 36 48 Z" fill="#5a2a27"/>
+              <!-- Ojos -->
+              <circle cx="52" cy="56" r="2.5" fill="#2c1810"/>
+              <circle cx="68" cy="56" r="2.5" fill="#2c1810"/>
+              <!-- Gafas -->
+              <circle cx="51" cy="56" r="7" fill="none" stroke="#2c1810" stroke-width="2"/>
+              <circle cx="69" cy="56" r="7" fill="none" stroke="#2c1810" stroke-width="2"/>
+              <line x1="58" y1="56" x2="62" y2="56" stroke="#2c1810" stroke-width="2"/>
+              <!-- Sonrisa -->
+              <path d="M 55 68 Q 60 72 65 68" fill="none" stroke="#d85252" stroke-width="2" stroke-linecap="round"/>
+              <!-- Chaqueta / Ropa -->
+              <path d="M 30 110 Q 60 85 90 110 L 90 120 L 30 120 Z" fill="#e91e63"/>
+              <path d="M 52 89 L 60 102 L 68 89 Z" fill="#ffffff"/>
+            </svg>
+          </div>
+        </div>
+        <span class="profile-name">MARÍA</span>
+      </div>
+
+      <!-- JUAN (Seleccionado por defecto) -->
+      <div class="profile-item theme-blue selected" onclick="selectProfile(this)">
+        <div class="avatar-ring">
+          <div class="avatar-img">
+            <svg viewBox="0 0 120 120" width="100%" height="100%">
+              <circle cx="60" cy="60" r="60" fill="#2196f3"/>
+              <!-- Rostro -->
+              <ellipse cx="60" cy="55" rx="21" ry="23" fill="#ffd0b0"/>
+              <!-- Cabello -->
+              <path d="M 38 48 C 38 28, 82 28, 82 48 C 75 35, 45 35, 38 48 Z" fill="#1f2937"/>
+              <!-- Barba -->
+              <path d="M 40 58 C 40 82, 80 82, 80 58 C 80 75, 40 75, 40 58 Z" fill="#1f2937"/>
+              <!-- Ojos -->
+              <circle cx="52" cy="52" r="2.5" fill="#1f2937"/>
+              <circle cx="68" cy="52" r="2.5" fill="#1f2937"/>
+              <!-- Cejas -->
+              <path d="M 48 46 Q 52 44 56 46" fill="none" stroke="#1f2937" stroke-width="2"/>
+              <path d="M 64 46 Q 68 44 72 46" fill="none" stroke="#1f2937" stroke-width="2"/>
+              <!-- Camiseta -->
+              <path d="M 28 110 Q 60 85 92 110 L 92 120 L 28 120 Z" fill="#1565c0"/>
+            </svg>
+          </div>
+        </div>
+        <span class="profile-name">JUAN</span>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function selectProfile(element) {
+      const items = document.querySelectorAll('.profile-item');
+      items.forEach(item => item.classList.remove('selected'));
+      element.classList.add('selected');
+    }
+  </script>
+
+</body>
+</html>
