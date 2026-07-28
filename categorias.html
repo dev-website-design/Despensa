@@ -27,6 +27,51 @@
       box-sizing: border-box;
     }
 
+    /* Estilos para las tarjetas dinámicas que genera tu app.js */
+    .categoria {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 16px;
+      box-shadow: 0 10px 25px rgba(42, 12, 27, 0.05);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 140px;
+      position: relative;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
+      transition: transform 0.2s;
+    }
+
+    .categoria:active {
+      transform: scale(0.96);
+    }
+
+    .categoria.con-imagen {
+      padding: 0;
+    }
+
+    .categoria:not(.con-imagen) .categoria-footer {
+      font-size: 18px;
+      font-weight: bold;
+      color: #2A0C1B;
+      text-align: center;
+    }
+
+    .categoria.con-imagen .categoria-footer {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      color: white;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
     /* Barra o Dock Flotante Inferior */
     .floating-dock {
       position: fixed !important;
@@ -66,7 +111,7 @@
       transform: scale(0.98);
     }
 
-    /* Nuevo Diseño del Modal Pop-up (Armónico con la App) */
+    /* Diseño del Modal Pop-up (Alineado con los ID de tu app.js) */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -79,14 +124,13 @@
       align-items: center;
       justify-content: center;
       z-index: 9999;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
+      opacity: 1;
+      transition: opacity 0.3s ease;
     }
 
-    .modal-overlay.active {
-      opacity: 1;
-      visibility: visible;
+    .hidden {
+      display: none !important;
+      opacity: 0;
     }
 
     .modal-content {
@@ -96,13 +140,13 @@
       border-radius: 32px;
       padding: 28px 24px;
       box-shadow: 0 20px 40px rgba(42, 12, 27, 0.15);
-      transform: translateY(20px) scale(0.95);
-      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       box-sizing: border-box;
     }
 
-    .modal-overlay.active .modal-content {
-      transform: translateY(0) scale(1);
+    @keyframes modalIn {
+      from { transform: translateY(20px) scale(0.95); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
     }
 
     .modal-header {
@@ -117,7 +161,6 @@
       font-size: 20px;
       font-weight: 800;
       color: #2A0C1B;
-      letter-spacing: 0.5px;
     }
 
     .modal-close-btn {
@@ -136,12 +179,7 @@
       transition: background 0.2s;
     }
 
-    .modal-close-btn:hover {
-      background: #ffe0eb;
-    }
-
-    .modal-body input, 
-    .modal-body textarea {
+    .modal-body input {
       width: 100%;
       padding: 14px 16px;
       background: #faf7f8;
@@ -153,12 +191,10 @@
       outline: none;
       color: #2A0C1B;
       font-family: inherit;
-      transition: border-color 0.2s, background 0.2s;
     }
 
-    .modal-body input:focus, 
-    .modal-body textarea:focus {
-      border-color: #2A0C1B;
+    .modal-body input[type="file"] {
+      padding: 10px;
       background: #ffffff;
     }
 
@@ -172,16 +208,7 @@
       font-weight: 700;
       font-size: 15px;
       cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
       box-shadow: 0 4px 12px rgba(42, 12, 27, 0.2);
-    }
-
-    .modal-submit-btn:hover {
-      background: #401328;
-    }
-
-    .modal-submit-btn:active {
-      transform: scale(0.98);
     }
   </style>
 </head>
@@ -189,65 +216,37 @@
 
   <div class="app-container">
     <!-- Tarjeta Principal Superior -->
-    <div class="hero-card">
+    <div class="hero-card" style="background: white; border-radius: 24px; padding: 20px; margin-bottom: 20px;">
       <div class="hero-info">
-        <h1 class="hero-title">Mi Despensa</h1>
-        <p class="hero-subtitle" id="user-greeting">Hola, MARÍA</p>
-        <div class="hero-actions">
-          <button class="action-btn" aria-label="Buscar">🔍</button>
-          <button class="action-btn" aria-label="Ajustes">⚙️</button>
-        </div>
-      </div>
-      <div class="hero-image-wrapper">
-        <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=400&q=80" alt="Despensa" class="hero-img">
+        <h1 class="hero-title" style="margin:0; font-size: 24px;">Mi Despensa</h1>
+        <p class="hero-subtitle" id="user-greeting" style="color: gray; margin-top: 5px;">Hola, Cargando...</p>
       </div>
     </div>
 
     <!-- Encabezado de Sección -->
-    <div class="section-header">
-      <h2 class="section-title">Categorías</h2>
-      <div class="status-dot"></div>
+    <div class="section-header" style="margin-bottom: 15px;">
+      <h2 class="section-title" style="margin:0;">Categorías</h2>
     </div>
 
-    <!-- Contenedor de Categorías / Cuadros -->
-    <div class="grid-container" id="contenedor-categorias">
-      <div class="hero-card" style="display: flex; flex-direction: column; justify-content: space-between; min-height: 140px;">
-        <p class="hero-title" style="font-size: 18px;">Te amo</p>
-      </div>
-      
-      <div class="hero-card" style="padding: 0; overflow: hidden; position: relative;">
-        <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=400&q=80" alt="Sala" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top:0; left:0;">
-        <div style="position: absolute; bottom: 10px; left: 10px; color: white; background: rgba(0,0,0,0.4); padding: 4px 8px; border-radius: 8px;">
-          <h3 style="margin:0; font-size: 14px;">Sala</h3>
-        </div>
-      </div>
-
-      <div class="hero-card" style="padding: 0; overflow: hidden; position: relative;">
-        <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=400&q=80" alt="Perrito" style="width: 100%; height: 100%; object-fit: cover;">
-      </div>
-
-      <div class="hero-card" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-        <p class="hero-title" style="font-size: 16px;">Tengo hambre ❤️ 👉</p>
-      </div>
-
-      <div class="hero-card" style="display: flex; flex-direction: column; justify-content: space-between; min-height: 140px;">
-        <p class="hero-title" style="font-size: 18px;">Cocina</p>
-      </div>
+    <!-- Contenedor de Categorías (Aquí app.js inyectará los datos de Firebase) -->
+    <div class="grid-container" id="contenedor-categorias" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <!-- Se llena automáticamente con app.js -->
     </div>
   </div>
 
-  <!-- Modal Pop-up Rediseñado -->
-  <div id="add-modal" class="modal-overlay">
+  <!-- Modal Pop-up (IDs adaptados a app.js) -->
+  <div id="modal-categoria" class="modal-overlay hidden">
     <div class="modal-content">
       <div class="modal-header">
         <h3>Nueva Categoría</h3>
-        <button id="modal-close-btn" class="modal-close-btn" type="button">✕</button>
+        <button id="btn-cerrar-modal" class="modal-close-btn" type="button">✕</button>
       </div>
       <div class="modal-body">
-        <form id="add-form">
-          <input type="text" id="input-nombre" placeholder="Nombre de la categoría..." required>
-          <textarea id="input-desc" placeholder="Descripción o detalles..." rows="3" style="resize: none;"></textarea>
-          <button type="submit" class="modal-submit-btn">Añadir Categoría</button>
+        <form id="form-nueva-categoria">
+          <input type="text" id="nombre-categoria" placeholder="Nombre de la categoría..." required>
+          <label style="font-size: 12px; color: gray; margin-bottom: 4px; display: block;">Imagen (Opcional):</label>
+          <input type="file" id="imagen-categoria" accept="image/*">
+          <button type="submit" class="modal-submit-btn" style="margin-top: 10px;">Guardar Categoría</button>
         </form>
       </div>
     </div>
@@ -269,7 +268,12 @@
       </svg>
     </a>
 
-    <button id="btn-open-modal" class="dock-add-btn" type="button" aria-label="Agregar">+</button>
+    <!-- Este es el botón que app.js escucha para abrir el modal -->
+    <button id="btn-open-modal" class="dock-add-btn" type="button" aria-label="Agregar">
+      <div style="background-color: #d63384; color: white; width: 44px; height: 44px; border-radius: 50%; font-size: 26px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(214,51,132,0.4);">
+        +
+      </div>
+    </button>
 
     <button class="dock-item" aria-label="Lista" type="button">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -289,103 +293,16 @@
     </a>
   </nav>
 
+  <!-- AQUÍ CONECTAMOS TU app.js -->
+  <!-- "type=module" es fundamental porque tu app.js usa "import" -->
+  <script type="module" src="app.js"></script>
+
+  <!-- Script EXCLUSIVO para la animación estética de la barra inferior -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const dock = document.querySelector('.floating-dock');
       const indicator = document.getElementById('dock-indicator');
       const dockItems = document.querySelectorAll('.floating-dock .dock-item');
-      
-      const btnOpenModal = document.getElementById('btn-open-modal');
-      const modal = document.getElementById('add-modal');
-      const modalCloseBtn = document.getElementById('modal-close-btn');
-      const addForm = document.getElementById('add-form');
-      const contenedorCategorias = document.getElementById('contenedor-categorias');
-
-      if (btnOpenModal && modal) {
-        btnOpenModal.addEventListener('click', (e) => {
-          e.stopPropagation();
-          modal.classList.add('active');
-        });
-      }
-
-      if (modalCloseBtn && modal) {
-        modalCloseBtn.addEventListener('click', () => {
-          modal.classList.remove('active');
-        });
-      }
-
-      if (modal) {
-        modal.addEventListener('click', (e) => {
-          if (e.target === modal) {
-            modal.classList.remove('active');
-          }
-        });
-      }
-
-      // Sincronizar y cargar desde Firebase en tiempo real si está disponible
-      function inicializarFirebaseSync() {
-        const firestoreDB = typeof db !== 'undefined' ? db : (window.firebase && firebase.firestore ? firebase.firestore() : null);
-        
-        if (firestoreDB) {
-          try {
-            firestoreDB.collection('categorias').onSnapshot((snapshot) => {
-              // Mantener las tarjetas estáticas iniciales o limpiar y cargar dinámicamente según prefieras
-              snapshot.docChanges().forEach((change) => {
-                if (change.type === "added") {
-                  const data = change.doc.data();
-                  const nombre = data.nombre || data.name || '';
-                  if (nombre) {
-                    const nuevaCard = document.createElement('div');
-                    nuevaCard.className = 'hero-card';
-                    nuevaCard.style.cssText = 'display: flex; flex-direction: column; justify-content: space-between; min-height: 140px;';
-                    nuevaCard.innerHTML = `<p class="hero-title" style="font-size: 18px;">${nombre}</p>`;
-                    contenedorCategorias.appendChild(nuevaCard);
-                  }
-                }
-              });
-            }, (error) => {
-              console.error("Error en snapshot de Firebase:", error);
-            });
-          } catch (err) {
-            console.error("Error configurando listener de Firebase:", err);
-          }
-        }
-      }
-
-      inicializarFirebaseSync();
-
-      if (addForm && contenedorCategorias) {
-        addForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const nombreInput = document.getElementById('input-nombre');
-          const descInput = document.getElementById('input-desc');
-          const nombre = nombreInput.value.trim();
-          const descripcion = descInput.value.trim();
-
-          if (nombre !== '') {
-            try {
-              const firestoreDB = typeof db !== 'undefined' ? db : (window.firebase && firebase.firestore ? firebase.firestore() : null);
-
-              if (firestoreDB) {
-                await firestoreDB.collection('categorias').add({
-                  nombre: nombre,
-                  descripcion: descripcion,
-                  fecha: new Date().toISOString()
-                });
-              } else {
-                console.warn("Base de datos de Firebase no detectada en el ámbito global.");
-              }
-
-              // Limpiar formulario y cerrar modal
-              nombreInput.value = '';
-              descInput.value = '';
-              modal.classList.remove('active');
-            } catch (error) {
-              console.error("Error al guardar en Firebase:", error);
-            }
-          }
-        });
-      }
 
       function moverIndicador(elemento) {
         if (!elemento || !indicator || !dock) return;
@@ -403,7 +320,7 @@
 
       const activeInicial = document.querySelector('.floating-dock .dock-item.active');
       if (activeInicial) {
-        moverIndicador(activeInicial);
+        setTimeout(() => moverIndicador(activeInicial), 100);
       }
 
       dockItems.forEach(item => {
@@ -416,11 +333,7 @@
             moverIndicador(item);
             setTimeout(() => {
               window.location.href = href;
-            }, 300);
-          } else {
-            dockItems.forEach(i => i.classList.remove('active'));
-            item.classList.add('active');
-            moverIndicador(item);
+            }, 250);
           }
         });
       });
