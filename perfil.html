@@ -132,7 +132,7 @@
 <body>
 
   <div class="app-container">
-    <!-- Redirección corregida a index.html en minúsculas -->
+    <!-- El botón X de la esquina superior izquierda sigue redirigiendo a index.html -->
     <button class="close-btn" onclick="window.location.href='index.html'" aria-label="Cerrar">✕</button>
 
     <div class="profile-selection-wrapper">
@@ -165,8 +165,9 @@
 
   <script>
     function cambiarUsuario(nombre) {
+      // Guarda el perfil seleccionado y redirige a categorias.html
       localStorage.setItem('usuarioActivo', nombre);
-      window.location.href = 'index.html';
+      window.location.href = 'categorias.html';
     }
   </script>
 </body>
