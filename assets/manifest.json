@@ -2,7 +2,7 @@
   "id": "nuestro-hogar-pwa",
   "name": "Nuestro Hogar PWA",
   "short_name": "Nuestro Hogar",
-  "start_url": "https://dev-website-design.github.io/index.html",
+  "start_url": "https://dev-website-design.github.io/despensa",
   "scope": "https://dev-website-design.github.io/",
   "display": "standalone",
   "background_color": "#FFE0EB",
