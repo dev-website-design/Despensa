@@ -26,6 +26,8 @@
 
 * {
   box-sizing: border-box;
+  /* Desactiva el recuadro azul táctil en toda la app */
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -94,6 +96,7 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  outline: none;
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -234,7 +237,14 @@ body {
   height: 40px;
   border-radius: 50%;
   text-decoration: none;
+  outline: none; /* Elimina el borde azul al pulsar */
+  -webkit-tap-highlight-color: transparent; /* Elimina la sombra azul en iOS/Android */
   transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dock-item:focus,
+.dock-item:active {
+  outline: none;
 }
 
 .dock-item.active {
@@ -257,6 +267,8 @@ body {
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 14px rgba(190, 44, 85, 0.4);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
   transition: transform 0.2s ease;
 }
 
@@ -341,6 +353,7 @@ form input:focus {
   font-family: var(--font-main);
   font-size: 1rem;
   cursor: pointer;
+  outline: none;
 }
 
 .btn-secondary {
@@ -352,4 +365,5 @@ form input:focus {
   font-family: var(--font-main);
   font-size: 1rem;
   cursor: pointer;
+  outline: none;
 }
