@@ -7,11 +7,10 @@
   <link rel="stylesheet" href="assets/styles.css">
 
   <style>
-    /* Eliminamos el borde, sombras y contenedor de simulación móvil */
     body {
       margin: 0;
       padding: 0;
-      background-color: #ffd1dc; /* Fondo rosado general */
+      background-color: #ffd1dc;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
@@ -61,6 +60,105 @@
       color: #2A0C1B !important;
       transform: scale(0.98);
     }
+
+    /* Estilos del Modal Pop-up */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background: #ffffff;
+      width: 90%;
+      max-width: 360px;
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    .modal-overlay.active .modal-content {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a202c;
+    }
+
+    .modal-close-btn {
+      background: #f7fafc;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #718096;
+    }
+
+    .modal-body input, .modal-body textarea, .modal-body select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #cbd5e0;
+      border-radius: 12px;
+      font-size: 14px;
+      margin-bottom: 14px;
+      box-sizing: border-box;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .modal-body input:focus {
+      border-color: #2e634d;
+    }
+
+    .modal-submit-btn {
+      width: 100%;
+      background: #2e634d;
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .modal-submit-btn:hover {
+      background: #244f3d;
+    }
   </style>
 </head>
 <body>
@@ -89,7 +187,6 @@
 
     <!-- Contenedor de Categorías / Cuadros -->
     <div class="grid-container" id="contenedor-categorias">
-      <!-- Ejemplo estático de tarjetas acorde a tu diseño -->
       <div class="hero-card" style="display: flex; flex-direction: column; justify-content: space-between; min-height: 140px;">
         <p class="hero-title" style="font-size: 18px;">Te amo</p>
       </div>
@@ -111,6 +208,23 @@
 
       <div class="hero-card" style="display: flex; flex-direction: column; justify-content: space-between; min-height: 140px;">
         <p class="hero-title" style="font-size: 18px;">Cocina</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Pop-up para el botón + -->
+  <div id="add-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Agregar Elemento</h3>
+        <button id="modal-close-btn" class="modal-close-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="add-form" onsubmit="event.preventDefault(); alert('Elemento agregado con éxito'); document.getElementById('add-modal').classList.remove('active');">
+          <input type="text" placeholder="Nombre de la categoría o artículo" required>
+          <textarea placeholder="Descripción o detalles..." rows="3" style="resize: none;"></textarea>
+          <button type="submit" class="modal-submit-btn">Guardar</button>
+        </form>
       </div>
     </div>
   </div>
@@ -158,6 +272,31 @@
       const dock = document.querySelector('.floating-dock');
       const indicator = document.getElementById('dock-indicator');
       const dockItems = document.querySelectorAll('.floating-dock .dock-item');
+      
+      // Control del modal pop-up
+      const btnOpenModal = document.getElementById('btn-open-modal');
+      const modal = document.getElementById('add-modal');
+      const modalCloseBtn = document.getElementById('modal-close-btn');
+
+      if (btnOpenModal && modal) {
+        btnOpenModal.addEventListener('click', () => {
+          modal.classList.add('active');
+        });
+      }
+
+      if (modalCloseBtn && modal) {
+        modalCloseBtn.addEventListener('click', () => {
+          modal.classList.remove('active');
+        });
+      }
+
+      if (modal) {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            modal.classList.remove('active');
+          }
+        });
+      }
 
       function moverIndicador(elemento) {
         if (!elemento || !indicator || !dock) return;
