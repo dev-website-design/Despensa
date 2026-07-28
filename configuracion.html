@@ -1,246 +1,141 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Configuration - Sophie</title>
-  <!-- Tipografía Plus Jakarta Sans -->
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
+  <title>ConfiguraciÃ³n - Despensa</title>
+  <link rel="stylesheet" href="assets/styles.css">
+
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      background-color: #dce6e0;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    /* Formato Móvil Delgado y Alto */
-    .mobile-card {
-      width: 100%;
-      max-width: 360px;
-      height: 720px;
-      background-color: #f4f7f5;
-      border-radius: 44px;
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.18);
-      position: relative;
-      padding: 28px 20px 90px 20px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      border: 4px solid #ffffff;
-    }
-
-    /* Contenido desplazable */
-    .content-scroll {
-      flex: 1;
-      overflow-y: auto;
-      padding-right: 2px;
-    }
-
-    /* Ocultar barra de scroll para un acabado pulido */
-    .content-scroll::-webkit-scrollbar {
-      display: none;
-    }
-    .content-scroll {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
+    /* Eliminamos la simulaciÃ³n de mÃ³vil para que ocupe toda la pantalla */
+    .app-container {
+      max-width: 100% !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 16px !important;
+      padding-bottom: 90px !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
     }
 
     .page-title {
       font-size: 22px;
       font-weight: 800;
       color: #1a202c;
-      margin-top: 12px;
       margin-bottom: 20px;
     }
 
-    /* Tarjeta Perfil */
-    .profile-card {
+    /* Estilos de las tarjetas de configuraciÃ³n basadas en la imagen */
+    .settings-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #a0aec0;
+      letter-spacing: 0.05em;
+      margin: 20px 0 10px 4px;
+      text-transform: uppercase;
+    }
+
+    .profile-card-settings {
       background: #ffffff;
-      border-radius: 20px;
+      border-radius: 18px;
       padding: 16px;
       display: flex;
       align-items: center;
       gap: 14px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-      margin-bottom: 24px;
+      border: 1px solid #edf2f7;
+      margin-bottom: 10px;
     }
 
-    .avatar {
-      width: 52px;
-      height: 52px;
+    .profile-avatar {
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
-      background-color: #dbebe2;
-      overflow: hidden;
+      background-color: #dce6e0;
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
+      font-size: 24px;
     }
 
-    .user-name {
-      font-size: 16px;
+    .profile-info h3 {
+      font-size: 15px;
       font-weight: 700;
       color: #2d3748;
     }
 
-    .user-email {
+    .profile-info p {
       font-size: 12px;
       color: #718096;
-      font-weight: 500;
-    }
-
-    /* Grupos de Ajustes */
-    .section-label {
-      font-size: 12px;
-      font-weight: 700;
-      color: #a0aec0;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 10px;
-      padding-left: 4px;
     }
 
     .settings-group {
       background: #ffffff;
-      border-radius: 20px;
-      padding: 6px 16px;
+      border-radius: 18px;
+      overflow: hidden;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-      margin-bottom: 20px;
+      border: 1px solid #edf2f7;
+      margin-bottom: 10px;
     }
 
-    .setting-item {
+    .settings-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 0;
-      border-bottom: 1px solid #edf2f7;
-      cursor: pointer;
+      padding: 16px;
+      text-decoration: none;
+      color: #2d3748;
+      border-bottom: 1px solid #f7fafc;
+      font-size: 14px;
+      font-weight: 600;
     }
 
-    .setting-item:last-child {
+    .settings-item:last-child {
       border-bottom: none;
     }
 
-    .setting-left {
+    .settings-item-left {
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
-    .setting-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: #f4f7f5;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #2e634d;
+    .settings-icon {
+      font-size: 18px;
     }
 
-    .setting-text {
-      font-size: 13.5px;
-      font-weight: 600;
-      color: #2d3748;
-    }
-
-    /* Switch / Interruptor */
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 42px;
-      height: 24px;
-    }
-
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #cbd5e0;
-      transition: .3s;
-      border-radius: 24px;
-    }
-
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      transition: .3s;
-      border-radius: 50%;
-    }
-
-    input:checked + .slider {
-      background-color: #2e634d;
-    }
-
-    input:checked + .slider:before {
-      transform: translateX(18px);
-    }
-
-    /* Botón Cierre de Sesión */
-    .logout-btn {
+    .btn-logout {
       width: 100%;
-      background-color: #ffe8e8;
+      background-color: #fff5f5;
       color: #e53e3e;
-      border: none;
+      border: 1px solid #fed7d7;
       padding: 14px;
-      border-radius: 18px;
-      font-family: inherit;
-      font-size: 14px;
+      border-radius: 16px;
       font-weight: 700;
+      font-size: 14px;
       cursor: pointer;
-      margin-top: 8px;
-      margin-bottom: 20px;
-      transition: background-color 0.2s;
+      margin-top: 20px;
+      transition: background 0.2s;
     }
 
-    .logout-btn:active {
+    .btn-logout:hover {
       background-color: #fed7d7;
     }
 
-    /* DOCK FLOTANTE CON INDICADOR ANIMADO */
+    /* Dock Flotante Inferior */
     .floating-dock {
-      position: absolute;
-      bottom: 16px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: calc(100% - 32px);
-      height: 60px;
-      background: rgba(42, 12, 27, 0.88);
-      -webkit-backdrop-filter: blur(16px);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 224, 235, 0.2);
-      border-radius: 35px;
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      padding: 0 8px;
-      box-shadow: 0 10px 30px rgba(42, 12, 27, 0.3);
+      position: fixed !important;
+      bottom: 20px !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      width: calc(100% - 32px) !important;
+      max-width: 400px !important;
+      height: 52px !important;
+      padding: 0 8px !important;
       z-index: 99;
     }
 
-    /* INDICADOR DESLIZANTE DE FONDO */
     .dock-indicator {
       position: absolute;
       top: 0;
@@ -252,233 +147,159 @@
       opacity: 0;
       z-index: 1;
     }
-
-    .dock-item {
-      background: transparent;
-      border: none;
-      color: rgba(255, 255, 255, 0.5);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      text-decoration: none;
-      outline: none;
+    .dock-item, .dock-add-btn {
       position: relative;
       z-index: 2;
-      transition: color 0.25s ease, transform 0.2s ease;
+      transform: scale(0.88);
     }
-
     .dock-item.active {
-      color: #2A0C1B;
-      transform: scale(1.05);
-    }
-
-    .dock-add-btn {
-      background-color: #BE2C55;
-      color: #ffffff;
-      border: none;
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
-      font-size: 1.8rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 14px rgba(190, 44, 85, 0.4);
-      outline: none;
-      text-decoration: none;
-      position: relative;
-      z-index: 2;
-      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      color: #2A0C1B !important;
+      transform: scale(0.98);
     }
   </style>
 </head>
 <body>
 
-  <div class="mobile-card">
-    
-    <div class="content-scroll">
-      <div class="page-title">Paramètres</div>
+  <div class="app-container">
+    <h1 class="page-title">ParamÃ¨tres</h1>
 
-      <!-- Perfil -->
-      <div class="profile-card">
-        <div class="avatar">
-          <svg viewBox="0 0 100 100" width="100%" height="100%">
-            <circle cx="50" cy="50" r="50" fill="#d0e5d8"/>
-            <path d="M 30 40 C 30 20, 70 20, 70 40 C 70 60, 70 80, 70 80 L 30 80 Z" fill="#2c2c2c"/>
-            <circle cx="50" cy="20" r="10" fill="#2c2c2c"/>
-            <ellipse cx="50" cy="52" rx="18" ry="20" fill="#ffcca6"/>
-            <circle cx="44" cy="50" r="2" fill="#2c2c2c"/>
-            <circle cx="56" cy="50" r="2" fill="#2c2c2c"/>
-            <path d="M 46 60 Q 50 63 54 60" fill="none" stroke="#e57373" stroke-width="2" stroke-linecap="round"/>
-            <path d="M 25 95 Q 50 75 75 95 Z" fill="#2e634d"/>
-          </svg>
-        </div>
-        <div>
-          <div class="user-name">Sophie Martin</div>
-          <div class="user-email">sophie.martin@example.com</div>
-        </div>
+    <!-- Tarjeta de Perfil -->
+    <div class="profile-card-settings">
+      <div class="profile-avatar">ðŸ‘©</div>
+      <div class="profile-info">
+        <h3>Sophie Martin</h3>
+        <p>sophie.martin@example.com</p>
       </div>
-
-      <!-- Sección Cuenta -->
-      <div class="section-label">Compte</div>
-      <div class="settings-group">
-        <div class="setting-item">
-          <div class="setting-left">
-            <div class="setting-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            </div>
-            <div class="setting-text">Profil personnel</div>
-          </div>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-left">
-            <div class="setting-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            </div>
-            <div class="setting-text">Sécurité et mot de passe</div>
-          </div>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-        </div>
-      </div>
-
-      <!-- Sección Preferencias -->
-      <div class="section-label">Préférences</div>
-      <div class="settings-group">
-        <div class="setting-item">
-          <div class="setting-left">
-            <div class="setting-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-            </div>
-            <div class="setting-text">Notifications</div>
-          </div>
-          <label class="switch">
-            <input type="checkbox" checked>
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <div class="setting-item">
-          <div class="setting-left">
-            <div class="setting-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-            </div>
-            <div class="setting-text">Mode Sombre</div>
-          </div>
-          <label class="switch">
-            <input type="checkbox">
-            <span class="slider"></span>
-          </label>
-        </div>
-      </div>
-
-      <button class="logout-btn">Se déconnecter</button>
     </div>
 
-    <!-- DOCK FLOTANTE CON INDICADOR ANIMADO -->
-    <nav class="floating-dock">
-      <!-- Indicador Deslizante -->
-      <div id="dock-indicator" class="dock-indicator"></div>
-
-      <!-- 1. Inicio -->
-      <a href="index.html" class="dock-item" aria-label="Inicio">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
-        </svg>
+    <!-- SecciÃ³n Compte -->
+    <div class="settings-section-title">Compte</div>
+    <div class="settings-group">
+      <a href="perfil.html" class="settings-item">
+        <div class="settings-item-left">
+          <span class="settings-icon">ðŸ‘¤</span>
+          <span>Profil personnel</span>
+        </div>
+        <span>â€º</span>
       </a>
-
-      <!-- 2. Categorías -->
-      <a href="categorias.html" class="dock-item" aria-label="Categorías">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z" />
-        </svg>
+      <a href="#" class="settings-item">
+        <div class="settings-item-left">
+          <span class="settings-icon">ðŸ”’</span>
+          <span>SÃ©curitÃ© et mot de passe</span>
+        </div>
+        <span>â€º</span>
       </a>
+    </div>
 
-      <!-- 3. BOTÓN CENTRAL (+) -->
-      <button id="btn-open-modal" class="dock-add-btn" type="button" aria-label="Agregar">+</button>
+    <!-- SecciÃ³n PrÃ©fÃ©rences -->
+    <div class="settings-section-title">PrÃ©fÃ©rences</div>
+    <div class="settings-group">
+      <div class="settings-item">
+        <div class="settings-item-left">
+          <span class="settings-icon">ðŸ””</span>
+          <span>Notifications</span>
+        </div>
+        <!-- Toggle Switch Simple -->
+        <input type="checkbox" checked style="accent-color: #2e634d; width: 18px; height: 18px; cursor: pointer;">
+      </div>
+      <div class="settings-item">
+        <div class="settings-item-left">
+          <span class="settings-icon">ðŸŒ™</span>
+          <span>Mode Sombre</span>
+        </div>
+        <input type="checkbox" style="accent-color: #2e634d; width: 18px; height: 18px; cursor: pointer;">
+      </div>
+    </div>
 
-      <!-- 4. Lista -->
-      <button class="dock-item" aria-label="Lista">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-          <line x1="8" y1="6" x2="21" y2="6"></line>
-          <line x1="8" y1="12" x2="21" y2="12"></line>
-          <line x1="8" y1="18" x2="21" y2="18"></line>
-          <line x1="3" y1="6" x2="3.01" y2="6"></line>
-          <line x1="3" y1="12" x2="3.01" y2="12"></line>
-          <line x1="3" y1="18" x2="3.01" y2="18"></line>
-        </svg>
-      </button>
-
-      <!-- 5. Configuración (ACTIVO) -->
-      <a href="configuracion.html" class="dock-item active" aria-label="Configuración">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-        </svg>
-      </a>
-    </nav>
-
+    <!-- BotÃ³n Cerrar SesiÃ³n -->
+    <button class="btn-logout">Se dÃ©connecter</button>
   </div>
 
+  <!-- Dock Flotante (ConfiguraciÃ³n activa en el Ãºltimo Ã­cono o perfil segÃºn corresponda) -->
+  <nav class="floating-dock">
+    <div id="dock-indicator" class="dock-indicator"></div>
+
+    <a href="perfil.html" class="dock-item" aria-label="Perfil">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+      </svg>
+    </a>
+
+    <a href="categorias.html" class="dock-item" aria-label="CategorÃ­as">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z" />
+      </svg>
+    </a>
+
+    <button id="btn-open-modal" class="dock-add-btn" type="button" aria-label="Agregar">+</button>
+
+    <button class="dock-item" aria-label="Lista">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="8" y1="6" x2="21" y2="6"></line>
+        <line x1="8" y1="12" x2="21" y2="12"></line>
+        <line x1="8" y1="18" x2="21" y2="18"></line>
+        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+      </svg>
+    </button>
+
+    <a href="configuracion.html" class="dock-item active" aria-label="ConfiguraciÃ³n">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+      </svg>
+    </a>
+  </nav>
+
+  <!-- Script para la animaciÃ³n y posicionamiento del indicador -->
   <script>
-    const dock = document.querySelector('.floating-dock');
-    const indicator = document.getElementById('dock-indicator');
-    const dockItems = document.querySelectorAll('.floating-dock .dock-item');
+    document.addEventListener('DOMContentLoaded', () => {
+      const dock = document.querySelector('.floating-dock');
+      const indicator = document.getElementById('dock-indicator');
+      const dockItems = document.querySelectorAll('.floating-dock .dock-item');
 
-    function moverIndicador(elemento) {
-      if (!elemento || !indicator || !dock) return;
-      
-      const dockRect = dock.getBoundingClientRect();
-      const itemRect = elemento.getBoundingClientRect();
+      function moverIndicador(elemento) {
+        if (!elemento || !indicator || !dock) return;
+        const dockRect = dock.getBoundingClientRect();
+        const itemRect = elemento.getBoundingClientRect();
 
-      const left = itemRect.left - dockRect.left;
-      const top = itemRect.top - dockRect.top;
+        const left = itemRect.left - dockRect.left;
+        const top = itemRect.top - dockRect.top;
 
-      indicator.style.width = `${itemRect.width}px`;
-      indicator.style.height = `${itemRect.height}px`;
-      indicator.style.transform = `translate(${left}px, ${top}px)`;
-      indicator.style.opacity = '1';
-    }
+        indicator.style.width = `${itemRect.width}px`;
+        indicator.style.height = `${itemRect.height}px`;
+        indicator.style.transform = `translate(${left}px, ${top}px)`;
+        indicator.style.opacity = '1';
+      }
 
-    // Inicializar indicador
-    window.addEventListener('load', () => {
       const activeInicial = document.querySelector('.floating-dock .dock-item.active');
       if (activeInicial) {
         moverIndicador(activeInicial);
       }
-    });
 
-    // Eventos de clic para animar el indicador antes de ir a otra vista
-    dockItems.forEach(item => {
-      item.addEventListener('click', (e) => {
-        const target = e.currentTarget;
-        const href = target.getAttribute('href');
-
-        if (href && href !== '#') {
-          e.preventDefault();
-          dockItems.forEach(i => i.classList.remove('active'));
-          target.classList.add('active');
-          moverIndicador(target);
-
-          setTimeout(() => {
-            window.location.href = href;
-          }, 300);
-        } else {
-          dockItems.forEach(i => i.classList.remove('active'));
-          target.classList.add('active');
-          moverIndicador(target);
-        }
+      dockItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+          const href = item.getAttribute('href');
+          if (href && href !== '#') {
+            e.preventDefault();
+            dockItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+            moverIndicador(item);
+            setTimeout(() => {
+              window.location.href = href;
+            }, 300);
+          } else {
+            dockItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+            moverIndicador(item);
+          }
+        });
       });
-    });
 
-    window.addEventListener('resize', () => {
-      const itemActivo = document.querySelector('.floating-dock .dock-item.active');
-      if (itemActivo) moverIndicador(itemActivo);
+      window.addEventListener('resize', () => {
+        const itemActivo = document.querySelector('.floating-dock .dock-item.active');
+        if (itemActivo) moverIndicador(itemActivo);
+      });
     });
   </script>
 </body>
