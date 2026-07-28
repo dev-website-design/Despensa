@@ -163,3 +163,8 @@ form input[type="file"]::file-selector-button {
   25% { transform: translateX(120%) rotate(25deg); }
   100% { transform: translateX(120%) rotate(25deg); }
 }
+
+/* Agrega esta regla al final de tu archivo CSS */
+.modal.hidden {
+  display: none !important;
+}
