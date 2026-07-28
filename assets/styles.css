@@ -1,18 +1,35 @@
-/* --- PALETA DE COLORES --- */
+/* --- CARGA DE LA FUENTE LOCAL (KILTIER) --- */
+@font-face {
+  font-family: 'Kiltier';
+  src: url('../font/Kiltier-Regular.otf') format('opentype'),
+       url('../font/Kiltier-Regular.ttf') format('truetype'),
+       url('../font/Kiltier-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- PALETA DE COLORES Y TIPOGRAFÍA --- */
 :root {
   --black-cherry: #2A0C1B;
   --carousel-pink: #FFE0EB;
   --perfect-rose: #BE2C55;
   --white: #ffffff;
+
+  /* Tipografía global Kiltier */
+  --font-main: 'Kiltier', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--font-main);
   background-color: var(--carousel-pink);
   color: var(--black-cherry);
   min-height: 100vh;
-  box-sizing: border-box;
 }
 
 main {
@@ -26,7 +43,6 @@ main {
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
   padding: 10px 20px;
-  box-sizing: border-box;
 }
 
 /* --- TARJETAS CUADRADAS DE CATEGORÍA --- */
@@ -41,7 +57,6 @@ main {
   
   /* Mantener forma cuadrada */
   aspect-ratio: 1 / 1;
-  box-sizing: border-box;
   
   /* Ajustes para imagen de fondo */
   background-size: cover;
@@ -60,22 +75,22 @@ main {
 }
 
 .categoria span {
-  font-weight: 600;
-  font-size: 0.95rem;
+  font-family: var(--font-main);
+  font-size: 1.2rem;
+  letter-spacing: 0.5px;
   text-align: center;
   color: var(--black-cherry);
   word-break: break-word;
-  z-index: 2; /* Asegura que el texto esté por encima del fondo */
+  z-index: 2;
 }
 
 /* --- ESTILOS ESPECIALES CUANDO TIENE IMAGEN DE FONDO --- */
 .categoria.con-imagen {
-  justify-content: flex-end; /* Alinea el texto en la parte inferior */
-  padding: 14px;
+  justify-content: flex-end;
+  padding: 16px 12px;
   border: none;
 }
 
-/* Capa sombreada inferior para legibilidad del texto */
 .categoria.con-imagen::before {
   content: '';
   position: absolute;
@@ -86,8 +101,8 @@ main {
 
 .categoria.con-imagen span {
   color: var(--white);
-  font-weight: 700;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  font-size: 1.25rem;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
 /* --- BARRA FLOTANTE TIPO CÁPSULA (GLASSMORPHISM) --- */
@@ -111,7 +126,6 @@ main {
   padding: 0 10px;
   box-shadow: 0 10px 30px rgba(42, 12, 27, 0.35);
   z-index: 9999;
-  box-sizing: border-box;
 }
 
 .dock-item {
@@ -133,7 +147,6 @@ main {
   padding: 0;
   outline: none;
   -webkit-tap-highlight-color: transparent;
-  box-sizing: border-box;
 }
 
 .dock-item.active {
@@ -154,8 +167,8 @@ main {
   width: 46px;
   height: 46px;
   border-radius: 50%;
+  font-family: var(--font-main);
   font-size: 1.8rem;
-  font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -206,20 +219,22 @@ main {
   box-shadow: 0 20px 40px rgba(42, 12, 27, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.5);
   transform-origin: center;
+  font-family: var(--font-main);
 }
 
 .modal-content h2 {
   margin-top: 0;
   color: var(--black-cherry);
-  font-size: 1.25rem;
+  font-family: var(--font-main);
+  font-size: 1.5rem;
+  letter-spacing: 0.5px;
 }
 
 form label {
   display: block;
   margin-top: 14px;
   margin-bottom: 6px;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.95rem;
   color: var(--black-cherry);
 }
 
@@ -228,8 +243,8 @@ form input {
   padding: 12px;
   border: 1.5px solid #e2d0d7;
   border-radius: 12px;
-  box-sizing: border-box;
-  font-size: 0.95rem;
+  font-family: var(--font-main);
+  font-size: 1rem;
   background-color: #fff9fb;
 }
 
@@ -252,8 +267,8 @@ form input:focus {
   border: none;
   padding: 12px 24px;
   border-radius: 12px;
-  font-weight: 600;
-  font-size: 0.95rem;
+  font-family: var(--font-main);
+  font-size: 1rem;
   cursor: pointer;
   overflow: hidden;
   z-index: 1;
@@ -294,7 +309,8 @@ form input:focus {
   border: none;
   padding: 10px 18px;
   border-radius: 12px;
-  font-weight: 600;
+  font-family: var(--font-main);
+  font-size: 1rem;
   cursor: pointer;
 }
 
