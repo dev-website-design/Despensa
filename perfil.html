@@ -38,7 +38,6 @@
       overflow: hidden !important;
     }
 
-    /* Botón de cerrar redirige a Index.html */
     .close-btn {
       position: absolute;
       top: 20px;
@@ -133,7 +132,7 @@
 <body>
 
   <div class="app-container">
-    <!-- Botón con redirección a Index.html -->
+    <!-- Redirección corregida a index.html en minúsculas -->
     <button class="close-btn" onclick="window.location.href='index.html'" aria-label="Cerrar">✕</button>
 
     <div class="profile-selection-wrapper">
@@ -167,7 +166,7 @@
   <script>
     function cambiarUsuario(nombre) {
       localStorage.setItem('usuarioActivo', nombre);
-      window.location.href = 'Index.html';
+      window.location.href = 'index.html';
     }
   </script>
 </body>
