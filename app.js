@@ -1,6 +1,13 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { 
+  getFirestore, 
+  collection, 
+  addDoc, 
+  onSnapshot, 
+  serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// --- TUS CREDENCIALES REALES DE FIREBASE ---
 const firebaseConfig = {
   apiKey: "AIzaSyDfIQXFFDGoBMvTIOT52nZGVUc-pFJGFs4",
   authDomain: "hogar-e266a.firebaseapp.com",
@@ -10,40 +17,50 @@ const firebaseConfig = {
   appId: "1:534168977173:web:f3900fae93c7dd520b331c"
 };
 
+// Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Service Worker
+// Service Worker (para PWA)
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js').catch(err => console.error('SW Error:', err));
   });
 }
 
-// Modal Toggle
-window.mostrarModal = () => document.getElementById('modal')?.classList.remove('hidden');
-window.cerrarModal = () => document.getElementById('modal')?.classList.add('hidden');
+// Usuario actual del perfil
+const usuarioActivo = localStorage.getItem('usuarioActivo') || 'MARÍA';
 
-// Carga en tiempo real
-const categoriasContainer = document.getElementById('categorias');
+// Elementos DOM (busca por tus IDs antiguos o los nuevos)
+const contenedor = document.getElementById('categorias') || document.getElementById('contenedor-categorias');
+const modal = document.getElementById('modal') || document.getElementById('modal-categoria');
+const btnAbrir = document.getElementById('btn-abrir-modal') || document.getElementById('btn-open-modal');
+const btnCerrar = document.getElementById('btn-cerrar-modal') || document.getElementById('btn-cancelar');
+const form = document.getElementById('form-categoria') || document.getElementById('form-nueva-categoria');
+const userGreeting = document.getElementById('user-greeting');
 
+// Saludo dinámico si existe la etiqueta
+if (userGreeting) {
+  userGreeting.textContent = `Hola, ${usuarioActivo}`;
+}
+
+// --- LECTURA EN TIEMPO REAL DESDE FIRESTORE ---
 onSnapshot(collection(db, "categorias"), (snapshot) => {
-  if (!categoriasContainer) return;
-  categoriasContainer.innerHTML = '';
+  if (!contenedor) return;
+  contenedor.innerHTML = '';
 
   if (snapshot.empty) {
-    categoriasContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--perfect-rose);">Sin categorías aún. Toca + para crear una.</p>';
+    contenedor.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--perfect-rose);">No hay categorías aún. Toca + para crear una.</p>';
     return;
   }
 
   snapshot.forEach((doc) => {
     const cat = doc.data();
     const div = document.createElement('div');
-    div.classList.add('categoria');
+    div.className = `categoria ${cat.imagen ? 'con-imagen' : ''}`;
 
     if (cat.imagen && cat.imagen.trim() !== '') {
-      div.classList.add('con-imagen');
-      div.style.backgroundImage = `url('${cat.imagen.trim()}')`;
+      div.style.backgroundImage = `url('${cat.imagen}')`;
     }
 
     div.innerHTML = `
@@ -52,79 +69,72 @@ onSnapshot(collection(db, "categorias"), (snapshot) => {
       </div>
     `;
 
-    categoriasContainer.appendChild(div);
+    contenedor.appendChild(div);
   });
+}, (error) => {
+  console.error("Error de conexión con Firestore:", error);
 });
 
-// Lógica de interfaz y animación del Dock
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('btn-abrir-modal')?.addEventListener('click', window.mostrarModal);
-  document.getElementById('btn-cerrar-modal')?.addEventListener('click', window.cerrarModal);
-
-  // --- TRANSICIÓN SUAVE DEL INDICADOR EN EL DOCK ---
-  const dock = document.querySelector('.floating-dock');
-  const indicator = document.getElementById('dock-indicator');
-  const dockItems = document.querySelectorAll('.floating-dock .dock-item');
-
-  function moverIndicador(elemento) {
-    if (!elemento || !indicator || !dock) return;
-    const dockRect = dock.getBoundingClientRect();
-    const itemRect = elemento.getBoundingClientRect();
-
-    const left = itemRect.left - dockRect.left;
-    const top = itemRect.top - dockRect.top;
-
-    indicator.style.width = `${itemRect.width}px`;
-    indicator.style.height = `${itemRect.height}px`;
-    indicator.style.transform = `translate(${left}px, ${top}px)`;
-    indicator.style.opacity = '1';
-  }
-
-  // Inicializar indicador en la opción activa
-  const activeInicial = document.querySelector('.floating-dock .dock-item.active');
-  if (activeInicial) {
-    setTimeout(() => moverIndicador(activeInicial), 50);
-  }
-
-  // Evento al tocar cada ícono
-  dockItems.forEach(item => {
-    item.addEventListener('click', (e) => {
-      dockItems.forEach(i => i.classList.remove('active'));
-      const target = e.currentTarget;
-      target.classList.add('active');
-      moverIndicador(target);
-    });
+// Función para procesar imágenes locales a Base64
+function obtenerBase64(file) {
+  return new Promise((resolve, reject) => {
+    if (!file) resolve('');
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (err) => reject(err);
   });
+}
 
-  // Re-ajustar si cambia la pantalla/orientación
-  window.addEventListener('resize', () => {
-    const itemActivo = document.querySelector('.floating-dock .dock-item.active');
-    if (itemActivo) moverIndicador(itemActivo);
+// --- GUARDAR NUEVA CATEGORÍA CON REGISTRO DE USUARIO ---
+if (form) {
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const nombreInput = document.getElementById('nombre-categoria');
+    const fileInput = document.getElementById('imagen-categoria');
+
+    const nombre = nombreInput ? nombreInput.value.trim() : '';
+    const archivo = fileInput && fileInput.files ? fileInput.files[0] : null;
+
+    if (!nombre) return;
+
+    try {
+      const imagenBase64 = await obtenerBase64(archivo);
+
+      await addDoc(collection(db, "categorias"), {
+        nombre: nombre,
+        imagen: imagenBase64,
+        creadoPor: usuarioActivo,
+        creadoEn: serverTimestamp()
+      });
+
+      form.reset();
+      if (modal) modal.classList.add('hidden');
+    } catch (err) {
+      console.error("Error al guardar categoría:", err);
+      alert("Error al guardar: " + err.message);
+    }
   });
+}
 
-  // Guardar categoría
-  const form = document.getElementById('form-categoria');
-  if (form) {
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const nombre = document.getElementById('nombre-categoria')?.value.trim();
-      const imagen = document.getElementById('imagen-categoria')?.value.trim();
+// Control del Modal
+if (btnAbrir && modal) {
+  btnAbrir.addEventListener('click', () => modal.classList.remove('hidden'));
+}
 
-      if (nombre) {
-        try {
-          await addDoc(collection(db, "categorias"), {
-            nombre: nombre,
-            imagen: imagen || '',
-            fecha: new Date()
-          });
+if (btnCerrar && modal) {
+  btnCerrar.addEventListener('click', () => {
+    if (form) form.reset();
+    modal.classList.add('hidden');
+  });
+}
 
-          window.cerrarModal();
-          form.reset();
-        } catch (err) {
-          alert("Error al guardar: " + err.message);
-        }
-      }
-    });
-  }
-});
+if (modal) {
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      if (form) form.reset();
+      modal.classList.add('hidden');
+    }
+  });
+}
