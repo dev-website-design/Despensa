@@ -4,35 +4,39 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Findora - Welcome</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  
+  <link rel="stylesheet" href="assets/styles.css">
+
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    /* Eliminamos el borde y contenedor de simulación móvil para pantalla completa */
     body {
-      background-color: #f0f2f5;
-      font-family: 'Montserrat', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-    .mobile-card {
-      width: 100%;
-      max-width: 390px;
-      height: 780px;
+      margin: 0;
+      padding: 0;
       background-color: #ffffff;
-      border-radius: 40px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
-      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .app-container {
+      max-width: 100% !important;
+      width: 100% !important;
+      height: 100vh !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: #ffffff !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+      border: none !important;
       display: flex;
       flex-direction: column;
-      position: relative;
+      justify-content: space-between;
+      overflow-y: auto;
     }
+
+    /* Sección superior con la imagen de la casa */
     .hero-section {
       position: relative;
-      height: 58%;
-      background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1000&auto=format&fit=crop');
+      width: 100%;
+      height: 55vh;
+      background-image: url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=80');
       background-size: cover;
       background-position: center;
       display: flex;
@@ -40,60 +44,171 @@
       align-items: center;
       justify-content: center;
       text-align: center;
+      color: white;
+      border-bottom-left-radius: 40px;
+      border-bottom-right-radius: 40px;
+      overflow: hidden;
     }
-    .hero-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.15); }
-    .brand-container { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; }
-    .logo-circle {
-      width: 75px; height: 75px; background-color: #ffffff; border-radius: 50%;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); margin-bottom: 12px; padding: 8px;
+
+    .hero-section::after {
+      content: '';
+      position: absolute;
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%;
+      background: rgba(0, 0, 0, 0.3);
     }
-    .logo-circle svg { width: 28px; height: 28px; fill: #1a1a1a; margin-bottom: 2px; }
-    .logo-circle span { font-size: 5px; font-weight: 800; color: #1a1a1a; letter-spacing: 0.5px; text-transform: uppercase; }
-    .brand-name { color: #ffffff; font-size: 26px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; }
-    .brand-subtitle { color: #ffffff; font-size: 14px; font-weight: 500; margin-top: 2px; }
-    .curve-divider { position: absolute; bottom: -1px; left: 0; width: 100%; height: 70px; z-index: 2; }
-    .content-section {
-      height: 42%; background-color: #ffffff; display: flex; flex-direction: column;
-      align-items: center; justify-content: space-between; padding: 10px 30px 40px 30px;
-      text-align: center; z-index: 3;
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
     }
-    .welcome-title { font-size: 28px; font-weight: 800; color: #2b2b2b; text-transform: uppercase; }
-    .description { font-size: 13.5px; color: #7d7d7d; line-height: 1.5; font-weight: 500; }
-    .buttons-container { width: 100%; display: flex; flex-direction: column; gap: 12px; }
-    .btn { width: 100%; padding: 15px 0; border-radius: 30px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; }
-    .btn-login { background-color: #1a1a1a; color: #ffffff; }
-    .btn-signup { background-color: transparent; color: #1a1a1a; border: 1px solid #e0e0e0; }
+
+    .logo-badge {
+      width: 70px;
+      height: 70px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .logo-badge span {
+      font-size: 32px;
+      color: #1a202c;
+      font-weight: bold;
+      line-height: 1;
+    }
+
+    .hero-title {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      margin: 0 0 5px 0;
+      text-transform: uppercase;
+    }
+
+    .hero-subtitle {
+      font-size: 13px;
+      opacity: 0.9;
+      margin: 0;
+      letter-spacing: 0.5px;
+    }
+
+    /* Sección inferior con texto y botones */
+    .bottom-content {
+      flex: 1;
+      background: #ffffff;
+      padding: 30px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      justify-content: space-between;
+      max-width: 500px;
+      margin: 0 auto;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .welcome-text-group h2 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #1a202c;
+      margin: 0 0 10px 0;
+      letter-spacing: 0.5px;
+    }
+
+    .welcome-text-group p {
+      font-size: 13px;
+      color: #718096;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .auth-buttons {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .btn-login {
+      width: 100%;
+      background-color: #1a202c;
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-decoration: none;
+      display: block;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .btn-login:hover {
+      background-color: #2d3748;
+    }
+
+    .btn-signup {
+      width: 100%;
+      background-color: transparent;
+      color: #1a202c;
+      border: 1px solid #cbd5e0;
+      padding: 16px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-decoration: none;
+      display: block;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .btn-signup:hover {
+      background-color: #f7fafc;
+    }
   </style>
 </head>
 <body>
 
-  <div class="mobile-card">
+  <div class="app-container">
+    <!-- Sección Superior con la Imagen y Logotipo -->
     <div class="hero-section">
-      <div class="hero-overlay"></div>
-      <div class="brand-container">
-        <div class="logo-circle">
-          <svg viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
-          <span>Findora</span>
-          <span>Dream House</span>
+      <div class="hero-content">
+        <div class="logo-badge">
+          <span>✱</span>
         </div>
-        <h1 class="brand-name">FINDORA</h1>
-        <p class="brand-subtitle">Dream House</p>
+        <h1 class="hero-title">FINDORA</h1>
+        <p class="hero-subtitle">Dream House</p>
       </div>
-      <svg class="curve-divider" viewBox="0 0 500 80" preserveAspectRatio="none">
-        <path d="M 0,80 Q 250,-20 500,80 L 500,80 L 0,80 Z" fill="#ffffff"></path>
-      </svg>
     </div>
 
-    <div class="content-section">
-      <div>
-        <h2 class="welcome-title">WELCOME</h2>
-        <p class="description">Find your next space, feel at home<br>Where comfort meets convenience</p>
+    <!-- Sección Inferior con Bienvenida y Botones -->
+    <div class="bottom-content">
+      <div class="welcome-text-group">
+        <h2>WELCOME</h2>
+        <p>Find your next space, feel at home<br>Where comfort meets convenience</p>
       </div>
 
-      <div class="buttons-container">
-        <button class="btn btn-login" onclick="window.location.href='perfil.html'">Login</button>
-        <button class="btn btn-signup">Sign Up</button>
+      <div class="auth-buttons">
+        <a href="categorias.html" class="btn-login">Login</a>
+        <a href="#" class="btn-signup">Sign Up</a>
       </div>
     </div>
   </div>
