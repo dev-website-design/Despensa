@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Perfil</title>
-  <!-- Tipograf�a Montserrat -->
+  <!-- Tipografía Montserrat -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800;900&display=swap" rel="stylesheet">
   
   <style>
@@ -24,7 +24,7 @@
       padding: 20px;
     }
 
-    /* Contenedor estilo Pantalla M�vil */
+    /* Contenedor estilo Pantalla Móvil */
     .mobile-card {
       width: 100%;
       max-width: 380px;
@@ -37,11 +37,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center; /* Centrado vertical para 2 perfiles */
+      justify-content: center;
       overflow: hidden;
     }
 
-    /* Bot�n Cerrar (X) */
+    /* Botón Cerrar (X) */
     .close-btn {
       position: absolute;
       top: 25px;
@@ -117,12 +117,12 @@
       position: relative;
     }
 
-    /* Borde tem�tico Rosa */
+    /* Borde temático Rosa */
     .theme-pink .avatar-ring {
       border: 3px solid #e91e63;
     }
 
-    /* Borde tem�tico Azul */
+    /* Borde temático Azul */
     .theme-blue .avatar-ring {
       border: 3px solid #2196f3;
     }
@@ -134,7 +134,7 @@
       transform: scale(1.05);
     }
 
-    /* C�rculo interior con la ilustraci�n */
+    /* Círculo interior con la ilustración */
     .avatar-img {
       width: 100%;
       height: 100%;
@@ -164,10 +164,10 @@
 <body>
 
   <div class="mobile-card">
-    <!-- Bot�n Cerrar -->
-    <button class="close-btn" aria-label="Cerrar">&times;</button>
+    <!-- Botón Cerrar (vuelve al index) -->
+    <button class="close-btn" aria-label="Cerrar" onclick="window.location.href='index.html'">&times;</button>
 
-    <!-- T�tulo y Subt�tulo -->
+    <!-- Título y Subtítulo -->
     <div class="header">
       <h1>Selecciona tu perfil</h1>
       <p>Que tengas un bonito dia..</p>
@@ -176,8 +176,8 @@
     <!-- Rejilla de Perfiles -->
     <div class="profiles-grid">
       
-      <!-- MAR�A -->
-      <div class="profile-item theme-pink" onclick="selectProfile(this)">
+      <!-- MARÍA -->
+      <div class="profile-item theme-pink" onclick="selectProfile(this, 'MARÍA')">
         <div class="avatar-ring">
           <div class="avatar-img">
             <svg viewBox="0 0 120 120" width="100%" height="100%">
@@ -203,11 +203,11 @@
             </svg>
           </div>
         </div>
-        <span class="profile-name">MAR�A</span>
+        <span class="profile-name">MARÍA</span>
       </div>
 
-      <!-- JUAN (Seleccionado por defecto) -->
-      <div class="profile-item theme-blue selected" onclick="selectProfile(this)">
+      <!-- JUAN -->
+      <div class="profile-item theme-blue" onclick="selectProfile(this, 'JUAN')">
         <div class="avatar-ring">
           <div class="avatar-img">
             <svg viewBox="0 0 120 120" width="100%" height="100%">
@@ -236,10 +236,19 @@
   </div>
 
   <script>
-    function selectProfile(element) {
+    function selectProfile(element, name) {
+      // 1. Marcar el elemento con el anillo brillante
       const items = document.querySelectorAll('.profile-item');
       items.forEach(item => item.classList.remove('selected'));
       element.classList.add('selected');
+
+      // 2. Guardar el nombre del perfil seleccionado
+      localStorage.setItem('selectedProfile', name);
+
+      // 3. Redirigir a categorias.html tras 300 ms (para apreciar el efecto brillante)
+      setTimeout(() => {
+        window.location.href = 'categorias.html';
+      }, 300);
     }
   </script>
 
