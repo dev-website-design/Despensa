@@ -15,7 +15,7 @@
       height: 100dvh;
       background-color: #1a1a1c;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      overflow: hidden !important; /* Bloquea cualquier scroll */
+      overflow: hidden !important;
     }
 
     .app-container {
@@ -38,7 +38,7 @@
       overflow: hidden !important;
     }
 
-    /* Botón de cerrar */
+    /* Botón de cerrar redirige a Index.html */
     .close-btn {
       position: absolute;
       top: 20px;
@@ -61,7 +61,6 @@
       background: #3a3a3c;
     }
 
-    /* Contenido central ajustado para no requerir scroll */
     .profile-selection-wrapper {
       text-align: center;
       width: 100%;
@@ -134,7 +133,8 @@
 <body>
 
   <div class="app-container">
-    <button class="close-btn" onclick="window.location.href='categorias.html'" aria-label="Cerrar">✕</button>
+    <!-- Botón con redirección a Index.html -->
+    <button class="close-btn" onclick="window.location.href='Index.html'" aria-label="Cerrar">✕</button>
 
     <div class="profile-selection-wrapper">
       <h1 class="profile-title">Selecciona tu perfil</h1>
@@ -167,7 +167,7 @@
   <script>
     function cambiarUsuario(nombre) {
       localStorage.setItem('usuarioActivo', nombre);
-      window.location.href = 'categorias.html';
+      window.location.href = 'Index.html';
     }
   </script>
 </body>
