@@ -12,11 +12,11 @@ const firebaseConfig = {
   appId: "1:534168977173:web:f3900fae93c7dd520b331c"
 };
 
-// Inicializar la base de datos en la nube
+// Inicializar Firestore
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- REGISTRO DE SERVICE WORKER (PWA) ---
+// --- REGISTRO DE SERVICE WORKER ---
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js')
@@ -24,9 +24,8 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// --- CAMBIO DINÁMICO DEL INDICADOR EN LA BARRA FLOTANTE ---
+// --- NAVEGACIÓN EN DOCK ---
 const dockItems = document.querySelectorAll('.dock-item');
-
 dockItems.forEach(item => {
   item.addEventListener('click', () => {
     dockItems.forEach(btn => btn.classList.remove('active'));
@@ -34,7 +33,7 @@ dockItems.forEach(item => {
   });
 });
 
-// --- FUNCIONES DEL MODAL (GLOBALES) ---
+// --- FUNCIONES DEL MODAL ---
 window.mostrarModal = function() {
   const modal = document.getElementById('modal');
   if (modal) modal.classList.remove('hidden');
@@ -45,7 +44,7 @@ window.cerrarModal = function() {
   if (modal) modal.classList.add('hidden');
 };
 
-// --- LEER EN TIEMPO REAL DESDE FIREBASE ---
+// --- RENDERIZADO EN TIEMPO REAL DESDE FIREBASE ---
 const categoriasContainer = document.getElementById('categorias');
 
 onSnapshot(collection(db, "categorias"), (snapshot) => {
@@ -63,15 +62,13 @@ onSnapshot(collection(db, "categorias"), (snapshot) => {
     const div = document.createElement('div');
     div.classList.add('categoria');
 
-    if (cat.imagen) {
-      div.innerHTML = `
-        <img src="${cat.imagen}" alt="${cat.nombre}">
-        <span>${cat.nombre}</span>
-      `;
-    } else {
-      div.innerHTML = `<span>${cat.nombre}</span>`;
+    // SI TIENE URL DE IMAGEN, SE ASIGNA COMO FONDO
+    if (cat.imagen && cat.imagen.trim() !== '') {
+      div.classList.add('con-imagen');
+      div.style.backgroundImage = `url('${cat.imagen.trim()}')`;
     }
 
+    div.innerHTML += `<span>${cat.nombre}</span>`;
     categoriasContainer.appendChild(div);
   });
 }, (error) => {
@@ -109,7 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
             fecha: new Date()
           });
 
-          // Cierre rápido en 200ms
           await new Promise(resolve => setTimeout(resolve, 200));
 
           if (btnSubmit) btnSubmit.style.transform = '';
