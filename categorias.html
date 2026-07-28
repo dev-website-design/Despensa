@@ -73,8 +73,8 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(42, 12, 27, 0.4); /* Fondo oscuro semitransparente elegante */
-      backdrop-filter: blur(4px); /* Efecto difuminado moderno */
+      background: rgba(42, 12, 27, 0.4);
+      backdrop-filter: blur(4px);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -164,7 +164,7 @@
 
     .modal-submit-btn {
       width: 100%;
-      background: #2A0C1B; /* Color acorde al estilo oscuro/elegante de los botones principales */
+      background: #2A0C1B;
       color: white;
       border: none;
       padding: 15px;
@@ -265,7 +265,7 @@
 
     <a href="categorias.html" class="dock-item active" aria-label="Categorías">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z" />
+        <path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5H5v6zm6-6v6h5V5h-5z" />
       </svg>
     </a>
 
@@ -322,6 +322,38 @@
         });
       }
 
+      // Sincronizar y cargar desde Firebase en tiempo real si está disponible
+      function inicializarFirebaseSync() {
+        const firestoreDB = typeof db !== 'undefined' ? db : (window.firebase && firebase.firestore ? firebase.firestore() : null);
+        
+        if (firestoreDB) {
+          try {
+            firestoreDB.collection('categorias').onSnapshot((snapshot) => {
+              // Mantener las tarjetas estáticas iniciales o limpiar y cargar dinámicamente según prefieras
+              snapshot.docChanges().forEach((change) => {
+                if (change.type === "added") {
+                  const data = change.doc.data();
+                  const nombre = data.nombre || data.name || '';
+                  if (nombre) {
+                    const nuevaCard = document.createElement('div');
+                    nuevaCard.className = 'hero-card';
+                    nuevaCard.style.cssText = 'display: flex; flex-direction: column; justify-content: space-between; min-height: 140px;';
+                    nuevaCard.innerHTML = `<p class="hero-title" style="font-size: 18px;">${nombre}</p>`;
+                    contenedorCategorias.appendChild(nuevaCard);
+                  }
+                }
+              });
+            }, (error) => {
+              console.error("Error en snapshot de Firebase:", error);
+            });
+          } catch (err) {
+            console.error("Error configurando listener de Firebase:", err);
+          }
+        }
+      }
+
+      inicializarFirebaseSync();
+
       if (addForm && contenedorCategorias) {
         addForm.addEventListener('submit', async (e) => {
           e.preventDefault();
@@ -332,27 +364,17 @@
 
           if (nombre !== '') {
             try {
-              // Guardar en Firebase Firestore manteniendo compatibilidad con la conexión global existente
-              if (typeof db !== 'undefined' && db.collection) {
-                await db.collection('categorias').add({
-                  nombre: nombre,
-                  descripcion: descripcion,
-                  fecha: new Date().toISOString()
-                });
-              } else if (window.firebase && firebase.firestore) {
-                await firebase.firestore().collection('categorias').add({
-                  nombre: nombre,
-                  descripcion: descripcion,
-                  fecha: new Date().toISOString()
-                });
-              }
+              const firestoreDB = typeof db !== 'undefined' ? db : (window.firebase && firebase.firestore ? firebase.firestore() : null);
 
-              // Crear y agregar la tarjeta visualmente en la pantalla
-              const nuevaCard = document.createElement('div');
-              nuevaCard.className = 'hero-card';
-              nuevaCard.style.cssText = 'display: flex; flex-direction: column; justify-content: space-between; min-height: 140px;';
-              nuevaCard.innerHTML = `<p class="hero-title" style="font-size: 18px;">${nombre}</p>`;
-              contenedorCategorias.appendChild(nuevaCard);
+              if (firestoreDB) {
+                await firestoreDB.collection('categorias').add({
+                  nombre: nombre,
+                  descripcion: descripcion,
+                  fecha: new Date().toISOString()
+                });
+              } else {
+                console.warn("Base de datos de Firebase no detectada en el ámbito global.");
+              }
 
               // Limpiar formulario y cerrar modal
               nombreInput.value = '';
