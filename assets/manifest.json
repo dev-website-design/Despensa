@@ -3,7 +3,7 @@
   "name": "Nuestro Hogar PWA",
   "short_name": "Nuestro Hogar",
   "start_url": "https://dev-website-design.github.io/Despensa",
-  "scope": "https://dev-website-design.github.io/",
+  "scope": "https://dev-website-design.github.io/Despensa",
   "display": "standalone",
   "background_color": "#FFE0EB",
   "theme_color": "#2A0C1B",
