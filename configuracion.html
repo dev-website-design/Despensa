@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="assets/styles.css">
 
   <style>
-    /* Eliminamos la simulación de móvil para que ocupe toda la pantalla */
+    /* Eliminamos exclusivamente el contenedor de simulación móvil para pantalla completa */
     .app-container {
       max-width: 100% !important;
       width: 100% !important;
@@ -17,113 +17,9 @@
       background: transparent !important;
       box-shadow: none !important;
       border-radius: 0 !important;
+      border: none !important;
     }
 
-    .page-title {
-      font-size: 22px;
-      font-weight: 800;
-      color: #1a202c;
-      margin-bottom: 20px;
-    }
-
-    /* Estilos de las tarjetas de configuración basadas en la imagen */
-    .settings-section-title {
-      font-size: 11px;
-      font-weight: 700;
-      color: #a0aec0;
-      letter-spacing: 0.05em;
-      margin: 20px 0 10px 4px;
-      text-transform: uppercase;
-    }
-
-    .profile-card-settings {
-      background: #ffffff;
-      border-radius: 18px;
-      padding: 16px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-      border: 1px solid #edf2f7;
-      margin-bottom: 10px;
-    }
-
-    .profile-avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background-color: #dce6e0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-    }
-
-    .profile-info h3 {
-      font-size: 15px;
-      font-weight: 700;
-      color: #2d3748;
-    }
-
-    .profile-info p {
-      font-size: 12px;
-      color: #718096;
-    }
-
-    .settings-group {
-      background: #ffffff;
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-      border: 1px solid #edf2f7;
-      margin-bottom: 10px;
-    }
-
-    .settings-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px;
-      text-decoration: none;
-      color: #2d3748;
-      border-bottom: 1px solid #f7fafc;
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .settings-item:last-child {
-      border-bottom: none;
-    }
-
-    .settings-item-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .settings-icon {
-      font-size: 18px;
-    }
-
-    .btn-logout {
-      width: 100%;
-      background-color: #fff5f5;
-      color: #e53e3e;
-      border: 1px solid #fed7d7;
-      padding: 14px;
-      border-radius: 16px;
-      font-weight: 700;
-      font-size: 14px;
-      cursor: pointer;
-      margin-top: 20px;
-      transition: background 0.2s;
-    }
-
-    .btn-logout:hover {
-      background-color: #fed7d7;
-    }
-
-    /* Dock Flotante Inferior */
     .floating-dock {
       position: fixed !important;
       bottom: 20px !important;
@@ -161,61 +57,60 @@
 <body>
 
   <div class="app-container">
-    <h1 class="page-title">Paramètres</h1>
+    <!-- Encabezado de Sección -->
+    <div class="section-header">
+      <h2 class="section-title">Parámetros</h2>
+    </div>
 
-    <!-- Tarjeta de Perfil -->
-    <div class="profile-card-settings">
-      <div class="profile-avatar">👩</div>
-      <div class="profile-info">
-        <h3>Sophie Martin</h3>
-        <p>sophie.martin@example.com</p>
+    <!-- Perfil -->
+    <div class="hero-card">
+      <div class="hero-info">
+        <h1 class="hero-title">Sophie Martin</h1>
+        <p class="hero-subtitle">sophie.martin@example.com</p>
       </div>
     </div>
 
     <!-- Sección Compte -->
-    <div class="settings-section-title">Compte</div>
-    <div class="settings-group">
-      <a href="perfil.html" class="settings-item">
-        <div class="settings-item-left">
-          <span class="settings-icon">👤</span>
-          <span>Profil personnel</span>
+    <div class="section-header" style="margin-top: 20px;">
+      <h2 class="section-title" style="font-size: 13px; color: #718096; text-transform: uppercase;">Compte</h2>
+    </div>
+
+    <div class="grid-container">
+      <a href="perfil.html" class="hero-card" style="text-decoration: none; display: block; margin-bottom: 10px;">
+        <div class="hero-info">
+          <p class="hero-title" style="font-size: 15px;">Profil personnel</p>
         </div>
-        <span>›</span>
       </a>
-      <a href="#" class="settings-item">
-        <div class="settings-item-left">
-          <span class="settings-icon">🔒</span>
-          <span>Sécurité et mot de passe</span>
+      <a href="#" class="hero-card" style="text-decoration: none; display: block; margin-bottom: 10px;">
+        <div class="hero-info">
+          <p class="hero-title" style="font-size: 15px;">Sécurité et mot de passe</p>
         </div>
-        <span>›</span>
       </a>
     </div>
 
     <!-- Sección Préférences -->
-    <div class="settings-section-title">Préférences</div>
-    <div class="settings-group">
-      <div class="settings-item">
-        <div class="settings-item-left">
-          <span class="settings-icon">🔔</span>
-          <span>Notifications</span>
-        </div>
-        <!-- Toggle Switch Simple -->
-        <input type="checkbox" checked style="accent-color: #2e634d; width: 18px; height: 18px; cursor: pointer;">
+    <div class="section-header" style="margin-top: 20px;">
+      <h2 class="section-title" style="font-size: 13px; color: #718096; text-transform: uppercase;">Préférences</h2>
+    </div>
+
+    <div class="grid-container">
+      <div class="hero-card" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+        <span class="hero-title" style="font-size: 15px;">Notifications</span>
+        <input type="checkbox" checked style="width: 20px; height: 20px; cursor: pointer;">
       </div>
-      <div class="settings-item">
-        <div class="settings-item-left">
-          <span class="settings-icon">🌙</span>
-          <span>Mode Sombre</span>
-        </div>
-        <input type="checkbox" style="accent-color: #2e634d; width: 18px; height: 18px; cursor: pointer;">
+      <div class="hero-card" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+        <span class="hero-title" style="font-size: 15px;">Mode Sombre</span>
+        <input type="checkbox" style="width: 20px; height: 20px; cursor: pointer;">
       </div>
     </div>
 
     <!-- Botón Cerrar Sesión -->
-    <button class="btn-logout">Se déconnecter</button>
+    <button class="btn-primary" style="width: 100%; margin-top: 20px; background-color: #fff5f5; color: #e53e3e; border: 1px solid #fed7d7;">
+      Se déconnecter
+    </button>
   </div>
 
-  <!-- Dock Flotante (Configuración activa en el último ícono o perfil según corresponda) -->
+  <!-- DOCK FLOTANTE INFERIOR -->
   <nav class="floating-dock">
     <div id="dock-indicator" class="dock-indicator"></div>
 
@@ -251,7 +146,8 @@
     </a>
   </nav>
 
-  <!-- Script para la animación y posicionamiento del indicador -->
+  <script type="module" src="app.js"></script>
+
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const dock = document.querySelector('.floating-dock');
