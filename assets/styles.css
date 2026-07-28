@@ -16,9 +16,8 @@
   --perfect-rose: #BE2C55;
   --white: #ffffff;
 
-  /* Variables del UI adaptadas */
   --bg-color: #FFE0EB;
-  --card-bg: rgba(255, 255, 255, 0.75);
+  --card-bg: rgba(255, 255, 255, 0.85);
   --card-border: rgba(190, 44, 85, 0.15);
   --dock-bg: rgba(42, 12, 27, 0.85);
   
@@ -44,7 +43,7 @@ body {
   padding: 16px;
 }
 
-/* --- TARJETAS HERO (DESTACADA SUPERIOR) --- */
+/* --- TARJETA HERO --- */
 .hero-card {
   position: relative;
   background: var(--white);
@@ -150,7 +149,7 @@ body {
   gap: 16px;
 }
 
-/* --- TARJETAS DE CATEGORÍA --- */
+/* --- TARJETAS DE CATEGORÍA (ALINEADAS ABAJO) --- */
 .categoria {
   position: relative;
   background: var(--white);
@@ -160,7 +159,7 @@ body {
   padding: 16px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-end; /* Alinea el nombre abajo */
   overflow: hidden;
   box-shadow: 0 6px 18px rgba(42, 12, 27, 0.04);
   background-size: cover;
@@ -172,23 +171,15 @@ body {
   transform: scale(0.96);
 }
 
-.categoria-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  z-index: 2;
-  font-size: 0.85rem;
-  color: var(--perfect-rose);
-}
-
 .categoria-footer {
   z-index: 2;
 }
 
 .categoria span {
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   color: var(--black-cherry);
   letter-spacing: 0.5px;
+  word-break: break-word;
 }
 
 /* ESTILO CUANDO TIENE IMAGEN DE FONDO */
@@ -196,17 +187,16 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(42, 12, 27, 0.85) 0%, rgba(42, 12, 27, 0.2) 65%, transparent 100%);
+  background: linear-gradient(to top, rgba(42, 12, 27, 0.85) 0%, rgba(42, 12, 27, 0.1) 70%, transparent 100%);
   z-index: 1;
 }
 
-.categoria.con-imagen .categoria-header,
 .categoria.con-imagen .categoria-footer span {
   color: var(--white);
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
-/* --- DOCK FLOTANTE CÁPSULA --- */
+/* --- DOCK FLOTANTE --- */
 .floating-dock {
   position: fixed;
   bottom: calc(16px + env(safe-area-inset-bottom, 0px));
@@ -269,7 +259,7 @@ body {
   transform: scale(0.9) rotate(90deg);
 }
 
-/* --- MODAL Y FORMULARIO --- */
+/* --- MODAL --- */
 .modal {
   position: fixed;
   top: 0;
