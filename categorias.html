@@ -7,37 +7,35 @@
   <link rel="stylesheet" href="assets/styles.css">
 
   <style>
-    .app-container {
-      max-width: 320px;
-      margin: 0 auto;
-      padding: 12px;
-      padding-bottom: 80px;
-    }
-    .hero-card {
-      padding: 14px !important;
-      margin-bottom: 14px !important;
-      border-radius: 16px !important;
-    }
-    .hero-title {
-      font-size: 18px !important;
-    }
-    .hero-subtitle {
-      font-size: 12px !important;
-    }
-    .section-header {
-      margin-bottom: 10px !important;
-    }
-    .section-title {
-      font-size: 16px !important;
+    /* Eliminamos el borde, sombras y contenedor de simulación móvil */
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #ffd1dc; /* Fondo rosado general */
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
+    .app-container {
+      max-width: 100% !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 16px !important;
+      padding-bottom: 100px !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+      border: none !important;
+      box-sizing: border-box;
+    }
+
+    /* Barra o Dock Flotante Inferior */
     .floating-dock {
       position: fixed !important;
       bottom: 20px !important;
       left: 50% !important;
       transform: translateX(-50%) !important;
       width: calc(100% - 32px) !important;
-      max-width: 320px !important;
+      max-width: 400px !important;
       height: 52px !important;
       padding: 0 8px !important;
       z-index: 99;
@@ -68,10 +66,11 @@
 <body>
 
   <div class="app-container">
+    <!-- Tarjeta Principal Superior -->
     <div class="hero-card">
       <div class="hero-info">
         <h1 class="hero-title">Mi Despensa</h1>
-        <p class="hero-subtitle" id="user-greeting">Hola...</p>
+        <p class="hero-subtitle" id="user-greeting">Hola, MARÍA</p>
         <div class="hero-actions">
           <button class="action-btn" aria-label="Buscar">🔍</button>
           <button class="action-btn" aria-label="Ajustes">⚙️</button>
@@ -82,15 +81,41 @@
       </div>
     </div>
 
+    <!-- Encabezado de Sección -->
     <div class="section-header">
       <h2 class="section-title">Categorías</h2>
       <div class="status-dot"></div>
     </div>
 
+    <!-- Contenedor de Categorías / Cuadros -->
     <div class="grid-container" id="contenedor-categorias">
+      <!-- Ejemplo estático de tarjetas acorde a tu diseño -->
+      <div class="hero-card" style="display: flex; flex-direction: column; justify-content: space-between; min-height: 140px;">
+        <p class="hero-title" style="font-size: 18px;">Te amo</p>
+      </div>
+      
+      <div class="hero-card" style="padding: 0; overflow: hidden; position: relative;">
+        <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=400&q=80" alt="Sala" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top:0; left:0;">
+        <div style="position: absolute; bottom: 10px; left: 10px; color: white; background: rgba(0,0,0,0.4); padding: 4px 8px; border-radius: 8px;">
+          <h3 style="margin:0; font-size: 14px;">Sala</h3>
+        </div>
+      </div>
+
+      <div class="hero-card" style="padding: 0; overflow: hidden; position: relative;">
+        <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=400&q=80" alt="Perrito" style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
+
+      <div class="hero-card" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+        <p class="hero-title" style="font-size: 16px;">Tengo hambre ❤️ 👉</p>
+      </div>
+
+      <div class="hero-card" style="display: flex; flex-direction: column; justify-content: space-between; min-height: 140px;">
+        <p class="hero-title" style="font-size: 18px;">Cocina</p>
+      </div>
     </div>
   </div>
 
+  <!-- Dock Flotante Inferior -->
   <nav class="floating-dock">
     <div id="dock-indicator" class="dock-indicator"></div>
 
@@ -125,24 +150,6 @@
       </svg>
     </a>
   </nav>
-
-  <div class="modal hidden" id="modal-categoria">
-    <div class="modal-content">
-      <h2>Nueva Categoría</h2>
-      <form id="form-nueva-categoria">
-        <label for="nombre-categoria">Nombre de la categoría:</label>
-        <input type="text" id="nombre-categoria" placeholder="Ej: Bebidas, Frutas..." required>
-
-        <label for="imagen-categoria">Imagen de portada:</label>
-        <input type="file" id="imagen-categoria" accept="image/*">
-
-        <div class="modal-buttons">
-          <button type="button" class="btn-secondary" id="btn-cancelar">Cancelar</button>
-          <button type="submit" class="btn-primary">Agregar</button>
-        </div>
-      </form>
-    </div>
-  </div>
 
   <script type="module" src="app.js"></script>
 
