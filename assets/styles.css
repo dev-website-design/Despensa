@@ -1,13 +1,25 @@
-/* --- CARGA DE LA FUENTE LOCAL (KILTIER) --- */
+/* --- CARGA DE LA FUENTE DESDE LA RAÍZ DEL PROYECTO --- */
 @font-face {
   font-family: 'Kiltier';
-  src: url('../font/Kiltier-Regular.otf') format('opentype'),
-       url('../font/Kiltier-Regular.ttf') format('truetype'),
-       url('../font/Kiltier-Regular.woff2') format('woff2');
+  src: url('../Kiltier-Regular.otf') format('opentype'),
+       url('../Kiltier-Regular.ttf') format('truetype'),
+       url('../Kiltier-Regular.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
+
+/* --- PALETA DE COLORES Y TIPOGRAFÍA --- */
+:root {
+  --black-cherry: #2A0C1B;
+  --carousel-pink: #FFE0EB;
+  --perfect-rose: #BE2C55;
+  --white: #ffffff;
+
+  /* Tipografía global */
+  --font-main: 'Kiltier', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
 
 /* --- PALETA DE COLORES Y TIPOGRAFÍA --- */
 :root {
