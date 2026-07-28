@@ -20,7 +20,7 @@
   --card-bg: rgba(255, 255, 255, 0.85);
   --card-border: rgba(190, 44, 85, 0.15);
   --dock-bg: rgba(42, 12, 27, 0.85);
-  
+
   --font-main: 'Kiltier', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
@@ -43,7 +43,7 @@ body {
   padding: 16px;
 }
 
-/* --- TARJETA HERO --- */
+/* --- TARJETA HERO (DESTACADA SUPERIOR) --- */
 .hero-card {
   position: relative;
   background: var(--white);
@@ -149,7 +149,7 @@ body {
   gap: 16px;
 }
 
-/* --- TARJETAS DE CATEGORÍA (ALINEADAS ABAJO) --- */
+/* --- TARJETAS DE CATEGORÍA (SIEMPRE CENTRADAS ABAJO) --- */
 .categoria {
   position: relative;
   background: var(--white);
@@ -159,7 +159,8 @@ body {
   padding: 16px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end; /* Alinea el nombre abajo */
+  justify-content: flex-end;
+  align-items: center;
   overflow: hidden;
   box-shadow: 0 6px 18px rgba(42, 12, 27, 0.04);
   background-size: cover;
@@ -173,13 +174,17 @@ body {
 
 .categoria-footer {
   z-index: 2;
+  width: 100%;
+  text-align: center;
 }
 
 .categoria span {
+  display: block;
   font-size: 1.2rem;
   color: var(--black-cherry);
   letter-spacing: 0.5px;
   word-break: break-word;
+  text-align: center;
 }
 
 /* ESTILO CUANDO TIENE IMAGEN DE FONDO */
@@ -196,7 +201,7 @@ body {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
-/* --- DOCK FLOTANTE --- */
+/* --- DOCK FLOTANTE CÁPSULA --- */
 .floating-dock {
   position: fixed;
   bottom: calc(16px + env(safe-area-inset-bottom, 0px));
@@ -259,7 +264,7 @@ body {
   transform: scale(0.9) rotate(90deg);
 }
 
-/* --- MODAL --- */
+/* --- MODAL Y FORMULARIO --- */
 .modal {
   position: fixed;
   top: 0;
