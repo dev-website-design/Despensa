@@ -24,7 +24,7 @@ if ('serviceWorker' in navigator) {
 window.mostrarModal = () => document.getElementById('modal')?.classList.remove('hidden');
 window.cerrarModal = () => document.getElementById('modal')?.classList.add('hidden');
 
-// Renderizado en tiempo real
+// Renderizado en tiempo real sin numeración
 const categoriasContainer = document.getElementById('categorias');
 
 onSnapshot(collection(db, "categorias"), (snapshot) => {
@@ -36,7 +36,6 @@ onSnapshot(collection(db, "categorias"), (snapshot) => {
     return;
   }
 
-  let index = 1;
   snapshot.forEach((doc) => {
     const cat = doc.data();
     const div = document.createElement('div');
@@ -47,20 +46,13 @@ onSnapshot(collection(db, "categorias"), (snapshot) => {
       div.style.backgroundImage = `url('${cat.imagen.trim()}')`;
     }
 
-    const padNum = String(index).padStart(2, '0');
-
     div.innerHTML = `
-      <div class="categoria-header">
-        <span>C-${padNum}</span>
-        <span>•</span>
-      </div>
       <div class="categoria-footer">
         <span>${cat.nombre}</span>
       </div>
     `;
 
     categoriasContainer.appendChild(div);
-    index++;
   });
 });
 
