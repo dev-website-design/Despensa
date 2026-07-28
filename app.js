@@ -1,8 +1,6 @@
-// 1. IMPORTAR MÓDULOS DE FIREBASE
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, collection, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// 2. CONFIGURACIÓN DE TU PROYECTO FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyDfIQXFFDGoBMvTIOT52nZGVUc-pFJGFs4",
   authDomain: "hogar-e266a.firebaseapp.com",
@@ -12,109 +10,83 @@ const firebaseConfig = {
   appId: "1:534168977173:web:f3900fae93c7dd520b331c"
 };
 
-// Inicializar Firestore
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- REGISTRO DE SERVICE WORKER ---
+// Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .catch(err => console.error('Error SW:', err));
+    navigator.serviceWorker.register('./sw.js').catch(err => console.error('SW Error:', err));
   });
 }
 
-// --- NAVEGACIÓN EN DOCK ---
-const dockItems = document.querySelectorAll('.dock-item');
-dockItems.forEach(item => {
-  item.addEventListener('click', () => {
-    dockItems.forEach(btn => btn.classList.remove('active'));
-    item.classList.add('active');
-  });
-});
+// Modal Toggle
+window.mostrarModal = () => document.getElementById('modal')?.classList.remove('hidden');
+window.cerrarModal = () => document.getElementById('modal')?.classList.add('hidden');
 
-// --- FUNCIONES DEL MODAL ---
-window.mostrarModal = function() {
-  const modal = document.getElementById('modal');
-  if (modal) modal.classList.remove('hidden');
-};
-
-window.cerrarModal = function() {
-  const modal = document.getElementById('modal');
-  if (modal) modal.classList.add('hidden');
-};
-
-// --- RENDERIZADO EN TIEMPO REAL DESDE FIREBASE ---
+// Renderizado en tiempo real
 const categoriasContainer = document.getElementById('categorias');
 
 onSnapshot(collection(db, "categorias"), (snapshot) => {
   if (!categoriasContainer) return;
-
   categoriasContainer.innerHTML = '';
 
   if (snapshot.empty) {
-    categoriasContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #888;">No hay categorías aún. ¡Agrega una con el botón +!</p>';
+    categoriasContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--perfect-rose);">No hay categorías aún. Toca + para crear una.</p>';
     return;
   }
 
+  let index = 1;
   snapshot.forEach((doc) => {
     const cat = doc.data();
     const div = document.createElement('div');
     div.classList.add('categoria');
 
-    // SI TIENE URL DE IMAGEN, SE ASIGNA COMO FONDO
     if (cat.imagen && cat.imagen.trim() !== '') {
       div.classList.add('con-imagen');
       div.style.backgroundImage = `url('${cat.imagen.trim()}')`;
     }
 
-    div.innerHTML += `<span>${cat.nombre}</span>`;
+    const padNum = String(index).padStart(2, '0');
+
+    div.innerHTML = `
+      <div class="categoria-header">
+        <span>C-${padNum}</span>
+        <span>•</span>
+      </div>
+      <div class="categoria-footer">
+        <span>${cat.nombre}</span>
+      </div>
+    `;
+
     categoriasContainer.appendChild(div);
+    index++;
   });
-}, (error) => {
-  console.error("Error al conectar con Firestore:", error);
-  alert("Error de permisos o conexión en Firebase: " + error.message);
 });
 
-// --- GUARDAR NUEVA CATEGORÍA EN FIREBASE ---
+// Guardar nueva categoría
 document.addEventListener('DOMContentLoaded', () => {
-  const btnAbrir = document.getElementById('btn-abrir-modal');
-  if (btnAbrir) btnAbrir.addEventListener('click', window.mostrarModal);
-
-  const btnCerrar = document.getElementById('btn-cerrar-modal');
-  if (btnCerrar) btnCerrar.addEventListener('click', window.cerrarModal);
+  document.getElementById('btn-abrir-modal')?.addEventListener('click', window.mostrarModal);
+  document.getElementById('btn-cerrar-modal')?.addEventListener('click', window.cerrarModal);
 
   const form = document.getElementById('form-categoria');
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-
-      const nombreInput = document.getElementById('nombre-categoria');
-      const imagenInput = document.getElementById('imagen-categoria');
-      const btnSubmit = form.querySelector('.btn-primary');
-
-      const nombre = nombreInput ? nombreInput.value.trim() : '';
-      const imagen = imagenInput ? imagenInput.value.trim() : '';
+      const nombre = document.getElementById('nombre-categoria')?.value.trim();
+      const imagen = document.getElementById('imagen-categoria')?.value.trim();
 
       if (nombre) {
         try {
-          if (btnSubmit) btnSubmit.style.transform = 'scale(0.92)';
-
           await addDoc(collection(db, "categorias"), {
             nombre: nombre,
             imagen: imagen,
             fecha: new Date()
           });
-
-          await new Promise(resolve => setTimeout(resolve, 200));
-
-          if (btnSubmit) btnSubmit.style.transform = '';
           window.cerrarModal();
           form.reset();
         } catch (err) {
-          if (btnSubmit) btnSubmit.style.transform = '';
-          console.error("Error al guardar en Firebase:", err);
-          alert("Error al guardar en la nube: " + err.message);
+          alert("Error de conexión: " + err.message);
         }
       }
     });
