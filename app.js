@@ -24,7 +24,7 @@ if ('serviceWorker' in navigator) {
 window.mostrarModal = () => document.getElementById('modal')?.classList.remove('hidden');
 window.cerrarModal = () => document.getElementById('modal')?.classList.add('hidden');
 
-// Renderizado en tiempo real sin numeración
+// Renderizado en tiempo real
 const categoriasContainer = document.getElementById('categorias');
 
 onSnapshot(collection(db, "categorias"), (snapshot) => {
@@ -56,11 +56,22 @@ onSnapshot(collection(db, "categorias"), (snapshot) => {
   });
 });
 
-// Guardar nueva categoría
+// Eventos de la interfaz
 document.addEventListener('DOMContentLoaded', () => {
+  // 1. Control del Modal
   document.getElementById('btn-abrir-modal')?.addEventListener('click', window.mostrarModal);
   document.getElementById('btn-cerrar-modal')?.addEventListener('click', window.cerrarModal);
 
+  // 2. Mover el indicador activo en la barra flotante (Dock)
+  const dockItems = document.querySelectorAll('.floating-dock .dock-item');
+  dockItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      dockItems.forEach(i => i.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+    });
+  });
+
+  // 3. Guardar nueva categoría
   const form = document.getElementById('form-categoria');
   if (form) {
     form.addEventListener('submit', async (e) => {
