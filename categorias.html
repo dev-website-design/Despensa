@@ -323,22 +323,44 @@
       }
 
       if (addForm && contenedorCategorias) {
-        addForm.addEventListener('submit', (e) => {
+        addForm.addEventListener('submit', async (e) => {
           e.preventDefault();
           const nombreInput = document.getElementById('input-nombre');
           const descInput = document.getElementById('input-desc');
           const nombre = nombreInput.value.trim();
+          const descripcion = descInput.value.trim();
 
           if (nombre !== '') {
-            const nuevaCard = document.createElement('div');
-            nuevaCard.className = 'hero-card';
-            nuevaCard.style.cssText = 'display: flex; flex-direction: column; justify-content: space-between; min-height: 140px;';
-            nuevaCard.innerHTML = `<p class="hero-title" style="font-size: 18px;">${nombre}</p>`;
-            contenedorCategorias.appendChild(nuevaCard);
+            try {
+              // Guardar en Firebase Firestore manteniendo compatibilidad con la conexión global existente
+              if (typeof db !== 'undefined' && db.collection) {
+                await db.collection('categorias').add({
+                  nombre: nombre,
+                  descripcion: descripcion,
+                  fecha: new Date().toISOString()
+                });
+              } else if (window.firebase && firebase.firestore) {
+                await firebase.firestore().collection('categorias').add({
+                  nombre: nombre,
+                  descripcion: descripcion,
+                  fecha: new Date().toISOString()
+                });
+              }
 
-            nombreInput.value = '';
-            descInput.value = '';
-            modal.classList.remove('active');
+              // Crear y agregar la tarjeta visualmente en la pantalla
+              const nuevaCard = document.createElement('div');
+              nuevaCard.className = 'hero-card';
+              nuevaCard.style.cssText = 'display: flex; flex-direction: column; justify-content: space-between; min-height: 140px;';
+              nuevaCard.innerHTML = `<p class="hero-title" style="font-size: 18px;">${nombre}</p>`;
+              contenedorCategorias.appendChild(nuevaCard);
+
+              // Limpiar formulario y cerrar modal
+              nombreInput.value = '';
+              descInput.value = '';
+              modal.classList.remove('active');
+            } catch (error) {
+              console.error("Error al guardar en Firebase:", error);
+            }
           }
         });
       }
