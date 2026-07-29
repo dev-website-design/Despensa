@@ -10,7 +10,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <style>
-    /* ===== TODO TU CSS ORIGINAL (Mantenido igual) ===== */
+    /* ===== TODO TU CSS ORIGINAL ===== */
     @font-face { font-family: 'Kiltier'; src: url('data:font/opentype;base64,AAEAAAAQAQAABAA...'); font-weight: normal; font-style: normal; font-display: swap; }
     :root { --black-cherry: #2A0C1B; --carousel-pink: #FFE0EB; --perfect-rose: #BE2C55; --white: #ffffff; --bg-color: #FFE0EB; --card-border: rgba(190, 44, 85, 0.15); --dock-bg: rgba(42, 12, 27, 0.85); --font-main: 'Kiltier', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -54,6 +54,8 @@
     .auth-card .auth-switch { text-align: center; margin-top: 16px; font-size: 0.9rem; }
     .auth-card .auth-switch a { color: var(--perfect-rose); cursor: pointer; text-decoration: underline; }
     .hidden-page { display: none !important; }
+    .mt-4 { margin-top: 16px; }
+    .text-center { text-align: center; }
 
     @keyframes modalSpringPop { 0% { opacity: 0; transform: scale(0.65) translateY(40px); } 70% { opacity: 1; transform: scale(1.04) translateY(-4px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
     @keyframes fadeInBackdrop { from { opacity: 0; } to { opacity: 1; } }
@@ -105,21 +107,21 @@
     </div>
   </div>
 
-  <!-- DOCK FLOTANTE -->
+  <!-- ===== DOCK FLOTANTE (CORREGIDO CON ENLACES) ===== -->
   <nav class="floating-dock" id="mainDock">
-    <button class="dock-item active" data-page="categorias" aria-label="Categorías">
+    <a href="categorias.html" class="dock-item active" aria-label="Categorías">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-    </button>
+    </a>
     <button class="dock-add-btn" id="dockAddBtn">+</button>
-    <button class="dock-item" data-page="config" aria-label="Configuración">
+    <a href="configuracion.html" class="dock-item" aria-label="Configuración">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    </button>
-    <button class="dock-item" data-page="perfil" aria-label="Perfil">
+    </a>
+    <a href="perfil.html" class="dock-item" aria-label="Perfil">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    </button>
+    </a>
   </nav>
 
-  <!-- MODAL -->
+  <!-- ===== MODAL PARA AÑADIR CATEGORÍA ===== -->
   <div id="modalCategoria" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-content">
       <h2>Nueva Categoría</h2>
@@ -136,7 +138,7 @@
     </div>
   </div>
 
-  <!-- CARGA EL SCRIPT PRINCIPAL (Sin módulos, script normal) -->
+  <!-- CARGA EL SCRIPT PRINCIPAL -->
   <script src="app.js"></script>
 </body>
 </html>
