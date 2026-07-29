@@ -72,11 +72,14 @@
       display: flex;
       align-items: center;
       justify-content: space-around;
+      background-color: #2A0C1B !important;
+      border-radius: 26px !important;
+      box-shadow: 0 10px 25px rgba(42, 12, 27, 0.2) !important;
     }
 
     .dock-indicator {
       position: absolute;
-      top: 0;
+      top: 4px;
       left: 0;
       background-color: #FFE0EB;
       border-radius: 50%;
@@ -93,11 +96,12 @@
       background: transparent;
       border: none;
       cursor: pointer;
-      color: inherit;
+      color: #bfa5b3 !important; /* Color grisáceo/rosado para iconos inactivos igual que categorías */
       text-decoration: none;
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: color 0.2s;
     }
 
     .dock-item.active {
@@ -241,7 +245,7 @@
     <!-- Tarjeta Principal Superior -->
     <div class="hero-card" style="background: white; border-radius: 24px; padding: 20px; margin-bottom: 20px;">
       <div class="hero-info">
-        <h1 class="hero-title" style="margin:0; font-size: 24px;">Configuración</h1>
+        <h1 class="hero-title" style="margin:0; font-size: 24px; color: #2A0C1B;">Configuración</h1>
         <p class="hero-subtitle" id="user-greeting" style="color: gray; margin-top: 5px;">Preferencias de la cuenta</p>
       </div>
     </div>
@@ -329,6 +333,14 @@
       
       const modal = document.getElementById('modal-categoria');
       const btnCerrar = document.getElementById('btn-cerrar-modal');
+      const btnOpenModal = document.getElementById('btn-open-modal');
+
+      if (btnOpenModal && modal) {
+        btnOpenModal.addEventListener('click', () => {
+          modal.classList.remove('hidden');
+          modal.style.display = 'flex';
+        });
+      }
 
       if (modal && btnCerrar) {
         const ejecutarCierreAnimado = (e) => {
