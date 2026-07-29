@@ -4,182 +4,61 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>FINDORA · Despensa</title>
-  <!-- Firebase SDKs (compat) -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <style>
-    /* ===== CSS COMPLETO (igual que antes) ===== */
-    @font-face {
-      font-family: 'Kiltier';
-      src: url('data:font/opentype;base64,AAEAAAAQAQAABAA...'); /* Opcional: usa sistema */
-      font-weight: normal; font-style: normal; font-display: swap;
-    }
-    :root {
-      --black-cherry: #2A0C1B;
-      --carousel-pink: #FFE0EB;
-      --perfect-rose: #BE2C55;
-      --white: #ffffff;
-      --bg-color: #FFE0EB;
-      --card-border: rgba(190, 44, 85, 0.15);
-      --dock-bg: rgba(42, 12, 27, 0.85);
-      --font-main: 'Kiltier', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    }
+    /* ===== TODO TU CSS ORIGINAL (Mantenido igual) ===== */
+    @font-face { font-family: 'Kiltier'; src: url('data:font/opentype;base64,AAEAAAAQAQAABAA...'); font-weight: normal; font-style: normal; font-display: swap; }
+    :root { --black-cherry: #2A0C1B; --carousel-pink: #FFE0EB; --perfect-rose: #BE2C55; --white: #ffffff; --bg-color: #FFE0EB; --card-border: rgba(190, 44, 85, 0.15); --dock-bg: rgba(42, 12, 27, 0.85); --font-main: 'Kiltier', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body {
-      margin: 0; font-family: var(--font-main);
-      background-color: var(--bg-color); color: var(--black-cherry);
-      min-height: 100vh; padding-bottom: 110px;
-    }
+    body { margin: 0; font-family: var(--font-main); background-color: var(--bg-color); color: var(--black-cherry); min-height: 100vh; padding-bottom: 110px; }
     .app-container { max-width: 480px; margin: 0 auto; padding: 16px; }
-
-    /* HERO CARD */
-    .hero-card {
-      position: relative; background: var(--white);
-      border: 1px solid var(--card-border); border-radius: 32px;
-      padding: 24px 20px; display: flex; align-items: center;
-      justify-content: space-between; box-shadow: 0 10px 25px rgba(42, 12, 27, 0.05);
-      overflow: hidden; margin-top: 10px; margin-bottom: 24px;
-    }
+    .hero-card { position: relative; background: var(--white); border: 1px solid var(--card-border); border-radius: 32px; padding: 24px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 10px 25px rgba(42, 12, 27, 0.05); overflow: hidden; margin-top: 10px; margin-bottom: 24px; }
     .hero-info { z-index: 2; max-width: 55%; }
     .hero-title { font-size: 2rem; margin: 0; font-weight: normal; color: var(--black-cherry); }
     .hero-subtitle { margin: 4px 0 16px 0; font-size: 0.95rem; color: var(--perfect-rose); }
     .user-greeting { color: var(--perfect-rose); font-size: 0.95rem; margin: 4px 0 0 0; }
-
     .categoria-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 16px; }
-    .categoria {
-      position: relative; background: var(--white);
-      border: 1px solid var(--card-border); border-radius: 28px;
-      aspect-ratio: 0.85 / 1; padding: 16px;
-      display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
-      overflow: hidden; box-shadow: 0 6px 18px rgba(42, 12, 27, 0.04);
-      background-size: cover; background-position: center;
-      transition: transform 0.2s ease;
-      cursor: pointer;
-    }
+    .categoria { position: relative; background: var(--white); border: 1px solid var(--card-border); border-radius: 28px; aspect-ratio: 0.85 / 1; padding: 16px; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; overflow: hidden; box-shadow: 0 6px 18px rgba(42, 12, 27, 0.04); background-size: cover; background-position: center; transition: transform 0.2s ease; cursor: pointer; }
     .categoria:active { transform: scale(0.96); }
     .categoria-footer { z-index: 2; width: 100%; text-align: center; }
-    .categoria span {
-      display: block; font-size: 1.2rem; color: var(--black-cherry);
-      letter-spacing: 0.5px; word-break: break-word; text-align: center;
-    }
-    .categoria.con-imagen::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(42, 12, 27, 0.85) 0%, rgba(42, 12, 27, 0.1) 70%, transparent 100%);
-      z-index: 1;
-    }
+    .categoria span { display: block; font-size: 1.2rem; color: var(--black-cherry); letter-spacing: 0.5px; word-break: break-word; text-align: center; }
+    .categoria.con-imagen::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(42, 12, 27, 0.85) 0%, rgba(42, 12, 27, 0.1) 70%, transparent 100%); z-index: 1; }
     .categoria.con-imagen .categoria-footer span { color: var(--white); text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4); }
-    .btn-eliminar {
-      background: none; border: none; color: var(--perfect-rose);
-      font-size: 0.8rem; margin-top: 6px; cursor: pointer;
-    }
-
-    /* DOCK FLOTANTE */
-    .floating-dock {
-      position: fixed; bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-      left: 50%; transform: translateX(-50%); width: min(88%, 350px); height: 60px;
-      background: var(--dock-bg); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 224, 235, 0.2); border-radius: 35px;
-      display: flex; align-items: center; justify-content: space-around; padding: 0 8px;
-      box-shadow: 0 10px 30px rgba(42, 12, 27, 0.3); z-index: 9999;
-    }
-    .dock-item {
-      background: transparent; border: none; color: rgba(255, 255, 255, 0.5);
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      width: 40px; height: 40px; border-radius: 50%; text-decoration: none; outline: none;
-      transition: 0.2s;
-    }
+    .btn-eliminar { background: none; border: none; color: var(--perfect-rose); font-size: 0.8rem; margin-top: 6px; cursor: pointer; }
+    .floating-dock { position: fixed; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); width: min(88%, 350px); height: 60px; background: var(--dock-bg); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255, 224, 235, 0.2); border-radius: 35px; display: flex; align-items: center; justify-content: space-around; padding: 0 8px; box-shadow: 0 10px 30px rgba(42, 12, 27, 0.3); z-index: 9999; }
+    .dock-item { background: transparent; border: none; color: rgba(255, 255, 255, 0.5); cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; text-decoration: none; outline: none; transition: 0.2s; }
     .dock-item.active { background-color: var(--carousel-pink); color: var(--black-cherry); transform: scale(1.08); }
-    .dock-add-btn {
-      background-color: var(--perfect-rose); color: var(--white); border: none;
-      width: 46px; height: 46px; border-radius: 50%; font-family: var(--font-main);
-      font-size: 1.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 4px 14px rgba(190, 44, 85, 0.4); outline: none;
-      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
+    .dock-add-btn { background-color: var(--perfect-rose); color: var(--white); border: none; width: 46px; height: 46px; border-radius: 50%; font-family: var(--font-main); font-size: 1.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(190, 44, 85, 0.4); outline: none; transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
     .dock-add-btn:active { transform: scale(0.85) rotate(90deg); }
-
-    /* MODAL */
-    .modal {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background-color: rgba(42, 12, 27, 0.65); display: flex; align-items: center; justify-content: center;
-      z-index: 10000; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-      animation: fadeInBackdrop 0.3s ease forwards;
-    }
+    .modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(42, 12, 27, 0.65); display: flex; align-items: center; justify-content: center; z-index: 10000; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); animation: fadeInBackdrop 0.3s ease forwards; }
     .hidden { display: none !important; }
     .modal:not(.hidden) .modal-content { animation: modalSpringPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-    .modal-content {
-      background-color: var(--white); padding: 24px; border-radius: 28px;
-      width: 88%; max-width: 360px; font-family: var(--font-main); color: var(--black-cherry);
-      box-shadow: 0 20px 40px rgba(42, 12, 27, 0.25);
-    }
+    .modal-content { background-color: var(--white); padding: 24px; border-radius: 28px; width: 88%; max-width: 360px; font-family: var(--font-main); color: var(--black-cherry); box-shadow: 0 20px 40px rgba(42, 12, 27, 0.25); }
     .modal-content h2 { margin-top: 0; font-size: 1.4rem; font-weight: normal; }
     form label { display: block; margin-top: 12px; margin-bottom: 6px; font-size: 0.9rem; color: var(--perfect-rose); }
-    form input[type="text"], form input[type="email"], form input[type="password"] {
-      width: 100%; padding: 12px; border: 1.5px solid #e2d0d7; border-radius: 12px;
-      font-family: var(--font-main); font-size: 1rem; background-color: #fff9fb; color: var(--black-cherry);
-    }
-    form input[type="file"] {
-      width: 100%; padding: 8px 12px; background-color: #fff9fb; border: 1.5px solid #e2d0d7; border-radius: 12px; cursor: pointer;
-    }
-    form input[type="file"]::file-selector-button {
-      background-color: var(--perfect-rose); color: var(--white); border: none;
-      padding: 6px 12px; border-radius: 8px; font-family: var(--font-main); cursor: pointer; margin-right: 10px;
-    }
+    form input[type="text"], form input[type="email"], form input[type="password"] { width: 100%; padding: 12px; border: 1.5px solid #e2d0d7; border-radius: 12px; font-family: var(--font-main); font-size: 1rem; background-color: #fff9fb; color: var(--black-cherry); }
+    form input[type="file"] { width: 100%; padding: 8px 12px; background-color: #fff9fb; border: 1.5px solid #e2d0d7; border-radius: 12px; cursor: pointer; }
+    form input[type="file"]::file-selector-button { background-color: var(--perfect-rose); color: var(--white); border: none; padding: 6px 12px; border-radius: 8px; font-family: var(--font-main); cursor: pointer; margin-right: 10px; }
     .modal-buttons { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-    .btn-primary {
-      position: relative; background-color: var(--perfect-rose); color: var(--white);
-      border: none; padding: 10px 22px; border-radius: 12px; font-family: var(--font-main);
-      font-size: 1rem; cursor: pointer; outline: none; overflow: hidden;
-      animation: pulse-glow 2.2s infinite;
-    }
+    .btn-primary { position: relative; background-color: var(--perfect-rose); color: var(--white); border: none; padding: 10px 22px; border-radius: 12px; font-family: var(--font-main); font-size: 1rem; cursor: pointer; outline: none; overflow: hidden; animation: pulse-glow 2.2s infinite; }
     .btn-secondary { background-color: #f0e2e7; color: var(--black-cherry); border: none; padding: 10px 16px; border-radius: 12px; font-family: var(--font-main); cursor: pointer; }
-
-    /* LOGIN / REGISTRO */
-    .auth-container {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      min-height: 80vh; padding: 20px;
-    }
-    .auth-card {
-      background: var(--white); border-radius: 32px; padding: 32px 24px;
-      box-shadow: 0 10px 25px rgba(42, 12, 27, 0.05); width: 100%; max-width: 360px;
-    }
+    .auth-container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; padding: 20px; }
+    .auth-card { background: var(--white); border-radius: 32px; padding: 32px 24px; box-shadow: 0 10px 25px rgba(42, 12, 27, 0.05); width: 100%; max-width: 360px; }
     .auth-card h2 { margin-top: 0; font-weight: normal; text-align: center; }
-    .auth-card .btn-google {
-      width: 100%; background: #fff; border: 1px solid #ddd; padding: 12px;
-      border-radius: 30px; font-family: var(--font-main); font-size: 1rem;
-      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
-      margin-bottom: 16px;
-    }
-    .auth-card .btn-google img { width: 20px; height: 20px; }
+    .auth-card .btn-google { width: 100%; background: #fff; border: 1px solid #ddd; padding: 12px; border-radius: 30px; font-family: var(--font-main); font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 16px; }
     .auth-card .divider { text-align: center; color: #999; margin: 16px 0; font-size: 0.9rem; }
     .auth-card .auth-switch { text-align: center; margin-top: 16px; font-size: 0.9rem; }
     .auth-card .auth-switch a { color: var(--perfect-rose); cursor: pointer; text-decoration: underline; }
-
-    /* OTROS */
     .hidden-page { display: none !important; }
-    .mt-4 { margin-top: 16px; }
-    .text-center { text-align: center; }
-    .w-full { width: 100%; }
 
-    /* KEYFRAMES */
-    @keyframes modalSpringPop {
-      0% { opacity: 0; transform: scale(0.65) translateY(40px); }
-      70% { opacity: 1; transform: scale(1.04) translateY(-4px); }
-      100% { opacity: 1; transform: scale(1) translateY(0); }
-    }
+    @keyframes modalSpringPop { 0% { opacity: 0; transform: scale(0.65) translateY(40px); } 70% { opacity: 1; transform: scale(1.04) translateY(-4px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
     @keyframes fadeInBackdrop { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes pulse-glow {
-      0% { box-shadow: 0 0 0 0 rgba(190, 44, 85, 0.6); }
-      70% { box-shadow: 0 0 0 12px rgba(190, 44, 85, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(190, 44, 85, 0); }
-    }
+    @keyframes pulse-glow { 0% { box-shadow: 0 0 0 0 rgba(190, 44, 85, 0.6); } 70% { box-shadow: 0 0 0 12px rgba(190, 44, 85, 0); } 100% { box-shadow: 0 0 0 0 rgba(190, 44, 85, 0); } }
   </style>
 </head>
 <body>
   <div class="app-container" id="app">
-    <!-- ===== PÁGINA: AUTENTICACIÓN (LOGIN / REGISTRO) ===== -->
+    <!-- ===== PÁGINA: AUTENTICACIÓN ===== -->
     <div id="page-auth">
       <div class="auth-container">
         <div class="auth-card">
@@ -205,7 +84,7 @@
       </div>
     </div>
 
-    <!-- ===== PÁGINA: CATEGORÍAS (protegida) ===== -->
+    <!-- ===== PÁGINA: CATEGORÍAS ===== -->
     <div id="page-categorias" class="hidden-page">
       <div class="hero-card">
         <div class="hero-info">
@@ -222,7 +101,7 @@
     </div>
   </div>
 
-  <!-- ===== DOCK FLOTANTE ===== -->
+  <!-- DOCK FLOTANTE -->
   <nav class="floating-dock" id="mainDock">
     <button class="dock-item active" data-page="categorias" aria-label="Categorías">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
@@ -236,7 +115,7 @@
     </button>
   </nav>
 
-  <!-- ===== MODAL PARA AÑADIR CATEGORÍA ===== -->
+  <!-- MODAL -->
   <div id="modalCategoria" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-content">
       <h2>Nueva Categoría</h2>
@@ -253,265 +132,7 @@
     </div>
   </div>
 
-  <script>
-    // =====================================================
-    // 1. CONFIGURACIÓN DE FIREBASE (PON AQUÍ TUS DATOS)
-    // =====================================================
-    const firebaseConfig = {
-      apiKey: "AIzaSy...", // <--- REEMPLAZA CON TU API KEY
-      authDomain: "tu-proyecto.firebaseapp.com",
-      projectId: "tu-proyecto",
-      storageBucket: "tu-proyecto.appspot.com",
-      messagingSenderId: "123456789",
-      appId: "1:123456789:web:abcdef"
-    };
-
-    // Inicializar Firebase
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    // =====================================================
-    // 2. DOM ELEMENTS
-    // =====================================================
-    const pageAuth = document.getElementById('page-auth');
-    const pageCategorias = document.getElementById('page-categorias');
-    const authForm = document.getElementById('authForm');
-    const authEmail = document.getElementById('authEmail');
-    const authPassword = document.getElementById('authPassword');
-    const authSubmitBtn = document.getElementById('authSubmitBtn');
-    const authTitle = document.getElementById('authTitle');
-    const authSwitchLink = document.getElementById('authSwitchLink');
-    const authSwitchText = document.getElementById('authSwitchText');
-    const authError = document.getElementById('authError');
-    const btnGoogle = document.getElementById('btnGoogle');
-    const btnLogout = document.getElementById('btnLogout');
-    const userNameSpan = document.getElementById('user-name');
-    const contenedor = document.getElementById('contenedor-categorias');
-    const modalCategoria = document.getElementById('modalCategoria');
-    const formCategoria = document.getElementById('formCategoria');
-    const nombreCategoria = document.getElementById('nombreCategoria');
-    const imagenCategoria = document.getElementById('imagenCategoria');
-    const modalCancel = document.getElementById('modalCancel');
-    const dockAddBtn = document.getElementById('dockAddBtn');
-
-    // =====================================================
-    // 3. ESTADO DE AUTENTICACIÓN
-    // =====================================================
-    let isLogin = true; // true = login, false = registro
-    let currentUser = null;
-
-    // =====================================================
-    // 4. FUNCIONES DE AUTENTICACIÓN
-    // =====================================================
-    function toggleAuthMode() {
-      isLogin = !isLogin;
-      authTitle.textContent = isLogin ? 'Iniciar Sesión' : 'Crear Cuenta';
-      authSubmitBtn.textContent = isLogin ? 'Iniciar sesión' : 'Registrarse';
-      authSwitchText.textContent = isLogin ? '¿No tienes cuenta? ' : '¿Ya tienes cuenta? ';
-      authSwitchLink.textContent = isLogin ? 'Regístrate' : 'Inicia sesión';
-      authError.textContent = '';
-    }
-
-    async function handleAuthSubmit(e) {
-      e.preventDefault();
-      const email = authEmail.value.trim();
-      const password = authPassword.value.trim();
-      if (!email || !password) {
-        authError.textContent = 'Por favor, completa todos los campos.';
-        return;
-      }
-      authError.textContent = 'Cargando...';
-      try {
-        if (isLogin) {
-          await auth.signInWithEmailAndPassword(email, password);
-        } else {
-          await auth.createUserWithEmailAndPassword(email, password);
-        }
-        // El estado se maneja en onAuthStateChanged
-      } catch (error) {
-        console.error(error);
-        authError.textContent = error.message;
-      }
-    }
-
-    async function loginWithGoogle() {
-      try {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        await auth.signInWithPopup(provider);
-      } catch (error) {
-        console.error(error);
-        authError.textContent = error.message;
-      }
-    }
-
-    function logout() {
-      auth.signOut();
-    }
-
-    // =====================================================
-    // 5. FUNCIONES DE CATEGORÍAS (Firestore)
-    // =====================================================
-    function getCategoriasRef() {
-      if (!currentUser) return null;
-      return db.collection('categorias').doc(currentUser.uid).collection('items');
-    }
-
-    function renderizarCategorias() {
-      if (!contenedor) return;
-      const ref = getCategoriasRef();
-      if (!ref) {
-        contenedor.innerHTML = '<p style="text-align:center; color:var(--perfect-rose);">Usuario no autenticado</p>';
-        return;
-      }
-
-      ref.get().then((snapshot) => {
-        if (snapshot.empty) {
-          contenedor.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: var(--perfect-rose);">No hay categorías. ¡Añade una!</p>`;
-          return;
-        }
-        let html = '';
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          const id = doc.id;
-          const tieneImagen = data.imagen && data.imagen.startsWith('data:image');
-          const estiloFondo = tieneImagen ? `background-image: url('${data.imagen}');` : '';
-          const claseImagen = tieneImagen ? 'con-imagen' : '';
-          html += `
-            <div class="categoria ${claseImagen}" style="${estiloFondo}" data-id="${id}">
-              <div class="categoria-footer">
-                <span>${data.nombre}</span>
-                <button class="btn-eliminar" data-id="${id}" aria-label="Eliminar">✕</button>
-              </div>
-            </div>
-          `;
-        });
-        contenedor.innerHTML = html;
-
-        // Eventos de eliminar
-        document.querySelectorAll('.btn-eliminar').forEach(btn => {
-          btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const id = this.dataset.id;
-            if (confirm('¿Eliminar esta categoría?')) {
-              eliminarCategoria(id);
-            }
-          });
-        });
-      }).catch(error => {
-        console.error('Error al cargar categorías:', error);
-        contenedor.innerHTML = `<p style="color:red;">Error al cargar: ${error.message}</p>`;
-      });
-    }
-
-    function agregarCategoria(nombre, imagenBase64) {
-      const ref = getCategoriasRef();
-      if (!ref) return;
-      ref.add({
-        nombre: nombre.trim(),
-        imagen: imagenBase64 || '',
-        fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(() => {
-        renderizarCategorias();
-      }).catch(error => {
-        console.error('Error al agregar:', error);
-        alert('Error al guardar: ' + error.message);
-      });
-    }
-
-    function eliminarCategoria(id) {
-      const ref = getCategoriasRef();
-      if (!ref) return;
-      ref.doc(id).delete().then(() => {
-        renderizarCategorias();
-      }).catch(error => {
-        console.error('Error al eliminar:', error);
-        alert('Error al eliminar: ' + error.message);
-      });
-    }
-
-    // =====================================================
-    // 6. MANEJO DE MODAL
-    // =====================================================
-    function abrirModal() {
-      modalCategoria.classList.remove('hidden');
-      nombreCategoria.value = '';
-      imagenCategoria.value = '';
-      setTimeout(() => nombreCategoria.focus(), 100);
-    }
-
-    function cerrarModal() {
-      modalCategoria.classList.add('hidden');
-      formCategoria.reset();
-    }
-
-    formCategoria.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const nombre = nombreCategoria.value.trim();
-      if (!nombre) { alert('El nombre es obligatorio'); return; }
-      const file = imagenCategoria.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          agregarCategoria(nombre, event.target.result);
-          cerrarModal();
-        };
-        reader.readAsDataURL(file);
-      } else {
-        agregarCategoria(nombre, '');
-        cerrarModal();
-      }
-    });
-
-    modalCancel.addEventListener('click', cerrarModal);
-    modalCategoria.addEventListener('click', (e) => {
-      if (e.target === modalCategoria) cerrarModal();
-    });
-    dockAddBtn.addEventListener('click', abrirModal);
-
-    // =====================================================
-    // 7. CONTROL DE SESIÓN (onAuthStateChanged)
-    // =====================================================
-    auth.onAuthStateChanged(user => {
-      currentUser = user;
-      if (user) {
-        // Usuario autenticado
-        pageAuth.classList.add('hidden-page');
-        pageCategorias.classList.remove('hidden-page');
-        userNameSpan.textContent = user.displayName || user.email || 'Usuario';
-        // Cargar categorías
-        renderizarCategorias();
-        // Escuchar cambios en tiempo real (opcional)
-        // Podríamos usar onSnapshot, pero para simplificar usamos get() cada vez.
-      } else {
-        // No autenticado
-        pageAuth.classList.remove('hidden-page');
-        pageCategorias.classList.add('hidden-page');
-        // Limpiar categorías
-        contenedor.innerHTML = '';
-        userNameSpan.textContent = 'Invitado';
-        // Resetear errores
-        authError.textContent = '';
-      }
-    });
-
-    // =====================================================
-    // 8. EVENTOS DE LA UI
-    // =====================================================
-    authForm.addEventListener('submit', handleAuthSubmit);
-    authSwitchLink.addEventListener('click', toggleAuthMode);
-    btnGoogle.addEventListener('click', loginWithGoogle);
-    btnLogout.addEventListener('click', logout);
-
-    // =====================================================
-    // 9. INICIALIZAR (modo login por defecto)
-    // =====================================================
-    // El estado de autenticación disparará la UI correcta.
-    // Si el usuario ya estaba logueado, onAuthStateChanged lo manejará.
-
-    console.log('FINDORA con Firebase Auth y Firestore cargado.');
-  </script>
+  <!-- CARGA EL MÓDULO PRINCIPAL -->
+  <script type="module" src="app.js"></script>
 </body>
 </html>
