@@ -1,36 +1,69 @@
-const CACHE_NAME = 'nuestro-hogar-v10-limpio';
+// sw.js - Service Worker para FINDORA
 
-// Instalación inmediata
+const CACHE_NAME = 'findora-v1';
+const urlsToCache = [
+  '/',
+  '/index.html',
+  '/perfil.html',
+  '/categorias.html',
+  '/configuracion.html',
+  '/assets/styles.css',
+  '/app.js',
+  '/Kiltier-Regular.otf',
+  '/Kiltier-Regular.ttf',
+  '/Kiltier-Regular.woff2'
+];
+
+// Instalación: cachear recursos estáticos
 self.addEventListener('install', (event) => {
-  self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => {
+        console.log('Cache abierto');
+        return cache.addAll(urlsToCache);
+      })
+      .then(() => self.skipWaiting())
+  );
 });
 
-// Al activarse: Destruye toda la caché vieja atrapada
+// Activación: eliminar caches antiguos
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
+    caches.keys().then((cacheNames) => {
       return Promise.all(
-        keys.map((key) => caches.delete(key))
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
       );
     }).then(() => self.clients.claim())
   );
 });
 
-// Busca en internet primero; si no hay red, usa la caché
+// Estrategia: stale-while-revalidate
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
-
   event.respondWith(
-    fetch(event.request)
-      .then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
-          const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
+    caches.match(event.request)
+      .then((cachedResponse) => {
+        const fetchPromise = fetch(event.request)
+          .then((networkResponse) => {
+            // Actualizar cache con la respuesta de red
+            if (networkResponse && networkResponse.status === 200) {
+              const clone = networkResponse.clone();
+              caches.open(CACHE_NAME).then((cache) => {
+                cache.put(event.request, clone);
+              });
+            }
+            return networkResponse;
+          })
+          .catch(() => {
+            // Si falla la red y no hay cache, mostrar página offline
+            if (event.request.mode === 'navigate') {
+              return caches.match('/index.html');
+            }
           });
-        }
-        return networkResponse;
+        return cachedResponse || fetchPromise;
       })
-      .catch(() => caches.match(event.request))
   );
 });
