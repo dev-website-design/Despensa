@@ -1,5 +1,5 @@
 // =====================================================
-// app.js - Modo COLABORATIVO con APODOS personalizados
+// app.js - Modo COLABORATIVO con APODOS y Navegación
 // =====================================================
 
 const firebaseConfig = {
@@ -17,9 +17,14 @@ if (!firebase.apps.length) {
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// DOM ELEMENTS
+// DOM ELEMENTS (Páginas y Dock)
 const pageAuth = document.getElementById('page-auth');
 const pageCategorias = document.getElementById('page-categorias');
+const pageConfig = document.getElementById('page-config');
+const dock = document.getElementById('mainDock');
+const dockItems = document.querySelectorAll('.dock-item');
+
+// DOM ELEMENTS (Formularios y demás)
 const authForm = document.getElementById('authForm');
 const authEmail = document.getElementById('authEmail');
 const authPassword = document.getElementById('authPassword');
@@ -38,9 +43,8 @@ const nombreCategoria = document.getElementById('nombreCategoria');
 const imagenCategoria = document.getElementById('imagenCategoria');
 const modalCancel = document.getElementById('modalCancel');
 const dockAddBtn = document.getElementById('dockAddBtn');
-const dock = document.getElementById('mainDock'); // Seleccionamos el Dock
 
-// ELEMENTOS DEL MODAL DE APODO
+// DOM ELEMENTS (Modal de Apodo)
 const modalNickname = document.getElementById('modalNickname');
 const formNickname = document.getElementById('formNickname');
 const inputNickname = document.getElementById('inputNickname');
@@ -53,7 +57,38 @@ let unsubscribeCategorias = null;
 let unsubscribeUser = null;
 let currentNickname = null; 
 
-// --- AUTENTICACIÓN ---
+// ==========================================
+// LÓGICA DE NAVEGACIÓN (Categorías / Configuración)
+// ==========================================
+function switchPage(pageId) {
+  // Ocultar todas las páginas interiores
+  if (pageCategorias) pageCategorias.classList.add('hidden-page');
+  if (pageConfig) pageConfig.classList.add('hidden-page');
+  
+  // Mostrar la página seleccionada
+  if (pageId === 'categorias' && pageCategorias) {
+    pageCategorias.classList.remove('hidden-page');
+  } else if (pageId === 'config' && pageConfig) {
+    pageConfig.classList.remove('hidden-page');
+  }
+
+  // Actualizar el estado de los botones del Dock
+  dockItems.forEach(item => item.classList.remove('active'));
+  const activeDock = document.querySelector(`.dock-item[data-page="${pageId}"]`);
+  if (activeDock) activeDock.classList.add('active');
+}
+
+// Escuchar los clics en los botones del Dock
+dockItems.forEach(item => {
+  item.addEventListener('click', function() {
+    const page = this.dataset.page;
+    if (page) switchPage(page);
+  });
+});
+
+// ==========================================
+// AUTENTICACIÓN
+// ==========================================
 function toggleAuthMode() {
   isLogin = !isLogin;
   authTitle.textContent = isLogin ? 'Iniciar Sesión' : 'Crear Cuenta';
@@ -101,7 +136,9 @@ async function loginWithGoogle() {
 
 function logout() { auth.signOut(); }
 
-// --- CATEGORÍAS (ESTRUCTURA COMPARTIDA) ---
+// ==========================================
+// CATEGORÍAS (ESTRUCTURA COMPARTIDA)
+// ==========================================
 function getCategoriasRef() {
   return db.collection('categorias_compartidas');
 }
@@ -174,7 +211,9 @@ function agregarCategoria(nombre, imagenBase64) {
   });
 }
 
-// --- MANEJO DE APODO EN FIRESTORE ---
+// ==========================================
+// MANEJO DE APODO EN FIRESTORE
+// ==========================================
 function suscribirApodo(user) {
   if (unsubscribeUser) {
     unsubscribeUser();
@@ -219,7 +258,9 @@ function guardarApodo(nuevoApodo) {
   });
 }
 
-// --- MODAL DE CATEGORÍAS ---
+// ==========================================
+// MODAL DE CATEGORÍAS
+// ==========================================
 function abrirModal() {
   modalCategoria.classList.remove('hidden');
   nombreCategoria.value = '';
@@ -251,7 +292,9 @@ modalCancel.addEventListener('click', cerrarModal);
 modalCategoria.addEventListener('click', (e) => { if (e.target === modalCategoria) cerrarModal(); });
 dockAddBtn.addEventListener('click', abrirModal);
 
-// --- MODAL DE APODO ---
+// ==========================================
+// MODAL DE APODO
+// ==========================================
 function abrirModalNickname() {
   modalNickname.classList.remove('hidden');
   inputNickname.value = currentNickname || '';
@@ -272,7 +315,9 @@ modalNickCancel.addEventListener('click', cerrarModalNickname);
 modalNickname.addEventListener('click', (e) => { if (e.target === modalNickname) cerrarModalNickname(); });
 
 
-// --- ESTADO DE SESIÓN ---
+// ==========================================
+// ESTADO DE SESIÓN
+// ==========================================
 auth.onAuthStateChanged(user => {
   if (unsubscribeCategorias) { unsubscribeCategorias(); unsubscribeCategorias = null; }
   if (unsubscribeUser) { unsubscribeUser(); unsubscribeUser = null; }
@@ -280,16 +325,23 @@ auth.onAuthStateChanged(user => {
   currentUser = user;
   if (user) {
     pageAuth.classList.add('hidden-page');
-    pageCategorias.classList.remove('hidden-page');
+    pageCategorias.classList.remove('hidden-page'); // Mostrar categorías al loguearse
+    if (pageConfig) pageConfig.classList.add('hidden-page'); // Ocultar config por si acaso
+    
     suscribirApodo(user);
     suscribirCategorias();
     
     // Mostramos el Dock si el usuario está logueado
     if (dock) dock.classList.remove('hidden-page');
+    // Resetear el botón activo del dock
+    dockItems.forEach(item => item.classList.remove('active'));
+    const activeItem = document.querySelector('.dock-item[data-page="categorias"]');
+    if (activeItem) activeItem.classList.add('active');
 
   } else {
     pageAuth.classList.remove('hidden-page');
     pageCategorias.classList.add('hidden-page');
+    if (pageConfig) pageConfig.classList.add('hidden-page');
     contenedor.innerHTML = '';
     userNameSpan.textContent = 'Invitado';
     currentNickname = null;
@@ -300,10 +352,12 @@ auth.onAuthStateChanged(user => {
   }
 });
 
-// --- EVENTOS UI ---
+// ==========================================
+// EVENTOS UI
+// ==========================================
 authForm.addEventListener('submit', handleAuthSubmit);
 authSwitchLink.addEventListener('click', toggleAuthMode);
 btnGoogle.addEventListener('click', loginWithGoogle);
 btnLogout.addEventListener('click', logout);
 
-console.log('FINDORA Colaborativo con Apodos cargado.');
+console.log('FINDORA Colaborativo con Apodos y Navegación cargado.');
