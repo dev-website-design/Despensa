@@ -2,221 +2,76 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Configuración - Despensa</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Configuración · FINDORA</title>
+  <meta name="description" content="Preferencias y ajustes de tu cuenta en FINDORA.">
   <link rel="stylesheet" href="assets/styles.css">
-
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: #ffd1dc;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    .app-container {
-      max-width: 100% !important;
-      width: 100% !important;
-      margin: 0 !important;
-      padding: 16px !important;
-      padding-bottom: 100px !important;
-      background: transparent !important;
-      box-shadow: none !important;
-      border-radius: 0 !important;
-      border: none !important;
-      box-sizing: border-box;
-    }
-
-    /* Estilos de la sección de configuración */
-    .config-section {
-      background: #ffffff;
-      border-radius: 24px;
-      padding: 20px;
-      box-shadow: 0 10px 25px rgba(42, 12, 27, 0.05);
-      margin-bottom: 16px;
-    }
-
-    .config-title {
-      font-size: 18px;
-      font-weight: 800;
-      color: #2A0C1B;
-      margin-top: 0;
-      margin-bottom: 12px;
-    }
-
-    .config-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid #f0e1e6;
-      color: #2A0C1B;
-      font-size: 15px;
-    }
-
-    .config-item:last-child {
-      border-bottom: none;
-    }
-
-    /* Barra o Dock Flotante Inferior */
-    .floating-dock {
-      position: fixed !important;
-      bottom: 20px !important;
-      left: 50% !important;
-      transform: translateX(-50%) !important;
-      width: calc(100% - 32px) !important;
-      max-width: 400px !important;
-      height: 52px !important;
-      padding: 0 8px !important;
-      z-index: 99;
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      background-color: #2A0C1B !important;
-      border-radius: 26px !important;
-      box-shadow: 0 10px 25px rgba(42, 12, 27, 0.2) !important;
-    }
-
-    .dock-indicator {
-      position: absolute;
-      top: 4px;
-      left: 0;
-      background-color: #FFE0EB;
-      border-radius: 50%;
-      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.35s, height 0.35s, opacity 0.2s;
-      pointer-events: none;
-      opacity: 0;
-      z-index: 1;
-    }
-
-    .dock-item {
-      position: relative;
-      z-index: 2;
-      transform: scale(0.88);
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      color: #bfa5b3 !important; /* Color grisáceo/rosado para iconos inactivos */
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: color 0.2s;
-    }
-
-    .dock-item.active {
-      color: #2A0C1B !important;
-      transform: scale(0.98);
-    }
+    .config-section { background: var(--white); border-radius: 28px; padding: 20px; box-shadow: 0 10px 25px rgba(42, 12, 27, 0.05); margin-bottom: 16px; }
+    .config-title { font-size: 1.2rem; font-weight: 600; color: var(--black-cherry); margin-top: 0; margin-bottom: 12px; }
+    .config-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0e1e6; color: var(--black-cherry); font-size: 1rem; }
+    .config-item:last-child { border-bottom: none; }
+    .config-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--perfect-rose); cursor: pointer; }
   </style>
 </head>
 <body>
-
   <div class="app-container">
-    <!-- Tarjeta Principal Superior -->
-    <div class="hero-card" style="background: white; border-radius: 24px; padding: 20px; margin-bottom: 20px;">
+    <div class="hero-card">
       <div class="hero-info">
-        <h1 class="hero-title" style="margin:0; font-size: 24px; color: #2A0C1B;">Configuración</h1>
-        <p class="hero-subtitle" id="user-greeting" style="color: gray; margin-top: 5px;">Preferencias de la cuenta</p>
+        <h1 class="hero-title">⚙️ Configuración</h1>
+        <p class="hero-subtitle" id="user-greeting" style="color: var(--perfect-rose); margin-top: 5px;">Preferencias de la cuenta</p>
       </div>
     </div>
-
-    <!-- Sección de Opciones -->
     <div class="config-section">
       <h2 class="config-title">General</h2>
       <div class="config-item">
-        <span>Modo Oscuro</span>
-        <input type="checkbox" style="cursor: pointer;">
+        <span>🌙 Modo Oscuro</span>
+        <input type="checkbox" id="darkModeToggle">
       </div>
       <div class="config-item">
-        <span>Notificaciones</span>
-        <input type="checkbox" checked style="cursor: pointer;">
+        <span>🔔 Notificaciones</span>
+        <input type="checkbox" id="notificationsToggle" checked>
+      </div>
+    </div>
+    <div class="config-section">
+      <h2 class="config-title">Acerca de</h2>
+      <div class="config-item" style="border-bottom: none; justify-content: center; font-size: 0.9rem; color: #8e8e93;">
+        <span>FINDORA v1.0 · Despensa inteligente</span>
       </div>
     </div>
   </div>
 
-  <!-- Dock Flotante Inferior (Sin el botón +) -->
-  <nav class="floating-dock">
-    <div id="dock-indicator" class="dock-indicator"></div>
+  <!-- DOCK FLOTANTE -->
+  <div class="floating-dock" id="mainDock">
+    <a href="index.html" class="dock-item" aria-label="Inicio"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg></a>
+    <a href="categorias.html" class="dock-item" aria-label="Categorías"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></a>
+    <button class="dock-add-btn" aria-label="Añadir categoría" id="addCategoryBtn">+</button>
+    <a href="configuracion.html" class="dock-item active" aria-label="Configuración"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a>
+    <a href="perfil.html" class="dock-item" aria-label="Perfil"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></a>
+  </div>
 
-    <a href="perfil.html" class="dock-item" aria-label="Perfil">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
-      </svg>
-    </a>
-
-    <a href="categorias.html" class="dock-item" aria-label="Categorías">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5H5v6zm6-6v6h5V5h-5z" />
-      </svg>
-    </a>
-
-    <button class="dock-item" aria-label="Lista" type="button">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-        <line x1="8" y1="6" x2="21" y2="6"></line>
-        <line x1="8" y1="12" x2="21" y2="12"></line>
-        <line x1="8" y1="18" x2="21" y2="18"></line>
-        <line x1="3" y1="6" x2="3.01" y2="6"></line>
-        <line x1="3" y1="12" x2="3.01" y2="12"></line>
-        <line x1="3" y1="18" x2="3.01" y2="18"></line>
-      </svg>
-    </button>
-
-    <!-- Configuración activa -->
-    <a href="configuracion.html" class="dock-item active" aria-label="Configuración">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-      </svg>
-    </a>
-  </nav>
-
-  <script type="module" src="app.js"></script>
-
-  <!-- Script para la animación de la barra inferior -->
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const dock = document.querySelector('.floating-dock');
-      const indicator = document.getElementById('dock-indicator');
-      const dockItems = document.querySelectorAll('.floating-dock .dock-item');
+    // Persistencia de opciones
+    const darkToggle = document.getElementById('darkModeToggle');
+    const notifToggle = document.getElementById('notificationsToggle');
 
-      function moverIndicador(elemento) {
-        if (!elemento || !indicator || !dock) return;
-        const dockRect = dock.getBoundingClientRect();
-        const itemRect = elemento.getBoundingClientRect();
+    // Cargar estado guardado
+    const savedDark = localStorage.getItem('darkMode');
+    const savedNotif = localStorage.getItem('notifications');
+    if (savedDark === 'true') { darkToggle.checked = true; document.body.classList.add('dark-mode'); }
+    if (savedNotif === 'false') notifToggle.checked = false;
 
-        const left = itemRect.left - dockRect.left;
-        const top = itemRect.top - dockRect.top;
+    darkToggle.addEventListener('change', () => {
+      localStorage.setItem('darkMode', darkToggle.checked);
+      document.body.classList.toggle('dark-mode', darkToggle.checked);
+    });
+    notifToggle.addEventListener('change', () => {
+      localStorage.setItem('notifications', notifToggle.checked);
+    });
 
-        indicator.style.width = `${itemRect.width}px`;
-        indicator.style.height = `${itemRect.height}px`;
-        indicator.style.transform = `translate(${left}px, ${top}px)`;
-        indicator.style.opacity = '1';
-      }
-
-      const activeInicial = document.querySelector('.floating-dock .dock-item.active');
-      if (activeInicial) {
-        setTimeout(() => moverIndicador(activeInicial), 100);
-      }
-
-      dockItems.forEach(item => {
-        item.addEventListener('click', (e) => {
-          const href = item.getAttribute('href');
-          if (href && href !== '#') {
-            e.preventDefault();
-            dockItems.forEach(i => i.classList.remove('active'));
-            item.classList.add('active');
-            moverIndicador(item);
-            setTimeout(() => {
-              window.location.href = href;
-            }, 250);
-          }
-        });
-      });
-
-      window.addEventListener('resize', () => {
-        const itemActivo = document.querySelector('.floating-dock .dock-item.active');
-        if (itemActivo) moverIndicador(itemActivo);
-      });
+    // El dock add button redirige a categorías con modal abierto (opcional)
+    document.getElementById('addCategoryBtn').addEventListener('click', () => {
+      window.location.href = 'categorias.html';
     });
   </script>
 </body>
