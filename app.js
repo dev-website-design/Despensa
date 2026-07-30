@@ -1,5 +1,5 @@
 // =====================================================
-// app.js - Compat con Firebase Auth + Firestore
+// app.js - Modo COLABORATIVO (Todos ven las mismas categorías)
 // =====================================================
 
 const firebaseConfig = {
@@ -91,23 +91,20 @@ async function loginWithGoogle() {
 
 function logout() { auth.signOut(); }
 
-// --- CATEGORÍAS ---
+// --- CATEGORÍAS (ESTRUCTURA COMPARTIDA) ---
 function getCategoriasRef() {
-  if (!currentUser) return null;
-  return db.collection('categorias').doc(currentUser.uid).collection('items');
+  // 🔥 CAMBIO IMPORTANTE: Ya no usamos el UID del usuario, todos escriben en la misma colección global
+  return db.collection('categorias_compartidas');
 }
 
 function suscribirCategorias() {
   if (unsubscribeCategorias) { unsubscribeCategorias(); unsubscribeCategorias = null; }
   const ref = getCategoriasRef();
-  if (!ref) {
-    contenedor.innerHTML = '<p style="text-align:center; color:var(--perfect-rose);">Inicia sesión para ver tus categorías</p>';
-    return;
-  }
-
+  
+  // Escuchamos los cambios en tiempo real
   unsubscribeCategorias = ref.orderBy('fechaCreacion', 'asc').onSnapshot((snapshot) => {
     if (snapshot.empty) {
-      contenedor.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: var(--perfect-rose);">No hay categorías. ¡Añade una!</p>`;
+      contenedor.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: var(--perfect-rose);">No hay categorías compartidas. ¡Añade la primera!</p>`;
       return;
     }
     let html = '';
@@ -117,10 +114,14 @@ function suscribirCategorias() {
       const tieneImagen = data.imagen && data.imagen.startsWith('data:image');
       const estiloFondo = tieneImagen ? `background-image: url('${data.imagen}');` : '';
       const claseImagen = tieneImagen ? 'con-imagen' : '';
+      
+      // Mostramos quién lo agregó (usando el nombre del perfil del localStorage)
+      const agregadoPor = data.agregadoPor ? ` (por ${data.agregadoPor})` : '';
+
       html += `
         <div class="categoria ${claseImagen}" style="${estiloFondo}" data-id="${id}">
           <div class="categoria-footer">
-            <span>${data.nombre}</span>
+            <span>${data.nombre}${agregadoPor}</span>
             <button class="btn-eliminar" data-id="${id}" aria-label="Eliminar">✕</button>
           </div>
         </div>
@@ -148,20 +149,19 @@ function suscribirCategorias() {
 
 function agregarCategoria(nombre, imagenBase64) {
   const ref = getCategoriasRef();
-  // VALIDACIÓN DE USUARIO:
-  if (!ref) {
-    alert("Error: No tienes una sesión activa. Por favor, inicia sesión.");
-    return;
-  }
+  
+  // 🔥 OBTENEMOS EL PERFIL QUE ESTÁ ACTIVO EN ESTE MOMENTO
+  const perfilActivo = localStorage.getItem('usuarioActivo') || 'Invitado';
+
   ref.add({
     nombre: nombre.trim(),
     imagen: imagenBase64 || '',
+    agregadoPor: perfilActivo, // Guardamos quién lo añadió para referencia en la UI
     fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
   }).catch(error => {
     console.error('Error al agregar:', error);
-    // ESTO TE DIRÁ SI EL PROBLEMA SON LOS PERMISOS:
     if (error.code === 'permission-denied') {
-      alert("⚠️ ERROR DE PERMISOS DE FIRESTORE. Ve a la consola de Firebase > Firestore > Reglas y pega las reglas de seguridad correctas.");
+      alert("⚠️ ERROR DE PERMISOS. Ve a Firebase > Firestore > Reglas y pega las reglas de seguridad colaborativas.");
     } else {
       alert('Error al guardar: ' + error.message);
     }
@@ -224,4 +224,4 @@ authSwitchLink.addEventListener('click', toggleAuthMode);
 btnGoogle.addEventListener('click', loginWithGoogle);
 btnLogout.addEventListener('click', logout);
 
-console.log('FINDORA cargado.');
+console.log('FINDORA Colaborativo cargado.');
