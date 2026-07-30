@@ -1,5 +1,5 @@
 // =====================================================
-// app.js - Modo COLABORATIVO (Todos ven las mismas categorías)
+// app.js - Modo COLABORATIVO usando Firebase Auth
 // =====================================================
 
 const firebaseConfig = {
@@ -93,7 +93,7 @@ function logout() { auth.signOut(); }
 
 // --- CATEGORÍAS (ESTRUCTURA COMPARTIDA) ---
 function getCategoriasRef() {
-  // 🔥 CAMBIO IMPORTANTE: Ya no usamos el UID del usuario, todos escriben en la misma colección global
+  // Todos escriben en la misma colección global
   return db.collection('categorias_compartidas');
 }
 
@@ -101,7 +101,6 @@ function suscribirCategorias() {
   if (unsubscribeCategorias) { unsubscribeCategorias(); unsubscribeCategorias = null; }
   const ref = getCategoriasRef();
   
-  // Escuchamos los cambios en tiempo real
   unsubscribeCategorias = ref.orderBy('fechaCreacion', 'asc').onSnapshot((snapshot) => {
     if (snapshot.empty) {
       contenedor.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: var(--perfect-rose);">No hay categorías compartidas. ¡Añade la primera!</p>`;
@@ -115,7 +114,6 @@ function suscribirCategorias() {
       const estiloFondo = tieneImagen ? `background-image: url('${data.imagen}');` : '';
       const claseImagen = tieneImagen ? 'con-imagen' : '';
       
-      // Mostramos quién lo agregó (usando el nombre del perfil del localStorage)
       const agregadoPor = data.agregadoPor ? ` (por ${data.agregadoPor})` : '';
 
       html += `
@@ -150,13 +148,13 @@ function suscribirCategorias() {
 function agregarCategoria(nombre, imagenBase64) {
   const ref = getCategoriasRef();
   
-  // 🔥 OBTENEMOS EL PERFIL QUE ESTÁ ACTIVO EN ESTE MOMENTO
-  const perfilActivo = localStorage.getItem('usuarioActivo') || 'Invitado';
+  // 🔥 AHORA USA EL NOMBRE REAL DE LA CUENTA DE FIREBASE
+  const perfilActivo = currentUser ? (currentUser.displayName || currentUser.email) : 'Invitado';
 
   ref.add({
     nombre: nombre.trim(),
     imagen: imagenBase64 || '',
-    agregadoPor: perfilActivo, // Guardamos quién lo añadió para referencia en la UI
+    agregadoPor: perfilActivo, // Se guarda con el nombre de la cuenta
     fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
   }).catch(error => {
     console.error('Error al agregar:', error);
