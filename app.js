@@ -1,10 +1,7 @@
 // =====================================================
-// app.js - Compat con Firebase Auth + Firestore (Validado)
+// app.js - Modo COLABORATIVO con APODOS personalizados
 // =====================================================
 
-// =====================================================
-// 1. CONFIGURACIÓN DE FIREBASE (TUS CREDENCIALES)
-// =====================================================
 const firebaseConfig = {
   apiKey: "AIzaSyDfIQXFFDGoBMvTIOT52nZGVUc-pFJGFs4",
   authDomain: "hogar-e266a.firebaseapp.com",
@@ -14,18 +11,13 @@ const firebaseConfig = {
   appId: "1:534168977173:web:f3900fae93c7dd520b331c"
 };
 
-// =====================================================
-// 2. INICIALIZAR FIREBASE (usamos Firestore y Auth)
-// =====================================================
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// =====================================================
-// 3. DOM ELEMENTS
-// =====================================================
+// DOM ELEMENTS
 const pageAuth = document.getElementById('page-auth');
 const pageCategorias = document.getElementById('page-categorias');
 const authForm = document.getElementById('authForm');
@@ -46,17 +38,22 @@ const nombreCategoria = document.getElementById('nombreCategoria');
 const imagenCategoria = document.getElementById('imagenCategoria');
 const modalCancel = document.getElementById('modalCancel');
 const dockAddBtn = document.getElementById('dockAddBtn');
+const dock = document.getElementById('mainDock'); // Seleccionamos el Dock
 
-// =====================================================
-// 4. ESTADO GLOBAL
-// =====================================================
-let isLogin = true; // true = login, false = registro
+// ELEMENTOS DEL MODAL DE APODO
+const modalNickname = document.getElementById('modalNickname');
+const formNickname = document.getElementById('formNickname');
+const inputNickname = document.getElementById('inputNickname');
+const modalNickCancel = document.getElementById('modalNickCancel');
+const btnOpenNicknameModal = document.getElementById('btnOpenNicknameModal');
+
+let isLogin = true;
 let currentUser = null;
-let unsubscribeCategorias = null; // Para cancelar la escucha al hacer logout
+let unsubscribeCategorias = null;
+let unsubscribeUser = null;
+let currentNickname = null; 
 
-// =====================================================
-// 5. LÓGICA DE AUTENTICACIÓN (¡CON VALIDACIÓN!)
-// =====================================================
+// --- AUTENTICACIÓN ---
 function toggleAuthMode() {
   isLogin = !isLogin;
   authTitle.textContent = isLogin ? 'Iniciar Sesión' : 'Crear Cuenta';
@@ -71,12 +68,10 @@ async function handleAuthSubmit(e) {
   const email = authEmail.value.trim();
   const password = authPassword.value.trim();
 
-  // ---------- ESTA VALIDACIÓN EVITA EL ERROR 400 ----------
   if (!email || !password) {
     authError.textContent = 'Por favor, completa el correo y la contraseña.';
-    return; // Corta la ejecución aquí
+    return;
   }
-  // --------------------------------------------------------
 
   authError.textContent = 'Cargando...';
   try {
@@ -87,16 +82,10 @@ async function handleAuthSubmit(e) {
     }
   } catch (error) {
     console.error(error);
-    // Mensajes de error más amigables
-    if (error.code === 'auth/email-already-in-use') {
-      authError.textContent = 'Este correo ya está registrado.';
-    } else if (error.code === 'auth/user-not-found') {
-      authError.textContent = 'Usuario no encontrado.';
-    } else if (error.code === 'auth/wrong-password') {
-      authError.textContent = 'Contraseña incorrecta.';
-    } else {
-      authError.textContent = error.message;
-    }
+    if (error.code === 'auth/email-already-in-use') authError.textContent = 'Este correo ya está registrado.';
+    else if (error.code === 'auth/user-not-found') authError.textContent = 'Usuario no encontrado.';
+    else if (error.code === 'auth/wrong-password') authError.textContent = 'Contraseña incorrecta.';
+    else authError.textContent = error.message;
   }
 }
 
@@ -110,32 +99,20 @@ async function loginWithGoogle() {
   }
 }
 
-function logout() {
-  auth.signOut();
-}
+function logout() { auth.signOut(); }
 
-// =====================================================
-// 6. FUNCIONES DE CATEGORÍAS (Firestore + tiempo real)
-// =====================================================
+// --- CATEGORÍAS (ESTRUCTURA COMPARTIDA) ---
 function getCategoriasRef() {
-  if (!currentUser) return null;
-  return db.collection('categorias').doc(currentUser.uid).collection('items');
+  return db.collection('categorias_compartidas');
 }
 
 function suscribirCategorias() {
-  if (unsubscribeCategorias) {
-    unsubscribeCategorias();
-    unsubscribeCategorias = null;
-  }
+  if (unsubscribeCategorias) { unsubscribeCategorias(); unsubscribeCategorias = null; }
   const ref = getCategoriasRef();
-  if (!ref) {
-    contenedor.innerHTML = '<p style="text-align:center; color:var(--perfect-rose);">Usuario no autenticado</p>';
-    return;
-  }
-
+  
   unsubscribeCategorias = ref.orderBy('fechaCreacion', 'asc').onSnapshot((snapshot) => {
     if (snapshot.empty) {
-      contenedor.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: var(--perfect-rose);">No hay categorías. ¡Añade una!</p>`;
+      contenedor.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: var(--perfect-rose);">No hay categorías compartidas. ¡Añade la primera!</p>`;
       return;
     }
     let html = '';
@@ -145,10 +122,13 @@ function suscribirCategorias() {
       const tieneImagen = data.imagen && data.imagen.startsWith('data:image');
       const estiloFondo = tieneImagen ? `background-image: url('${data.imagen}');` : '';
       const claseImagen = tieneImagen ? 'con-imagen' : '';
+      
+      const agregadoPor = data.agregadoPor ? ` (por ${data.agregadoPor})` : '';
+
       html += `
         <div class="categoria ${claseImagen}" style="${estiloFondo}" data-id="${id}">
           <div class="categoria-footer">
-            <span>${data.nombre}</span>
+            <span>${data.nombre}${agregadoPor}</span>
             <button class="btn-eliminar" data-id="${id}" aria-label="Eliminar">✕</button>
           </div>
         </div>
@@ -170,38 +150,86 @@ function suscribirCategorias() {
     });
   }, (error) => {
     console.error('Error en tiempo real:', error);
-    contenedor.innerHTML = `<p style="color:red;">Error de conexión: ${error.message}</p>`;
+    contenedor.innerHTML = `<p style="color:red;">Error de conexión (Revisa reglas de Firestore): ${error.message}</p>`;
   });
 }
 
 function agregarCategoria(nombre, imagenBase64) {
   const ref = getCategoriasRef();
-  if (!ref) return;
+  
+  const nombreMostrar = currentNickname || (currentUser ? currentUser.email : 'Invitado');
+
   ref.add({
     nombre: nombre.trim(),
     imagen: imagenBase64 || '',
+    agregadoPor: nombreMostrar, 
     fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
   }).catch(error => {
     console.error('Error al agregar:', error);
-    alert('Error al guardar: ' + error.message);
+    if (error.code === 'permission-denied') {
+      alert("⚠️ ERROR DE PERMISOS. Ve a Firebase > Firestore > Reglas y pega las reglas de seguridad colaborativas.");
+    } else {
+      alert('Error al guardar: ' + error.message);
+    }
   });
 }
 
-// =====================================================
-// 7. MANEJO DEL MODAL
-// =====================================================
+// --- MANEJO DE APODO EN FIRESTORE ---
+function suscribirApodo(user) {
+  if (unsubscribeUser) {
+    unsubscribeUser();
+    unsubscribeUser = null;
+  }
+
+  const userRef = db.collection('usuarios').doc(user.uid);
+  
+  unsubscribeUser = userRef.onSnapshot((doc) => {
+    if (doc.exists) {
+      const data = doc.data();
+      if (data.apodo && data.apodo.trim() !== '') {
+        currentNickname = data.apodo;
+        userNameSpan.textContent = data.apodo; 
+      } else {
+        currentNickname = user.displayName || user.email;
+        userNameSpan.textContent = currentNickname;
+      }
+    } else {
+      currentNickname = user.displayName || user.email;
+      userNameSpan.textContent = currentNickname;
+    }
+  }, (error) => {
+    console.error("Error al obtener el apodo:", error);
+    userNameSpan.textContent = user.displayName || user.email;
+  });
+}
+
+function guardarApodo(nuevoApodo) {
+  if (!currentUser) return;
+  const userRef = db.collection('usuarios').doc(currentUser.uid);
+  
+  userRef.set({
+    apodo: nuevoApodo.trim()
+  }, { merge: true })
+  .then(() => {
+    cerrarModalNickname();
+  })
+  .catch((error) => {
+    console.error("Error al guardar apodo:", error);
+    alert("Hubo un error al guardar tu apodo: " + error.message);
+  });
+}
+
+// --- MODAL DE CATEGORÍAS ---
 function abrirModal() {
   modalCategoria.classList.remove('hidden');
   nombreCategoria.value = '';
   imagenCategoria.value = '';
   setTimeout(() => nombreCategoria.focus(), 100);
 }
-
 function cerrarModal() {
   modalCategoria.classList.add('hidden');
   formCategoria.reset();
 }
-
 formCategoria.addEventListener('submit', function(e) {
   e.preventDefault();
   const nombre = nombreCategoria.value.trim();
@@ -219,42 +247,63 @@ formCategoria.addEventListener('submit', function(e) {
     cerrarModal();
   }
 });
-
 modalCancel.addEventListener('click', cerrarModal);
-modalCategoria.addEventListener('click', (e) => {
-  if (e.target === modalCategoria) cerrarModal();
-});
+modalCategoria.addEventListener('click', (e) => { if (e.target === modalCategoria) cerrarModal(); });
 dockAddBtn.addEventListener('click', abrirModal);
 
-// =====================================================
-// 8. CONTROL DE SESIÓN (onAuthStateChanged)
-// =====================================================
+// --- MODAL DE APODO ---
+function abrirModalNickname() {
+  modalNickname.classList.remove('hidden');
+  inputNickname.value = currentNickname || '';
+  setTimeout(() => inputNickname.focus(), 100);
+}
+function cerrarModalNickname() {
+  modalNickname.classList.add('hidden');
+  formNickname.reset();
+}
+formNickname.addEventListener('submit', function(e) {
+  e.preventDefault();
+  const nuevoApodo = inputNickname.value.trim();
+  if (!nuevoApodo) { alert('El apodo no puede estar vacío'); return; }
+  guardarApodo(nuevoApodo);
+});
+btnOpenNicknameModal.addEventListener('click', abrirModalNickname);
+modalNickCancel.addEventListener('click', cerrarModalNickname);
+modalNickname.addEventListener('click', (e) => { if (e.target === modalNickname) cerrarModalNickname(); });
+
+
+// --- ESTADO DE SESIÓN ---
 auth.onAuthStateChanged(user => {
-  if (unsubscribeCategorias) {
-    unsubscribeCategorias();
-    unsubscribeCategorias = null;
-  }
+  if (unsubscribeCategorias) { unsubscribeCategorias(); unsubscribeCategorias = null; }
+  if (unsubscribeUser) { unsubscribeUser(); unsubscribeUser = null; }
+  
   currentUser = user;
   if (user) {
     pageAuth.classList.add('hidden-page');
     pageCategorias.classList.remove('hidden-page');
-    userNameSpan.textContent = user.displayName || user.email || 'Usuario';
+    suscribirApodo(user);
     suscribirCategorias();
+    
+    // Mostramos el Dock si el usuario está logueado
+    if (dock) dock.classList.remove('hidden-page');
+
   } else {
     pageAuth.classList.remove('hidden-page');
     pageCategorias.classList.add('hidden-page');
     contenedor.innerHTML = '';
     userNameSpan.textContent = 'Invitado';
+    currentNickname = null;
     authError.textContent = '';
+
+    // Ocultamos el Dock si el usuario NO está logueado
+    if (dock) dock.classList.add('hidden-page');
   }
 });
 
-// =====================================================
-// 9. EVENTOS DE LA UI (autenticación)
-// =====================================================
+// --- EVENTOS UI ---
 authForm.addEventListener('submit', handleAuthSubmit);
 authSwitchLink.addEventListener('click', toggleAuthMode);
 btnGoogle.addEventListener('click', loginWithGoogle);
 btnLogout.addEventListener('click', logout);
 
-console.log('FINDORA con Firebase Auth y sincronización en tiempo real cargado.');
+console.log('FINDORA Colaborativo con Apodos cargado.');
