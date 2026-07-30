@@ -1,10 +1,7 @@
 // =====================================================
-// app.js - Compat con Firebase Auth + Firestore (Validado)
+// app.js - Compat con Firebase Auth + Firestore
 // =====================================================
 
-// =====================================================
-// 1. CONFIGURACIÓN DE FIREBASE (TUS CREDENCIALES)
-// =====================================================
 const firebaseConfig = {
   apiKey: "AIzaSyDfIQXFFDGoBMvTIOT52nZGVUc-pFJGFs4",
   authDomain: "hogar-e266a.firebaseapp.com",
@@ -14,18 +11,13 @@ const firebaseConfig = {
   appId: "1:534168977173:web:f3900fae93c7dd520b331c"
 };
 
-// =====================================================
-// 2. INICIALIZAR FIREBASE (usamos Firestore y Auth)
-// =====================================================
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// =====================================================
-// 3. DOM ELEMENTS
-// =====================================================
+// DOM ELEMENTS
 const pageAuth = document.getElementById('page-auth');
 const pageCategorias = document.getElementById('page-categorias');
 const authForm = document.getElementById('authForm');
@@ -47,16 +39,11 @@ const imagenCategoria = document.getElementById('imagenCategoria');
 const modalCancel = document.getElementById('modalCancel');
 const dockAddBtn = document.getElementById('dockAddBtn');
 
-// =====================================================
-// 4. ESTADO GLOBAL
-// =====================================================
-let isLogin = true; // true = login, false = registro
+let isLogin = true;
 let currentUser = null;
-let unsubscribeCategorias = null; // Para cancelar la escucha al hacer logout
+let unsubscribeCategorias = null;
 
-// =====================================================
-// 5. LÓGICA DE AUTENTICACIÓN (¡CON VALIDACIÓN!)
-// =====================================================
+// --- AUTENTICACIÓN ---
 function toggleAuthMode() {
   isLogin = !isLogin;
   authTitle.textContent = isLogin ? 'Iniciar Sesión' : 'Crear Cuenta';
@@ -71,12 +58,10 @@ async function handleAuthSubmit(e) {
   const email = authEmail.value.trim();
   const password = authPassword.value.trim();
 
-  // ---------- ESTA VALIDACIÓN EVITA EL ERROR 400 ----------
   if (!email || !password) {
     authError.textContent = 'Por favor, completa el correo y la contraseña.';
-    return; // Corta la ejecución aquí
+    return;
   }
-  // --------------------------------------------------------
 
   authError.textContent = 'Cargando...';
   try {
@@ -87,16 +72,10 @@ async function handleAuthSubmit(e) {
     }
   } catch (error) {
     console.error(error);
-    // Mensajes de error más amigables
-    if (error.code === 'auth/email-already-in-use') {
-      authError.textContent = 'Este correo ya está registrado.';
-    } else if (error.code === 'auth/user-not-found') {
-      authError.textContent = 'Usuario no encontrado.';
-    } else if (error.code === 'auth/wrong-password') {
-      authError.textContent = 'Contraseña incorrecta.';
-    } else {
-      authError.textContent = error.message;
-    }
+    if (error.code === 'auth/email-already-in-use') authError.textContent = 'Este correo ya está registrado.';
+    else if (error.code === 'auth/user-not-found') authError.textContent = 'Usuario no encontrado.';
+    else if (error.code === 'auth/wrong-password') authError.textContent = 'Contraseña incorrecta.';
+    else authError.textContent = error.message;
   }
 }
 
@@ -110,26 +89,19 @@ async function loginWithGoogle() {
   }
 }
 
-function logout() {
-  auth.signOut();
-}
+function logout() { auth.signOut(); }
 
-// =====================================================
-// 6. FUNCIONES DE CATEGORÍAS (Firestore + tiempo real)
-// =====================================================
+// --- CATEGORÍAS ---
 function getCategoriasRef() {
   if (!currentUser) return null;
   return db.collection('categorias').doc(currentUser.uid).collection('items');
 }
 
 function suscribirCategorias() {
-  if (unsubscribeCategorias) {
-    unsubscribeCategorias();
-    unsubscribeCategorias = null;
-  }
+  if (unsubscribeCategorias) { unsubscribeCategorias(); unsubscribeCategorias = null; }
   const ref = getCategoriasRef();
   if (!ref) {
-    contenedor.innerHTML = '<p style="text-align:center; color:var(--perfect-rose);">Usuario no autenticado</p>';
+    contenedor.innerHTML = '<p style="text-align:center; color:var(--perfect-rose);">Inicia sesión para ver tus categorías</p>';
     return;
   }
 
@@ -170,38 +142,43 @@ function suscribirCategorias() {
     });
   }, (error) => {
     console.error('Error en tiempo real:', error);
-    contenedor.innerHTML = `<p style="color:red;">Error de conexión: ${error.message}</p>`;
+    contenedor.innerHTML = `<p style="color:red;">Error de conexión (Revisa reglas de Firestore): ${error.message}</p>`;
   });
 }
 
 function agregarCategoria(nombre, imagenBase64) {
   const ref = getCategoriasRef();
-  if (!ref) return;
+  // VALIDACIÓN DE USUARIO:
+  if (!ref) {
+    alert("Error: No tienes una sesión activa. Por favor, inicia sesión.");
+    return;
+  }
   ref.add({
     nombre: nombre.trim(),
     imagen: imagenBase64 || '',
     fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
   }).catch(error => {
     console.error('Error al agregar:', error);
-    alert('Error al guardar: ' + error.message);
+    // ESTO TE DIRÁ SI EL PROBLEMA SON LOS PERMISOS:
+    if (error.code === 'permission-denied') {
+      alert("⚠️ ERROR DE PERMISOS DE FIRESTORE. Ve a la consola de Firebase > Firestore > Reglas y pega las reglas de seguridad correctas.");
+    } else {
+      alert('Error al guardar: ' + error.message);
+    }
   });
 }
 
-// =====================================================
-// 7. MANEJO DEL MODAL
-// =====================================================
+// --- MODAL ---
 function abrirModal() {
   modalCategoria.classList.remove('hidden');
   nombreCategoria.value = '';
   imagenCategoria.value = '';
   setTimeout(() => nombreCategoria.focus(), 100);
 }
-
 function cerrarModal() {
   modalCategoria.classList.add('hidden');
   formCategoria.reset();
 }
-
 formCategoria.addEventListener('submit', function(e) {
   e.preventDefault();
   const nombre = nombreCategoria.value.trim();
@@ -219,21 +196,13 @@ formCategoria.addEventListener('submit', function(e) {
     cerrarModal();
   }
 });
-
 modalCancel.addEventListener('click', cerrarModal);
-modalCategoria.addEventListener('click', (e) => {
-  if (e.target === modalCategoria) cerrarModal();
-});
+modalCategoria.addEventListener('click', (e) => { if (e.target === modalCategoria) cerrarModal(); });
 dockAddBtn.addEventListener('click', abrirModal);
 
-// =====================================================
-// 8. CONTROL DE SESIÓN (onAuthStateChanged)
-// =====================================================
+// --- ESTADO DE SESIÓN ---
 auth.onAuthStateChanged(user => {
-  if (unsubscribeCategorias) {
-    unsubscribeCategorias();
-    unsubscribeCategorias = null;
-  }
+  if (unsubscribeCategorias) { unsubscribeCategorias(); unsubscribeCategorias = null; }
   currentUser = user;
   if (user) {
     pageAuth.classList.add('hidden-page');
@@ -249,12 +218,10 @@ auth.onAuthStateChanged(user => {
   }
 });
 
-// =====================================================
-// 9. EVENTOS DE LA UI (autenticación)
-// =====================================================
+// --- EVENTOS UI ---
 authForm.addEventListener('submit', handleAuthSubmit);
 authSwitchLink.addEventListener('click', toggleAuthMode);
 btnGoogle.addEventListener('click', loginWithGoogle);
 btnLogout.addEventListener('click', logout);
 
-console.log('FINDORA con Firebase Auth y sincronización en tiempo real cargado.');
+console.log('FINDORA cargado.');
