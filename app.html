@@ -89,12 +89,10 @@
 
     /* ========================================== */
     /* REGLA DE SEGURIDAD PARA OCULTAR EL DOCK   */
-    /* Mientras la pantalla de Login esté visible */
     /* ========================================== */
     #page-auth:not(.hidden-page) ~ #mainDock {
         display: none !important;
     }
-    /* ========================================== */
 
     @keyframes modalSpringPop { 0% { opacity: 0; transform: scale(0.65) translateY(40px); } 70% { opacity: 1; transform: scale(1.04) translateY(-4px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
     @keyframes fadeInBackdrop { from { opacity: 0; } to { opacity: 1; } }
