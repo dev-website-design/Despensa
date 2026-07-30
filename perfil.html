@@ -2,173 +2,364 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Perfil - Despensa</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Perfil · FINDORA</title>
+  <meta name="description" content="Selecciona o cambia tu perfil en FINDORA.">
+  
+  <!-- CSS global -->
   <link rel="stylesheet" href="assets/styles.css">
 
+  <!-- Estilos específicos para perfil (sin romper el global) -->
   <style>
-    html, body {
-      margin: 0 !important;
-      padding: 0 !important;
-      width: 100%;
-      height: 100%;
-      height: 100dvh;
-      background-color: #1a1a1c;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      overflow: hidden !important;
-    }
-
-    .app-container {
-      width: 100% !important;
-      max-width: 100% !important;
-      height: 100vh !important;
-      height: 100dvh !important;
-      margin: 0 !important;
-      padding: 16px !important;
-      background-color: #1a1a1c !important;
-      border-radius: 0 !important;
-      border: none !important;
-      box-shadow: none !important;
-      box-sizing: border-box;
+    /* Contenedor de la página de perfil */
+    .profile-page {
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      overflow: hidden !important;
-    }
-
-    .close-btn {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      background: #2c2c2e;
-      border: none;
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      font-size: 16px;
-      cursor: pointer;
-      display: flex;
       align-items: center;
       justify-content: center;
-      color: #ffffff;
-      transition: background 0.2s;
+      min-height: 75vh;
+      padding: 20px 0;
     }
 
-    .close-btn:hover {
-      background: #3a3a3c;
-    }
-
-    .profile-selection-wrapper {
+    .profile-header {
       text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .profile-header h1 {
+      font-size: 2rem;
+      color: var(--black-cherry);
+      margin: 0 0 6px 0;
+      font-weight: normal;
+    }
+
+    .profile-header p {
+      color: var(--perfect-rose);
+      font-size: 0.95rem;
+      margin: 0;
+      opacity: 0.8;
+    }
+
+    .profile-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 24px;
       width: 100%;
       max-width: 400px;
     }
 
-    .profile-title {
-      color: #ffffff;
-      font-size: 24px;
-      font-weight: 800;
-      margin: 0 0 6px 0;
-    }
-
-    .profile-subtitle {
-      color: #8e8e93;
-      font-size: 13px;
-      margin: 0 0 28px 0;
-    }
-
-    .profiles-grid {
-      display: flex;
-      justify-content: center;
-      gap: 24px;
-      flex-wrap: wrap;
-    }
-
     .profile-card {
-      background: transparent;
-      border: none;
-      cursor: pointer;
+      background: var(--white);
+      border: 2px solid var(--card-border);
+      border-radius: 28px;
+      padding: 20px 16px 16px;
+      width: 130px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      transition: transform 0.2s;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      box-shadow: 0 6px 18px rgba(42, 12, 27, 0.04);
+      text-decoration: none;
+      background: var(--white);
     }
 
-    .profile-card:hover {
-      transform: scale(1.05);
+    .profile-card:active {
+      transform: scale(0.95);
+    }
+
+    .profile-card.active {
+      border-color: var(--perfect-rose);
+      box-shadow: 0 0 0 4px rgba(190, 44, 85, 0.15);
     }
 
     .profile-avatar {
-      width: 80px;
-      height: 80px;
+      width: 70px;
+      height: 70px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 8px;
-      position: relative;
+      margin-bottom: 10px;
+      background: var(--carousel-pink);
     }
 
-    .profile-avatar.maria {
-      border: 3px solid #e91e63;
-      background: #2c2c2e;
+    .profile-avatar svg {
+      width: 36px;
+      height: 36px;
     }
 
-    .profile-avatar.juan {
-      border: 3px solid #00bcd4;
-      background: #2c2c2e;
-    }
-
-    .profile-name {
-      color: #ffffff;
-      font-size: 15px;
+    .profile-card .profile-name {
+      font-size: 1.1rem;
+      color: var(--black-cherry);
       font-weight: 600;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
+    }
+
+    .profile-card .profile-role {
+      font-size: 0.75rem;
+      color: var(--perfect-rose);
+      opacity: 0.7;
+      margin-top: 2px;
+    }
+
+    .profile-card .check-badge {
+      display: none;
+      margin-top: 8px;
+      background: var(--perfect-rose);
+      color: white;
+      border-radius: 20px;
+      padding: 2px 12px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .profile-card.active .check-badge {
+      display: inline-block;
+    }
+
+    /* Botón de volver (sustituye a la X) */
+    .back-btn {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      background: var(--white);
+      border: 1px solid var(--card-border);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: transform 0.2s;
+      z-index: 100;
+      text-decoration: none;
+      color: var(--black-cherry);
+    }
+
+    .back-btn:active {
+      transform: scale(0.9);
+    }
+
+    /* Ajuste para el dock en esta página */
+    .floating-dock {
+      /* El dock ya está en el CSS global, solo lo usamos aquí */
+    }
+
+    /* Responsive */
+    @media (max-width: 380px) {
+      .profile-card {
+        width: 110px;
+        padding: 16px 12px;
+      }
+      .profile-avatar {
+        width: 60px;
+        height: 60px;
+      }
     }
   </style>
 </head>
 <body>
 
   <div class="app-container">
-    <!-- El botón X de la esquina superior izquierda sigue redirigiendo a index.html -->
-    <button class="close-btn" onclick="window.location.href='index.html'" aria-label="Cerrar">✕</button>
+    <!-- Botón de volver (sustituye a la X) -->
+    <a href="categorias.html" class="back-btn" aria-label="Volver a categorías">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    </a>
 
-    <div class="profile-selection-wrapper">
-      <h1 class="profile-title">Selecciona tu perfil</h1>
-      <p class="profile-subtitle">Que tengas un bonito día..</p>
-
-      <div class="profiles-grid">
-        <!-- Perfil María -->
-        <button class="profile-card" onclick="cambiarUsuario('MARÍA')">
-          <div class="profile-avatar maria">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="#e91e63">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-            </svg>
-          </div>
-          <span class="profile-name">MARÍA</span>
-        </button>
-
-        <!-- Perfil Juan -->
-        <button class="profile-card" onclick="cambiarUsuario('JUAN')">
-          <div class="profile-avatar juan">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="#00bcd4">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-            </svg>
-          </div>
-          <span class="profile-name">JUAN</span>
-        </button>
+    <!-- Contenido principal -->
+    <div class="profile-page">
+      <div class="profile-header">
+        <h1>👤 Perfil</h1>
+        <p>Selecciona tu cuenta activa</p>
       </div>
+
+      <div class="profile-grid" id="profileGrid">
+        <!-- Los perfiles se generarán desde JavaScript -->
+      </div>
+
+      <!-- Opción para añadir un perfil nuevo (muy simple) -->
+      <button id="addProfileBtn" class="btn-secondary" style="margin-top: 30px; padding: 12px 24px; border-radius: 30px;">
+        + Añadir perfil
+      </button>
     </div>
   </div>
 
+  <!-- DOCK FLOTANTE (igual que en el resto de la app) -->
+  <div class="floating-dock" id="mainDock">
+    <a href="index.html" class="dock-item" aria-label="Inicio">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+    </a>
+    <a href="categorias.html" class="dock-item active" aria-label="Categorías">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    </a>
+    <button class="dock-add-btn" aria-label="Añadir categoría" id="addCategoryBtn">+</button>
+    <a href="configuracion.html" class="dock-item" aria-label="Configuración">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </a>
+    <a href="perfil.html" class="dock-item active" aria-label="Perfil">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </a>
+  </div>
+
   <script>
-    function cambiarUsuario(nombre) {
-      // Guarda el perfil seleccionado y redirige a categorias.html
-      localStorage.setItem('usuarioActivo', nombre);
-      window.location.href = 'categorias.html';
-    }
+    (function() {
+      // --- Datos de perfiles predefinidos ---
+      const PERFILES = [
+        { id: 'maria', nombre: 'María', color: '#e91e63', iniciales: 'M' },
+        { id: 'juan', nombre: 'Juan', color: '#00bcd4', iniciales: 'J' },
+        { id: 'invitado', nombre: 'Invitado', color: '#8e8e93', iniciales: 'I' }
+      ];
+
+      // Obtener el perfil activo de localStorage (si existe)
+      let usuarioActivo = localStorage.getItem('usuarioActivo') || null;
+
+      // Función para renderizar los perfiles
+      function renderPerfiles() {
+        const grid = document.getElementById('profileGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        PERFILES.forEach(perfil => {
+          const isActive = (usuarioActivo === perfil.id);
+          const card = document.createElement('div');
+          card.className = `profile-card${isActive ? ' active' : ''}`;
+          card.setAttribute('role', 'button');
+          card.setAttribute('tabindex', '0');
+          card.setAttribute('aria-label', `Seleccionar perfil ${perfil.nombre}`);
+          card.dataset.id = perfil.id;
+
+          // SVG del avatar (usamos un círculo con las iniciales)
+          const avatar = document.createElement('div');
+          avatar.className = 'profile-avatar';
+          avatar.style.backgroundColor = perfil.color + '30'; // fondo semitransparente
+          avatar.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="${perfil.color}">
+              <circle cx="12" cy="8" r="5" />
+              <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
+            </svg>
+          `;
+
+          const nameSpan = document.createElement('span');
+          nameSpan.className = 'profile-name';
+          nameSpan.textContent = perfil.nombre;
+
+          const roleSpan = document.createElement('span');
+          roleSpan.className = 'profile-role';
+          roleSpan.textContent = isActive ? 'Activo' : 'Seleccionar';
+
+          const badge = document.createElement('span');
+          badge.className = 'check-badge';
+          badge.textContent = '✓ Activo';
+
+          card.appendChild(avatar);
+          card.appendChild(nameSpan);
+          card.appendChild(roleSpan);
+          card.appendChild(badge);
+
+          // Evento click
+          card.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const id = this.dataset.id;
+            if (id) {
+              localStorage.setItem('usuarioActivo', id);
+              // Redirigir a categorías para refrescar la vista
+              window.location.href = 'categorias.html';
+            }
+          });
+
+          // Soporte teclado (Enter)
+          card.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+              this.click();
+            }
+          });
+
+          grid.appendChild(card);
+        });
+      }
+
+      // --- Añadir perfil nuevo (simplificado) ---
+      document.getElementById('addProfileBtn').addEventListener('click', function() {
+        const nombre = prompt('Introduce el nombre del nuevo perfil:');
+        if (nombre && nombre.trim() !== '') {
+          const id = nombre.trim().toLowerCase().replace(/\s+/g, '_');
+          // Evitar duplicados
+          if (PERFILES.some(p => p.id === id)) {
+            alert('Ya existe un perfil con ese nombre.');
+            return;
+          }
+          // Añadir al array y guardar en localStorage (para persistencia)
+          PERFILES.push({
+            id: id,
+            nombre: nombre.trim(),
+            color: '#ff9800', // color genérico
+            iniciales: nombre.trim().substring(0,2).toUpperCase()
+          });
+          // Guardar lista de perfiles en localStorage para futuras visitas
+          localStorage.setItem('perfilesPersonalizados', JSON.stringify(PERFILES));
+          // Renderizar de nuevo
+          renderPerfiles();
+          // Seleccionar automáticamente el nuevo
+          localStorage.setItem('usuarioActivo', id);
+          window.location.href = 'categorias.html';
+        }
+      });
+
+      // --- Cargar perfiles personalizados guardados ---
+      const stored = localStorage.getItem('perfilesPersonalizados');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          // Fusionar con los predefinidos (evitar duplicados por id)
+          const existingIds = PERFILES.map(p => p.id);
+          parsed.forEach(p => {
+            if (!existingIds.includes(p.id)) {
+              PERFILES.push(p);
+            }
+          });
+        } catch (e) {
+          console.warn('Error al cargar perfiles personalizados');
+        }
+      }
+
+      // --- Inicializar ---
+      renderPerfiles();
+
+      // --- Sincronizar con el perfil activo si viene de index ---
+      // Si hay un usuario guardado en 'user' (del index), lo convertimos a 'usuarioActivo'
+      const userData = localStorage.getItem('user');
+      if (userData && !localStorage.getItem('usuarioActivo')) {
+        try {
+          const parsed = JSON.parse(userData);
+          if (parsed && parsed.name) {
+            // Buscar un perfil que coincida con el nombre (case insensitive)
+            const match = PERFILES.find(p => p.nombre.toLowerCase() === parsed.name.toLowerCase());
+            if (match) {
+              localStorage.setItem('usuarioActivo', match.id);
+              usuarioActivo = match.id;
+              renderPerfiles();
+            }
+          }
+        } catch (e) {}
+      }
+
+      // Si no hay perfil activo, seleccionar el primero por defecto (o invitado)
+      if (!localStorage.getItem('usuarioActivo')) {
+        // Elegir 'invitado' o el primero
+        const defaultProfile = PERFILES.find(p => p.id === 'invitado') || PERFILES[0];
+        if (defaultProfile) {
+          localStorage.setItem('usuarioActivo', defaultProfile.id);
+          usuarioActivo = defaultProfile.id;
+          renderPerfiles();
+        }
+      }
+
+    })();
   </script>
+
 </body>
 </html>
