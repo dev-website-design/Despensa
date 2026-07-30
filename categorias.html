@@ -5,151 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Categorías · FINDORA</title>
   <meta name="description" content="Gestiona tus categorías de despensa en FINDORA.">
-  
-  <!-- CSS global -->
   <link rel="stylesheet" href="assets/styles.css">
-
-  <!-- Estilos específicos para categorías (sin duplicar reglas globales) -->
   <style>
-    /* Ajustes menores para la página de categorías */
-    .categoria-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      margin-top: 16px;
-    }
-
-    /* Las tarjetas ya están definidas en el CSS global (clase .categoria) */
-    /* Solo añadimos un pequeño detalle para el footer cuando no hay imagen */
-    .categoria:not(.con-imagen) .categoria-footer {
-      text-align: center;
-      width: 100%;
-    }
-
-    /* El modal ya está en el CSS global, solo aseguramos que el formulario herede */
-    #form-nueva-categoria input[type="text"] {
-      width: 100%;
-      padding: 12px;
-      border: 1.5px solid #e2d0d7;
-      border-radius: 12px;
-      font-family: var(--font-main);
-      font-size: 1rem;
-      background-color: #fff9fb;
-      color: var(--black-cherry);
-      box-sizing: border-box;
-      margin-bottom: 12px;
-    }
-
-    #form-nueva-categoria input[type="file"] {
-      width: 100%;
-      padding: 8px 12px;
-      background-color: #fff9fb;
-      border: 1.5px solid #e2d0d7;
-      border-radius: 12px;
-      cursor: pointer;
-      font-family: var(--font-main);
-      box-sizing: border-box;
-    }
-
-    #form-nueva-categoria input[type="file"]::file-selector-button {
-      background-color: var(--perfect-rose);
-      color: var(--white);
-      border: none;
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-family: var(--font-main);
-      cursor: pointer;
-      margin-right: 10px;
-    }
-
-    .modal-buttons {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    /* Ajuste para el botón de guardar dentro del modal */
-    .modal-submit-btn {
-      background-color: var(--perfect-rose);
-      color: var(--white);
-      border: none;
-      padding: 10px 22px;
-      border-radius: 12px;
-      font-family: var(--font-main);
-      font-size: 1rem;
-      cursor: pointer;
-      outline: none;
-      width: 100%;
-    }
-
-    /* Para el saludo del usuario */
-    .user-greeting {
-      color: var(--perfect-rose);
-      font-size: 0.95rem;
-      margin: 4px 0 0 0;
-    }
-
-    /* Ajuste responsive para móviles pequeños */
-    @media (max-width: 380px) {
-      .categoria-grid {
-        gap: 12px;
-      }
-    }
+    .categoria-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 16px; }
+    .categoria:not(.con-imagen) .categoria-footer { text-align: center; width: 100%; }
+    #form-nueva-categoria input[type="text"] { width: 100%; padding: 12px; border: 1.5px solid #e2d0d7; border-radius: 12px; font-family: var(--font-main); font-size: 1rem; background-color: #fff9fb; color: var(--black-cherry); box-sizing: border-box; margin-bottom: 12px; }
+    #form-nueva-categoria input[type="file"] { width: 100%; padding: 8px 12px; background-color: #fff9fb; border: 1.5px solid #e2d0d7; border-radius: 12px; cursor: pointer; font-family: var(--font-main); box-sizing: border-box; }
+    #form-nueva-categoria input[type="file"]::file-selector-button { background-color: var(--perfect-rose); color: var(--white); border: none; padding: 6px 12px; border-radius: 8px; font-family: var(--font-main); cursor: pointer; margin-right: 10px; }
+    .modal-buttons { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+    .modal-submit-btn { background-color: var(--perfect-rose); color: var(--white); border: none; padding: 10px 22px; border-radius: 12px; font-family: var(--font-main); font-size: 1rem; cursor: pointer; outline: none; width: 100%; }
+    .user-greeting { color: var(--perfect-rose); font-size: 0.95rem; margin: 4px 0 0 0; }
+    @media (max-width: 380px) { .categoria-grid { gap: 12px; } }
   </style>
 </head>
 <body>
-
   <div class="app-container">
-    <!-- Hero Card (similar al de la landing pero adaptado) -->
     <div class="hero-card">
       <div class="hero-info">
         <h1 class="hero-title">Mi Despensa</h1>
-        <p class="hero-subtitle" id="user-greeting">Hola, <span id="user-name">Cargando...</span></p>
+        <p class="hero-subtitle user-greeting" id="user-greeting">Hola, <span id="user-name">Cargando...</span></p>
       </div>
-      <!-- Podrías añadir un icono o imagen aquí si quieres -->
     </div>
-
-    <!-- Encabezado de sección -->
     <div class="section-header">
       <h2 class="section-title">Categorías</h2>
       <span class="status-dot"></span>
     </div>
-
-    <!-- Contenedor de categorías (se llena desde app.js) -->
-    <div class="categoria-grid" id="contenedor-categorias">
-      <!-- Las categorías se renderizan dinámicamente -->
-    </div>
+    <div class="categoria-grid" id="contenedor-categorias"></div>
   </div>
 
-  <!-- DOCK FLOTANTE (idéntico al de perfil.html para consistencia) -->
+  <!-- DOCK FLOTANTE (idéntico) -->
   <div class="floating-dock" id="mainDock">
-    <a href="index.html" class="dock-item" aria-label="Inicio">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-    </a>
-    <a href="categorias.html" class="dock-item active" aria-label="Categorías">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-    </a>
+    <a href="index.html" class="dock-item" aria-label="Inicio"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg></a>
+    <a href="categorias.html" class="dock-item active" aria-label="Categorías"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></a>
     <button class="dock-add-btn" aria-label="Añadir categoría" id="btn-open-modal">+</button>
-    <a href="configuracion.html" class="dock-item" aria-label="Configuración">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    </a>
-    <a href="perfil.html" class="dock-item" aria-label="Perfil">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    </a>
+    <a href="configuracion.html" class="dock-item" aria-label="Configuración"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a>
+    <a href="perfil.html" class="dock-item" aria-label="Perfil"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></a>
   </div>
 
-  <!-- MODAL PARA AÑADIR CATEGORÍA (usando las clases globales) -->
+  <!-- MODAL (usando clases globales) -->
   <div id="modal-categoria" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-content">
       <h2 id="modalTitle">Nueva Categoría</h2>
       <form id="form-nueva-categoria">
         <label for="nombre-categoria">Nombre</label>
         <input type="text" id="nombre-categoria" placeholder="Ej. Frutas, Verduras..." required>
-
         <label for="imagen-categoria">Imagen (opcional)</label>
         <input type="file" id="imagen-categoria" accept="image/*">
-
         <div class="modal-buttons">
           <button type="button" class="btn-secondary" id="btn-cerrar-modal">Cancelar</button>
           <button type="submit" class="btn-primary">Guardar</button>
@@ -158,48 +59,33 @@
     </div>
   </div>
 
-  <!-- JavaScript principal (carga el módulo app.js) -->
+  <!-- app.js se encarga del renderizado y lógica de categorías -->
   <script type="module" src="app.js"></script>
 
-  <!-- Script adicional para la integración del perfil y el modal -->
+  <!-- Script adicional para saludo y modal -->
   <script>
     (function() {
-      // --- Mostrar el nombre del usuario activo ---
       function actualizarSaludo() {
         const userNameSpan = document.getElementById('user-name');
         if (!userNameSpan) return;
-
-        // Intentar obtener el perfil activo desde 'usuarioActivo' o 'user'
         let nombre = 'Invitado';
         const perfilId = localStorage.getItem('usuarioActivo');
         if (perfilId) {
-          // Si tenemos perfiles personalizados guardados, buscar el nombre
           const perfilesGuardados = localStorage.getItem('perfilesPersonalizados');
           if (perfilesGuardados) {
-            try {
-              const perfiles = JSON.parse(perfilesGuardados);
-              const encontrado = perfiles.find(p => p.id === perfilId);
-              if (encontrado) nombre = encontrado.nombre;
-            } catch (e) {}
+            try { const perfiles = JSON.parse(perfilesGuardados); const encontrado = perfiles.find(p => p.id === perfilId); if (encontrado) nombre = encontrado.nombre; } catch(e) {}
           } else {
-            // Fallback: si no hay perfiles guardados, usar el nombre por defecto
             const nombresPorId = { maria: 'María', juan: 'Juan', invitado: 'Invitado' };
             nombre = nombresPorId[perfilId] || perfilId;
           }
         } else {
-          // Si no hay perfil activo, intentar con 'user' (de la landing)
           const userData = localStorage.getItem('user');
-          if (userData) {
-            try {
-              const parsed = JSON.parse(userData);
-              if (parsed && parsed.name) nombre = parsed.name;
-            } catch (e) {}
-          }
+          if (userData) { try { const parsed = JSON.parse(userData); if (parsed && parsed.name) nombre = parsed.name; } catch(e) {} }
         }
         userNameSpan.textContent = nombre;
       }
 
-      // --- Lógica del modal (usando las clases globales .hidden) ---
+      // Modal
       const modal = document.getElementById('modal-categoria');
       const openBtn = document.getElementById('btn-open-modal');
       const closeBtn = document.getElementById('btn-cerrar-modal');
@@ -208,52 +94,25 @@
       if (openBtn && modal) {
         openBtn.addEventListener('click', () => {
           modal.classList.remove('hidden');
-          // Enfocar el primer campo
           const input = document.getElementById('nombre-categoria');
           if (input) setTimeout(() => input.focus(), 100);
         });
       }
-
       if (closeBtn && modal) {
-        closeBtn.addEventListener('click', () => {
-          modal.classList.add('hidden');
-          if (form) form.reset();
-        });
+        closeBtn.addEventListener('click', () => { modal.classList.add('hidden'); if (form) form.reset(); });
       }
-
-      // Cerrar modal al hacer clic fuera del contenido
       if (modal) {
-        modal.addEventListener('click', (e) => {
-          if (e.target === modal) {
-            modal.classList.add('hidden');
-            if (form) form.reset();
-          }
-        });
+        modal.addEventListener('click', (e) => { if (e.target === modal) { modal.classList.add('hidden'); if (form) form.reset(); } });
       }
-
-      // --- Manejo del formulario (delegado a app.js, pero prevenimos envío por defecto) ---
       if (form) {
-        form.addEventListener('submit', (e) => {
-          e.preventDefault(); // app.js se encargará de guardar
-          // Aquí podrías llamar a una función global si app.js la expone
-          // Por ahora, solo cerramos el modal (la lógica real está en app.js)
-          modal.classList.add('hidden');
-          // Si app.js no maneja el submit, podríamos disparar un evento personalizado
-          // Pero asumimos que app.js tiene su propio listener
-        });
+        form.addEventListener('submit', (e) => { e.preventDefault(); modal.classList.add('hidden'); });
       }
 
-      // --- Inicializar ---
       actualizarSaludo();
-
-      // Si el perfil cambia en otra pestaña, actualizar (opcional)
       window.addEventListener('storage', (e) => {
-        if (e.key === 'usuarioActivo' || e.key === 'user') {
-          actualizarSaludo();
-        }
+        if (e.key === 'usuarioActivo' || e.key === 'user' || e.key === 'perfilesPersonalizados') actualizarSaludo();
       });
     })();
   </script>
-
 </body>
 </html>
