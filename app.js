@@ -1,139 +1,143 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { 
-  getFirestore, 
-  collection, 
-  addDoc, 
-  onSnapshot, 
-  serverTimestamp 
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+// app.js - Módulo principal para gestión de categorías
 
-// --- CONFIGURACIÓN DE FIREBASE ---
-const firebaseConfig = {
-  apiKey: "AIzaSyDfIQXFFDGoBMvTIOT52nZGVUc-pFJGFs4",
-  authDomain: "hogar-e266a.firebaseapp.com",
-  projectId: "hogar-e266a",
-  storageBucket: "hogar-e266a.firebasestorage.app",
-  messagingSenderId: "534168977173",
-  appId: "1:534168977173:web:f3900fae93c7dd520b331c"
-};
+// Clave para localStorage
+const STORAGE_KEY = 'categorias';
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// Estado inicial (si no hay datos)
+let categorias = [];
 
-// Usuario Activo
-const usuarioActivo = localStorage.getItem('usuarioActivo') || 'MARÍA';
+// Elementos DOM
+const contenedor = document.getElementById('contenedor-categorias');
+const modal = document.getElementById('modal-categoria');
+const form = document.getElementById('form-nueva-categoria');
+const nombreInput = document.getElementById('nombre-categoria');
+const imagenInput = document.getElementById('imagen-categoria');
 
-// Inicialización de la interfaz
-window.addEventListener('DOMContentLoaded', () => {
-  const userGreeting = document.getElementById('user-greeting');
-  if (userGreeting) userGreeting.textContent = `Hola, ${usuarioActivo}`;
-
-  inicializarModal();
-  cargarCategorias();
-});
-
-// --- LÓGICA DEL MODAL ---
-function inicializarModal() {
-  const modal = document.getElementById('modal-categoria') || document.getElementById('modal');
-  const btnAbrir = document.getElementById('btn-open-modal') || document.getElementById('btn-abrir-modal');
-  const btnCerrar = document.getElementById('btn-cancelar') || document.getElementById('btn-cerrar-modal');
-  const form = document.getElementById('form-nueva-categoria') || document.getElementById('form-categoria');
-
-  function abrir() {
-    if (!modal) return;
-    modal.classList.remove('hidden');
-    modal.style.display = 'flex'; // Forzado por script
-  }
-
-  function cerrar() {
-    if (!modal) return;
-    modal.classList.add('hidden');
-    modal.style.display = 'none'; // Forzado por script
-    if (form) form.reset();
-  }
-
-  if (btnAbrir) btnAbrir.addEventListener('click', abrir);
-  if (btnCerrar) btnCerrar.addEventListener('click', cerrar);
-
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) cerrar();
-    });
-  }
-
-  // GUARDAR EN FIREBASE AL ENVIAR FORMULARIO
-  if (form) {
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const nombreInput = document.getElementById('nombre-categoria');
-      const fileInput = document.getElementById('imagen-categoria');
-
-      const nombre = nombreInput ? nombreInput.value.trim() : '';
-      const archivo = fileInput && fileInput.files ? fileInput.files[0] : null;
-
-      if (!nombre) return;
-
-      try {
-        const imagenBase64 = archivo ? await obtenerBase64(archivo) : '';
-
-        await addDoc(collection(db, "categorias"), {
-          nombre: nombre,
-          imagen: imagenBase64,
-          creadoPor: usuarioActivo,
-          creadoEn: serverTimestamp()
-        });
-
-        cerrar();
-      } catch (err) {
-        console.error("Error al guardar categoría:", err);
-        alert("Error al guardar en Firebase: " + err.message);
-      }
-    });
+// --- Funciones de persistencia ---
+function cargarCategorias() {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored) {
+    try { categorias = JSON.parse(stored); } catch (e) { categorias = []; }
+  } else {
+    // Datos de ejemplo (opcional)
+    categorias = [
+      { id: Date.now() + 1, nombre: 'Frutas', imagen: '' },
+      { id: Date.now() + 2, nombre: 'Verduras', imagen: '' },
+      { id: Date.now() + 3, nombre: 'Lácteos', imagen: '' }
+    ];
+    guardarCategorias();
   }
 }
 
-// --- LECTURA EN TIEMPO REAL ---
-function cargarCategorias() {
-  const contenedor = document.getElementById('contenedor-categorias') || document.getElementById('categorias');
+function guardarCategorias() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(categorias));
+}
+
+// --- Renderizado ---
+function renderizarCategorias() {
   if (!contenedor) return;
-
-  onSnapshot(collection(db, "categorias"), (snapshot) => {
-    contenedor.innerHTML = '';
-
-    if (snapshot.empty) {
-      contenedor.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--perfect-rose);">No hay categorías aún. Toca + para crear una.</p>';
-      return;
-    }
-
-    snapshot.forEach((doc) => {
-      const cat = doc.data();
-      const div = document.createElement('div');
-      div.className = `categoria ${cat.imagen ? 'con-imagen' : ''}`;
-
-      if (cat.imagen && cat.imagen.trim() !== '') {
-        div.style.backgroundImage = `url('${cat.imagen}')`;
-      }
-
-      div.innerHTML = `
+  if (categorias.length === 0) {
+    contenedor.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: var(--perfect-rose);">No hay categorías. ¡Añade una!</p>`;
+    return;
+  }
+  let html = '';
+  categorias.forEach(cat => {
+    const tieneImagen = cat.imagen && cat.imagen.startsWith('data:image');
+    const estiloFondo = tieneImagen ? `background-image: url('${cat.imagen}');` : '';
+    const claseImagen = tieneImagen ? 'con-imagen' : '';
+    html += `
+      <div class="categoria ${claseImagen}" style="${estiloFondo}" data-id="${cat.id}">
         <div class="categoria-footer">
           <span>${cat.nombre}</span>
+          <button class="btn-eliminar" data-id="${cat.id}" aria-label="Eliminar categoría" style="background: none; border: none; color: var(--perfect-rose); font-size: 0.8rem; margin-top: 6px; cursor: pointer;">✕</button>
         </div>
-      `;
+      </div>
+    `;
+  });
+  contenedor.innerHTML = html;
 
-      contenedor.appendChild(div);
+  // Eventos de eliminación
+  document.querySelectorAll('.btn-eliminar').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = Number(btn.dataset.id);
+      if (confirm('¿Eliminar esta categoría?')) {
+        eliminarCategoria(id);
+      }
     });
-  }, (err) => {
-    console.error("Error al leer categorías:", err);
   });
 }
 
-// Transformar imagen a string base64
-function obtenerBase64(file) {
-  return new Promise((resolve, reject) => {
+// --- CRUD ---
+function agregarCategoria(nombre, imagenBase64) {
+  const nueva = {
+    id: Date.now(),
+    nombre: nombre.trim(),
+    imagen: imagenBase64 || ''
+  };
+  categorias.push(nueva);
+  guardarCategorias();
+  renderizarCategorias();
+}
+
+function eliminarCategoria(id) {
+  categorias = categorias.filter(c => c.id !== id);
+  guardarCategorias();
+  renderizarCategorias();
+}
+
+// --- Manejo del formulario ---
+function handleSubmit(e) {
+  e.preventDefault();
+  const nombre = nombreInput.value.trim();
+  if (!nombre) { alert('El nombre es obligatorio'); return; }
+
+  const file = imagenInput.files[0];
+  if (file) {
     const reader = new FileReader();
+    reader.onload = (event) => {
+      agregarCategoria(nombre, event.target.result);
+      cerrarModal();
+    };
     reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (err) => reject(err);
-  });
+  } else {
+    agregarCategoria(nombre, '');
+    cerrarModal();
+  }
+}
+
+function cerrarModal() {
+  if (modal) modal.classList.add('hidden');
+  form.reset();
+}
+
+// --- Inicialización ---
+function init() {
+  cargarCategorias();
+  renderizarCategorias();
+
+  // Eventos del formulario
+  if (form) {
+    form.addEventListener('submit', handleSubmit);
+  }
+
+  // Cerrar modal con botón cancelar (ya existe en el HTML)
+  const cancelBtn = document.getElementById('btn-cerrar-modal');
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', cerrarModal);
+  }
+
+  // Cerrar al hacer clic fuera
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) cerrarModal();
+    });
+  }
+}
+
+// Ejecutar cuando el DOM esté listo
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
 }
