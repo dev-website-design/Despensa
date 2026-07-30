@@ -4,9 +4,7 @@ const CACHE_NAME = 'findora-v1';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/perfil.html',
-  '/categorias.html',
-  '/configuracion.html',
+  '/app.html',
   '/assets/styles.css',
   '/app.js',
   '/Kiltier-Regular.otf',
