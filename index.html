@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>FINDORA · Despensa</title>
-  <!-- Firebase SDKs (Versión Compat, ideal para GitHub Pages) -->
+  <!-- Firebase SDKs (Compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <style>
-    /* ===== TODO TU CSS ORIGINAL ===== */
+    /* ===== CSS ORIGINAL (Mantenido igual) ===== */
     @font-face { font-family: 'Kiltier'; src: url('data:font/opentype;base64,AAEAAAAQAQAABAA...'); font-weight: normal; font-style: normal; font-display: swap; }
     :root { --black-cherry: #2A0C1B; --carousel-pink: #FFE0EB; --perfect-rose: #BE2C55; --white: #ffffff; --bg-color: #FFE0EB; --card-border: rgba(190, 44, 85, 0.15); --dock-bg: rgba(42, 12, 27, 0.85); --font-main: 'Kiltier', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -36,6 +36,7 @@
     .dock-add-btn:active { transform: scale(0.85) rotate(90deg); }
     .modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(42, 12, 27, 0.65); display: flex; align-items: center; justify-content: center; z-index: 10000; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); animation: fadeInBackdrop 0.3s ease forwards; }
     .hidden { display: none !important; }
+    .hidden-page { display: none !important; }
     .modal:not(.hidden) .modal-content { animation: modalSpringPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
     .modal-content { background-color: var(--white); padding: 24px; border-radius: 28px; width: 88%; max-width: 360px; font-family: var(--font-main); color: var(--black-cherry); box-shadow: 0 20px 40px rgba(42, 12, 27, 0.25); }
     .modal-content h2 { margin-top: 0; font-size: 1.4rem; font-weight: normal; }
@@ -53,17 +54,48 @@
     .auth-card .divider { text-align: center; color: #999; margin: 16px 0; font-size: 0.9rem; }
     .auth-card .auth-switch { text-align: center; margin-top: 16px; font-size: 0.9rem; }
     .auth-card .auth-switch a { color: var(--perfect-rose); cursor: pointer; text-decoration: underline; }
-    .hidden-page { display: none !important; }
     .mt-4 { margin-top: 16px; }
-    .text-center { text-align: center; }
+
+    /* ----- ESTILOS DE CONFIGURACIÓN ----- */
+    .config-section { background: var(--white); border-radius: 28px; padding: 20px; box-shadow: 0 10px 25px rgba(42, 12, 27, 0.05); margin-bottom: 16px; }
+    .config-title { font-size: 1.2rem; font-weight: 600; color: var(--black-cherry); margin-top: 0; margin-bottom: 12px; }
+    .config-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0e1e6; color: var(--black-cherry); font-size: 1rem; }
+    .config-item:last-child { border-bottom: none; }
+    .config-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--perfect-rose); cursor: pointer; }
+
+    /* ----- ESTILOS DE PERFIL ----- */
+    .profile-page { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; padding: 20px 0; }
+    .profile-header { text-align: center; margin-bottom: 30px; }
+    .profile-header h1 { font-size: 2rem; color: var(--black-cherry); margin: 0 0 6px 0; font-weight: normal; }
+    .profile-header p { color: var(--perfect-rose); font-size: 0.95rem; margin: 0; opacity: 0.8; }
+    .profile-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; width: 100%; max-width: 400px; }
+    .profile-card { background: var(--white); border: 2px solid var(--card-border); border-radius: 28px; padding: 20px 16px 16px; width: 130px; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; box-shadow: 0 6px 18px rgba(42, 12, 27, 0.04); text-decoration: none; }
+    .profile-card:active { transform: scale(0.95); }
+    .profile-card.active { border-color: var(--perfect-rose); box-shadow: 0 0 0 4px rgba(190, 44, 85, 0.15); }
+    .profile-avatar { width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; background: var(--carousel-pink); }
+    .profile-avatar svg { width: 36px; height: 36px; }
+    .profile-card .profile-name { font-size: 1.1rem; color: var(--black-cherry); font-weight: 600; letter-spacing: 0.3px; }
+    .profile-card .profile-role { font-size: 0.75rem; color: var(--perfect-rose); opacity: 0.7; margin-top: 2px; }
+    .profile-card .check-badge { display: none; margin-top: 8px; background: var(--perfect-rose); color: white; border-radius: 20px; padding: 2px 12px; font-size: 0.7rem; font-weight: 600; }
+    .profile-card.active .check-badge { display: inline-block; }
 
     @keyframes modalSpringPop { 0% { opacity: 0; transform: scale(0.65) translateY(40px); } 70% { opacity: 1; transform: scale(1.04) translateY(-4px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
     @keyframes fadeInBackdrop { from { opacity: 0; } to { opacity: 1; } }
     @keyframes pulse-glow { 0% { box-shadow: 0 0 0 0 rgba(190, 44, 85, 0.6); } 70% { box-shadow: 0 0 0 12px rgba(190, 44, 85, 0); } 100% { box-shadow: 0 0 0 0 rgba(190, 44, 85, 0); } }
+
+    /* MODO OSCURO */
+    body.dark-mode { --bg-color: #1a1a1c; --white: #2c2c2e; --black-cherry: #f0e2e7; --card-border: rgba(255, 224, 235, 0.1); background-color: #1a1a1c; }
+    body.dark-mode .hero-card, body.dark-mode .config-section, body.dark-mode .modal-content, body.dark-mode .profile-card, body.dark-mode .auth-card { background: #2c2c2e; color: #f0e2e7; }
+    body.dark-mode .categoria { background: #2c2c2e; color: #f0e2e7; }
+    body.dark-mode .categoria span { color: #f0e2e7; }
+    body.dark-mode .config-item { border-bottom-color: #3a3a3c; }
+    body.dark-mode .dock-item { color: rgba(255, 255, 255, 0.5); }
+    body.dark-mode .dock-item.active { color: #FFE0EB !important; }
   </style>
 </head>
 <body>
   <div class="app-container" id="app">
+    
     <!-- ===== PÁGINA: AUTENTICACIÓN ===== -->
     <div id="page-auth">
       <div class="auth-container">
@@ -105,23 +137,63 @@
       </div>
       <div class="categoria-grid" id="contenedor-categorias"></div>
     </div>
+
+    <!-- ===== PÁGINA: CONFIGURACIÓN ===== -->
+    <div id="page-config" class="hidden-page">
+      <div class="hero-card" style="margin-top: 20px;">
+        <div class="hero-info">
+          <h1 class="hero-title">⚙️ Configuración</h1>
+          <p class="hero-subtitle" style="color: var(--perfect-rose); margin-top: 5px;">Preferencias de la cuenta</p>
+        </div>
+      </div>
+      <div class="config-section">
+        <h2 class="config-title">General</h2>
+        <div class="config-item">
+          <span>🌙 Modo Oscuro</span>
+          <input type="checkbox" id="darkModeToggle">
+        </div>
+        <div class="config-item">
+          <span>🔔 Notificaciones</span>
+          <input type="checkbox" id="notificationsToggle" checked>
+        </div>
+      </div>
+      <div class="config-section">
+        <h2 class="config-title">Acerca de</h2>
+        <div class="config-item" style="border-bottom: none; justify-content: center; font-size: 0.9rem; color: #8e8e93;">
+          <span>FINDORA v1.0 · Despensa inteligente</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PÁGINA: PERFIL ===== -->
+    <div id="page-perfil" class="hidden-page">
+      <div class="profile-page">
+        <div class="profile-header">
+          <h1>👤 Perfil</h1>
+          <p>Selecciona tu cuenta activa</p>
+        </div>
+        <div class="profile-grid" id="profileGrid"></div>
+        <button id="addProfileBtn" class="btn-secondary" style="margin-top: 30px; padding: 12px 24px; border-radius: 30px;">+ Añadir perfil</button>
+      </div>
+    </div>
+
   </div>
 
-  <!-- ===== DOCK FLOTANTE (CORREGIDO CON ENLACES) ===== -->
+  <!-- ===== DOCK FLOTANTE (CON BOTONES, NO ENLACES) ===== -->
   <nav class="floating-dock" id="mainDock">
-    <a href="categorias.html" class="dock-item active" aria-label="Categorías">
+    <button class="dock-item active" data-page="categorias" aria-label="Categorías">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-    </a>
+    </button>
     <button class="dock-add-btn" id="dockAddBtn">+</button>
-    <a href="configuracion.html" class="dock-item" aria-label="Configuración">
+    <button class="dock-item" data-page="config" aria-label="Configuración">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    </a>
-    <a href="perfil.html" class="dock-item" aria-label="Perfil">
+    </button>
+    <button class="dock-item" data-page="perfil" aria-label="Perfil">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    </a>
+    </button>
   </nav>
 
-  <!-- ===== MODAL PARA AÑADIR CATEGORÍA ===== -->
+  <!-- ===== MODAL ===== -->
   <div id="modalCategoria" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-content">
       <h2>Nueva Categoría</h2>
@@ -140,5 +212,123 @@
 
   <!-- CARGA EL SCRIPT PRINCIPAL -->
   <script src="app.js"></script>
+
+  <!-- PEQUEÑO SCRIPT PARA LA NAVEGACIÓN ENTRE PÁGINAS Y PERFILES -->
+  <script>
+    (function() {
+      // 1. CAMBIO DE PÁGINAS (Categorías, Configuración, Perfil)
+      const pages = {
+        categorias: document.getElementById('page-categorias'),
+        config: document.getElementById('page-config'),
+        perfil: document.getElementById('page-perfil')
+      };
+      const dockItems = document.querySelectorAll('.dock-item');
+
+      function switchPage(pageId) {
+        // Ocultar todas las páginas interiores
+        Object.values(pages).forEach(el => el.classList.add('hidden-page'));
+        // Mostrar la seleccionada
+        if (pages[pageId]) pages[pageId].classList.remove('hidden-page');
+        // Actualizar botones del dock
+        dockItems.forEach(el => el.classList.remove('active'));
+        const activeDock = document.querySelector(`.dock-item[data-page="${pageId}"]`);
+        if (activeDock) activeDock.classList.add('active');
+      }
+
+      dockItems.forEach(item => {
+        item.addEventListener('click', function() {
+          const page = this.dataset.page;
+          if (page) switchPage(page);
+        });
+      });
+
+      // 2. LÓGICA DE CONFIGURACIÓN (MODO OSCURO)
+      const darkToggle = document.getElementById('darkModeToggle');
+      const notifToggle = document.getElementById('notificationsToggle');
+      const savedDark = localStorage.getItem('darkMode');
+      const savedNotif = localStorage.getItem('notifications');
+      if (savedDark === 'true') { darkToggle.checked = true; document.body.classList.add('dark-mode'); }
+      if (savedNotif === 'false') notifToggle.checked = false;
+      if (darkToggle) {
+        darkToggle.addEventListener('change', () => {
+          localStorage.setItem('darkMode', darkToggle.checked);
+          document.body.classList.toggle('dark-mode', darkToggle.checked);
+        });
+      }
+      if (notifToggle) {
+        notifToggle.addEventListener('change', () => {
+          localStorage.setItem('notifications', notifToggle.checked);
+        });
+      }
+
+      // 3. LÓGICA DE PERFILES
+      const PERFILES = [
+        { id: 'maria', nombre: 'María', color: '#e91e63' },
+        { id: 'juan', nombre: 'Juan', color: '#00bcd4' },
+        { id: 'invitado', nombre: 'Invitado', color: '#8e8e93' }
+      ];
+      const stored = localStorage.getItem('perfilesPersonalizados');
+      if (stored) {
+        try { const parsed = JSON.parse(stored); parsed.forEach(p => { if (!PERFILES.some(pp => pp.id === p.id)) PERFILES.push(p); }); } catch(e) {}
+      }
+      let usuarioActivo = localStorage.getItem('usuarioActivo') || null;
+
+      function renderPerfiles() {
+        const grid = document.getElementById('profileGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        PERFILES.forEach(perfil => {
+          const isActive = (usuarioActivo === perfil.id);
+          const card = document.createElement('div');
+          card.className = `profile-card${isActive ? ' active' : ''}`;
+          card.dataset.id = perfil.id;
+          const avatar = document.createElement('div');
+          avatar.className = 'profile-avatar';
+          avatar.style.backgroundColor = perfil.color + '30';
+          avatar.innerHTML = `<svg viewBox="0 0 24 24" fill="${perfil.color}"><circle cx="12" cy="8" r="5" /><path d="M4 20c0-4 4-6 8-6s8 2 8 6" /></svg>`;
+          const nameSpan = document.createElement('span');
+          nameSpan.className = 'profile-name';
+          nameSpan.textContent = perfil.nombre;
+          const roleSpan = document.createElement('span');
+          roleSpan.className = 'profile-role';
+          roleSpan.textContent = isActive ? 'Activo' : 'Seleccionar';
+          const badge = document.createElement('span');
+          badge.className = 'check-badge';
+          badge.textContent = '✓ Activo';
+          card.appendChild(avatar); card.appendChild(nameSpan); card.appendChild(roleSpan); card.appendChild(badge);
+          card.addEventListener('click', function() {
+            localStorage.setItem('usuarioActivo', this.dataset.id);
+            window.location.reload(); // Recarga para actualizar nombre en el saludo
+          });
+          grid.appendChild(card);
+        });
+      }
+
+      const addProfileBtn = document.getElementById('addProfileBtn');
+      if (addProfileBtn) {
+        addProfileBtn.addEventListener('click', function() {
+          const nombre = prompt('Introduce el nombre del nuevo perfil:');
+          if (nombre && nombre.trim() !== '') {
+            const id = nombre.trim().toLowerCase().replace(/\s+/g, '_');
+            if (PERFILES.some(p => p.id === id)) { alert('Ya existe un perfil con ese nombre.'); return; }
+            PERFILES.push({ id, nombre: nombre.trim(), color: '#ff9800' });
+            localStorage.setItem('perfilesPersonalizados', JSON.stringify(PERFILES));
+            localStorage.setItem('usuarioActivo', id);
+            window.location.reload();
+          }
+        });
+      }
+
+      // Inicializar perfiles solo si existen los elementos
+      if (document.getElementById('profileGrid')) {
+        if (!localStorage.getItem('usuarioActivo')) {
+          const defaultProfile = PERFILES.find(p => p.id === 'invitado') || PERFILES[0];
+          if (defaultProfile) { localStorage.setItem('usuarioActivo', defaultProfile.id); usuarioActivo = defaultProfile.id; }
+        }
+        renderPerfiles();
+      }
+
+    })();
+  </script>
 </body>
 </html>
