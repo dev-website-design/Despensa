@@ -2,216 +2,214 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Findora - Welcome</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>FINDORA · Dream House</title>
+  <meta name="description" content="Encuentra tu próximo espacio, siéntete como en casa. FINDORA - donde la comodidad se encuentra con la conveniencia.">
+  
+  <!-- CSS global -->
   <link rel="stylesheet" href="assets/styles.css">
-
+  
+  <!-- Estilos adicionales específicos para la landing (para no contaminar el CSS global) -->
   <style>
-    /* Eliminamos el borde y contenedor de simulación móvil para pantalla completa */
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: #ffffff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    .app-container {
-      max-width: 100% !important;
-      width: 100% !important;
-      height: 100vh !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      background: #ffffff !important;
-      box-shadow: none !important;
-      border-radius: 0 !important;
-      border: none !important;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      overflow-y: auto;
-    }
-
-    /* Sección superior con la imagen de la casa */
-    .hero-section {
-      position: relative;
-      width: 100%;
-      height: 55vh;
+    /* Ajustes menores para que la landing use el sistema de la app */
+    .landing-hero {
       background-image: url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=80');
       background-size: cover;
       background-position: center;
+      border-radius: 32px;
+      padding: 40px 24px;
+      min-height: 55vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       text-align: center;
-      color: white;
-      border-bottom-left-radius: 40px;
-      border-bottom-right-radius: 40px;
-      overflow: hidden;
+      position: relative;
+      margin-bottom: 24px;
     }
-
-    .hero-section::after {
+    .landing-hero::after {
       content: '';
       position: absolute;
-      top: 0; 
-      left: 0; 
-      width: 100%; 
-      height: 100%;
-      background: rgba(0, 0, 0, 0.3);
+      inset: 0;
+      background: rgba(42, 12, 27, 0.35);
+      border-radius: 32px;
+      z-index: 1;
     }
-
-    .hero-content {
+    .landing-hero *:not(.logo-badge) {
       position: relative;
       z-index: 2;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
     }
-
-    .logo-badge {
-      width: 70px;
-      height: 70px;
-      background: white;
+    .landing-hero .logo-badge {
+      width: 80px;
+      height: 80px;
+      background: var(--white);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      position: relative;
+      z-index: 2;
     }
-
-    .logo-badge span {
-      font-size: 32px;
-      color: #1a202c;
+    .landing-hero .logo-badge span {
+      font-size: 2.8rem;
+      color: var(--black-cherry);
       font-weight: bold;
-      line-height: 1;
     }
-
-    .hero-title {
-      font-size: 28px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      margin: 0 0 5px 0;
-      text-transform: uppercase;
+    .landing-hero h1 {
+      font-size: 2.8rem;
+      margin: 0 0 4px 0;
+      color: white;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+      letter-spacing: 2px;
     }
-
-    .hero-subtitle {
-      font-size: 13px;
-      opacity: 0.9;
-      margin: 0;
-      letter-spacing: 0.5px;
-    }
-
-    /* Sección inferior con texto y botones */
-    .bottom-content {
-      flex: 1;
-      background: #ffffff;
-      padding: 30px 24px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      justify-content: space-between;
-      max-width: 500px;
-      margin: 0 auto;
-      width: 100%;
-      box-sizing: border-box;
-    }
-
-    .welcome-text-group h2 {
-      font-size: 24px;
-      font-weight: 800;
-      color: #1a202c;
-      margin: 0 0 10px 0;
-      letter-spacing: 0.5px;
-    }
-
-    .welcome-text-group p {
-      font-size: 13px;
-      color: #718096;
-      line-height: 1.5;
+    .landing-hero p {
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.9);
+      text-shadow: 0 1px 8px rgba(0,0,0,0.3);
       margin: 0;
     }
-
-    .auth-buttons {
-      width: 100%;
+    .landing-actions {
       display: flex;
       flex-direction: column;
       gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .btn-login {
       width: 100%;
-      background-color: #1a202c;
+      max-width: 320px;
+      margin: 24px auto 0;
+    }
+    .btn-primary-landing {
+      background: var(--perfect-rose);
       color: white;
       border: none;
       padding: 16px;
       border-radius: 30px;
-      font-weight: 700;
-      font-size: 15px;
+      font-family: var(--font-main);
+      font-size: 1rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s;
       text-decoration: none;
-      display: block;
       text-align: center;
-      box-sizing: border-box;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 14px rgba(190, 44, 85, 0.3);
     }
-
-    .btn-login:hover {
-      background-color: #2d3748;
-    }
-
-    .btn-signup {
-      width: 100%;
-      background-color: transparent;
-      color: #1a202c;
-      border: 1px solid #cbd5e0;
+    .btn-primary-landing:active { transform: scale(0.96); }
+    .btn-secondary-landing {
+      background: transparent;
+      color: var(--black-cherry);
+      border: 1.5px solid var(--card-border);
       padding: 16px;
       border-radius: 30px;
-      font-weight: 700;
-      font-size: 15px;
+      font-family: var(--font-main);
+      font-size: 1rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s;
       text-decoration: none;
-      display: block;
       text-align: center;
-      box-sizing: border-box;
+      transition: background 0.2s;
     }
-
-    .btn-signup:hover {
-      background-color: #f7fafc;
+    .btn-secondary-landing:active { background: var(--carousel-pink); }
+    
+    /* Ajuste para el dock en la landing: lo ocultamos si no está logueado */
+    .floating-dock.landing-dock {
+      display: none; /* Se mostrará solo cuando el usuario esté logueado */
     }
   </style>
 </head>
 <body>
-
   <div class="app-container">
-    <!-- Sección Superior con la Imagen y Logotipo -->
-    <div class="hero-section">
-      <div class="hero-content">
-        <div class="logo-badge">
-          <span>✱</span>
-        </div>
-        <h1 class="hero-title">FINDORA</h1>
-        <p class="hero-subtitle">Dream House</p>
+    <!-- HERO LANDING -->
+    <div class="landing-hero">
+      <div class="logo-badge">
+        <span>✱</span>
+      </div>
+      <h1>FINDORA</h1>
+      <p>Dream House</p>
+      <div class="landing-actions">
+        <a href="perfil.html" class="btn-primary-landing">Iniciar Sesión</a>
+        <a href="#" class="btn-secondary-landing" id="signupBtn">Registrarse</a>
       </div>
     </div>
 
-    <!-- Sección Inferior con Bienvenida y Botones -->
-    <div class="bottom-content">
-      <div class="welcome-text-group">
-        <h2>WELCOME</h2>
-        <p>Find your next space, feel at home<br>Where comfort meets convenience</p>
-      </div>
-
-      <div class="auth-buttons">
-        <a href="perfil.html" class="btn-login">Login</a>
-        <a href="#" class="btn-signup">Sign Up</a>
-      </div>
+    <!-- Breve introducción (opcional) -->
+    <div style="text-align: center; padding: 0 16px 20px;">
+      <p style="color: var(--black-cherry); opacity: 0.7; font-size: 0.95rem; margin: 0;">
+        Encuentra tu próximo espacio, siéntete como en casa<br>
+        <span style="color: var(--perfect-rose);">Donde la comodidad se encuentra con la conveniencia</span>
+      </p>
     </div>
   </div>
 
+  <!-- DOCK FLOTANTE (oculto en landing) -->
+  <div class="floating-dock landing-dock" id="mainDock">
+    <a href="index.html" class="dock-item active" aria-label="Inicio">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+    </a>
+    <a href="categorias.html" class="dock-item" aria-label="Categorías">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    </a>
+    <button class="dock-add-btn" aria-label="Añadir categoría" id="addCategoryBtn">+</button>
+    <a href="configuracion.html" class="dock-item" aria-label="Configuración">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </a>
+    <a href="perfil.html" class="dock-item" aria-label="Perfil">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </a>
+  </div>
+
+  <!-- Modal para registro / añadir categoría (reutiliza el del CSS) -->
+  <div id="modalOverlay" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-content">
+      <h2 id="modalTitle">Crear cuenta</h2>
+      <form id="modalForm">
+        <label for="modalInput">Nombre de usuario</label>
+        <input type="text" id="modalInput" placeholder="Escribe tu nombre..." required>
+        <div class="modal-buttons">
+          <button type="button" class="btn-secondary" id="modalCancel">Cancelar</button>
+          <button type="submit" class="btn-primary" id="modalConfirm">Registrarse</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // --- Lógica básica para la landing ---
+    // El dock se oculta en la landing (ya tiene clase landing-dock)
+    // Mostramos el modal al hacer clic en "Registrarse"
+    const signupBtn = document.getElementById('signupBtn');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalCancel = document.getElementById('modalCancel');
+    const modalForm = document.getElementById('modalForm');
+
+    signupBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      modalOverlay.classList.remove('hidden');
+    });
+
+    modalCancel.addEventListener('click', () => {
+      modalOverlay.classList.add('hidden');
+    });
+
+    modalForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = document.getElementById('modalInput').value.trim();
+      if (username) {
+        // Guardar en localStorage y redirigir a categorías (simulando login)
+        localStorage.setItem('user', JSON.stringify({ name: username, loggedIn: true }));
+        window.location.href = 'categorias.html';
+      }
+    });
+
+    // Cerrar modal al hacer clic fuera
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) modalOverlay.classList.add('hidden');
+    });
+
+    // Si ya está logueado, redirigir a categorías
+    if (localStorage.getItem('user')) {
+      // Opcional: redirigir automáticamente o mostrar mensaje
+      // window.location.href = 'categorias.html';
+    }
+  </script>
 </body>
 </html>
