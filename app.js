@@ -1,5 +1,5 @@
 // =====================================================
-// app.js - Modo COLABORATIVO con APODOS y Navegación
+// app.js - Modo COLABORATIVO con APODOS y Configuración
 // =====================================================
 
 const firebaseConfig = {
@@ -56,35 +56,78 @@ let currentUser = null;
 let unsubscribeCategorias = null;
 let unsubscribeUser = null;
 let currentNickname = null; 
+let settingsListenersAttached = false; // Flag para no duplicar listeners
 
 // ==========================================
 // LÓGICA DE NAVEGACIÓN (Categorías / Configuración)
 // ==========================================
 function switchPage(pageId) {
-  // Ocultar todas las páginas interiores
   if (pageCategorias) pageCategorias.classList.add('hidden-page');
   if (pageConfig) pageConfig.classList.add('hidden-page');
   
-  // Mostrar la página seleccionada
   if (pageId === 'categorias' && pageCategorias) {
     pageCategorias.classList.remove('hidden-page');
   } else if (pageId === 'config' && pageConfig) {
     pageConfig.classList.remove('hidden-page');
+    // Al entrar a Configuración, actualizamos el estado de los toggles
+    initSettings();
   }
 
-  // Actualizar el estado de los botones del Dock
   dockItems.forEach(item => item.classList.remove('active'));
   const activeDock = document.querySelector(`.dock-item[data-page="${pageId}"]`);
   if (activeDock) activeDock.classList.add('active');
 }
 
-// Escuchar los clics en los botones del Dock
 dockItems.forEach(item => {
   item.addEventListener('click', function() {
     const page = this.dataset.page;
     if (page) switchPage(page);
   });
 });
+
+// ==========================================
+// CONFIGURACIÓN (MODO OSCURO y NOTIFICACIONES)
+// ==========================================
+function initSettings() {
+    const darkToggle = document.getElementById('darkModeToggle');
+    const notifToggle = document.getElementById('notificationsToggle');
+    
+    // Si los elementos no existen (no estamos en Configuración), salimos
+    if(!darkToggle || !notifToggle) return;
+
+    const savedDark = localStorage.getItem('darkMode');
+    const savedNotif = localStorage.getItem('notifications');
+
+    // Cargar el estado del Modo Oscuro
+    if (savedDark === 'true') {
+        darkToggle.checked = true;
+        document.body.classList.add('dark-mode');
+    } else {
+        darkToggle.checked = false;
+        document.body.classList.remove('dark-mode');
+    }
+
+    // Cargar el estado de Notificaciones
+    if (savedNotif === 'false') {
+        notifToggle.checked = false;
+    } else {
+        notifToggle.checked = true;
+    }
+
+    // Asignar los listeners solo la primera vez que se carga la página
+    if (!settingsListenersAttached) {
+        darkToggle.addEventListener('change', () => {
+            localStorage.setItem('darkMode', darkToggle.checked);
+            document.body.classList.toggle('dark-mode', darkToggle.checked);
+        });
+        
+        notifToggle.addEventListener('change', () => {
+            localStorage.setItem('notifications', notifToggle.checked);
+        });
+        
+        settingsListenersAttached = true;
+    }
+}
 
 // ==========================================
 // AUTENTICACIÓN
@@ -193,7 +236,6 @@ function suscribirCategorias() {
 
 function agregarCategoria(nombre, imagenBase64) {
   const ref = getCategoriasRef();
-  
   const nombreMostrar = currentNickname || (currentUser ? currentUser.email : 'Invitado');
 
   ref.add({
@@ -325,18 +367,19 @@ auth.onAuthStateChanged(user => {
   currentUser = user;
   if (user) {
     pageAuth.classList.add('hidden-page');
-    pageCategorias.classList.remove('hidden-page'); // Mostrar categorías al loguearse
-    if (pageConfig) pageConfig.classList.add('hidden-page'); // Ocultar config por si acaso
+    pageCategorias.classList.remove('hidden-page');
+    if (pageConfig) pageConfig.classList.add('hidden-page');
     
     suscribirApodo(user);
     suscribirCategorias();
     
-    // Mostramos el Dock si el usuario está logueado
     if (dock) dock.classList.remove('hidden-page');
-    // Resetear el botón activo del dock
     dockItems.forEach(item => item.classList.remove('active'));
     const activeItem = document.querySelector('.dock-item[data-page="categorias"]');
     if (activeItem) activeItem.classList.add('active');
+    
+    // Inicializar configuraciones al hacer login por si el usuario ya tenía el modo oscuro activado
+    initSettings();
 
   } else {
     pageAuth.classList.remove('hidden-page');
@@ -347,7 +390,6 @@ auth.onAuthStateChanged(user => {
     currentNickname = null;
     authError.textContent = '';
 
-    // Ocultamos el Dock si el usuario NO está logueado
     if (dock) dock.classList.add('hidden-page');
   }
 });
@@ -360,4 +402,9 @@ authSwitchLink.addEventListener('click', toggleAuthMode);
 btnGoogle.addEventListener('click', loginWithGoogle);
 btnLogout.addEventListener('click', logout);
 
-console.log('FINDORA Colaborativo con Apodos y Navegación cargado.');
+// Inicializamos el modo oscuro apenas carga la página para que no parpadee
+document.addEventListener('DOMContentLoaded', () => {
+    initSettings();
+});
+
+console.log('FINDORA Colaborativo con Apodos y Configuración cargado.');
