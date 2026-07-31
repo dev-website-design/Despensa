@@ -13,7 +13,7 @@ const firebaseConfig = {
   appId: "1:534168977173:web:f3900fae93c7dd520b331c"
 };
 
-let app, auth, db, messaging; // Añadimos messaging aquí
+let app, auth, db, messaging;
 
 try {
   if (!firebase.apps.length) {
@@ -21,7 +21,7 @@ try {
   }
   auth = firebase.auth();
   db = firebase.firestore();
-  messaging = firebase.messaging(); // 🔥 Inicializamos el servicio de mensajería
+  messaging = firebase.messaging();
   console.log("✅ Firebase inicializado correctamente.");
 } catch (err) {
   console.error("❌ ERROR CRÍTICO AL INICIALIZAR FIREBASE:", err);
@@ -60,6 +60,7 @@ const btnOpenNotif = document.getElementById('btnOpenNotifications');
 const modalNotif = document.getElementById('modalNotificaciones');
 const notifList = document.getElementById('notifList');
 const modalNotifClose = document.getElementById('modalNotifClose');
+const btnClearNotifications = document.getElementById('btnClearNotifications');
 const notifBadge = document.getElementById('notifBadge');
 const toastContainer = document.getElementById('toastContainer');
 
@@ -168,17 +169,14 @@ async function loginWithGoogle() {
 function logout() { auth.signOut(); }
 
 // ==========================================
-// 🆕 SOLICITUD DE PERMISOS PARA NOTIFICACIONES PUSH
+// SOLICITUD DE PERMISOS PARA NOTIFICACIONES PUSH
 // ==========================================
 async function requestNotificationPermission() {
-  if (!('Notification' in window)) return;
+  if (!('Notification' in window) || !currentUser) return;
   try {
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
-      // 🔥 IMPORTANTE: Reemplaza 'TU_VAPID_KEY_AQUI' por la clave que generaste en Firebase Console.
-      const token = await messaging.getToken({ vapidKey: 'BEyrkuxDLqHddHAKc3LA1tBK8T0RWpMFHJUH9mkZUDEooXRuTS2P4OkEQ1MA5VJ2HtjFFyuXhYcEUEkOhk4YzR8' });
-      
-      // Guardamos el token en Firestore, dentro de su documento de usuario
+      const token = await messaging.getToken({ vapidKey: 'TU_VAPID_KEY_AQUI' });
       const userRef = db.collection('usuarios').doc(currentUser.uid);
       await userRef.set({ 
         fcmTokens: firebase.firestore.FieldValue.arrayUnion(token) 
@@ -259,7 +257,7 @@ function agregarCategoria(nombre, imagenBase64) {
 }
 
 // ==========================================
-// NOTIFICACIONES INTERNAS (TOAST Y BADGE)
+// NOTIFICACIONES INTERNAS (TOAST, BADGE Y MODAL)
 // ==========================================
 function notificarNuevaCategoria(nombreCategoria, usuarioEmisor) {
   if (!currentUser) return; 
@@ -326,14 +324,19 @@ function mostrarToast(data) {
   }, 4000);
 }
 
-function marcarNotificacionesComoLeidas() {
+// 🔥 Función para limpiar las notificaciones vistas
+async function limpiarTodasLasNotificaciones() {
   if (!currentUser) return;
+  
   const ref = db.collection('notificaciones_globales');
-  ref.get().then((snapshot) => {
+  try {
+    const snapshot = await ref.get();
     const batch = db.batch();
     let contador = 0;
+    
     snapshot.forEach(doc => {
       const data = doc.data();
+      // Solo agregamos el UID a las que aún no lo tienen para no hacer operaciones de más
       if (!data.leido_por || !data.leido_por.includes(currentUser.uid)) {
         batch.update(doc.ref, {
           leido_por: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
@@ -341,25 +344,48 @@ function marcarNotificacionesComoLeidas() {
         contador++;
       }
     });
+
     if (contador > 0) {
-        batch.commit().catch(error => console.error("Error al marcar notificaciones como leídas:", error));
+      await batch.commit();
+      console.log(`✅ ${contador} notificaciones marcadas como leídas.`);
+      
+      // Recargamos el modal para que se vacíe inmediatamente
+      abrirModalNotificaciones();
+    } else {
+      // Si ya estaban todas leídas, simplemente recargamos para refrescar
+      abrirModalNotificaciones();
     }
-  });
+  } catch (error) {
+    console.error("❌ Error al limpiar notificaciones:", error);
+    alert("Hubo un error al intentar limpiar las notificaciones.");
+  }
 }
 
 function abrirModalNotificaciones() {
   if (!currentUser) return;
-  marcarNotificacionesComoLeidas();
+
+  // Ya no marcamos automáticamente al abrir, dejamos que el usuario vea las pendientes y las limpie manualmente.
   const ref = db.collection('notificaciones_globales').orderBy('timestamp', 'desc').limit(50);
   ref.get().then((snapshot) => {
     notifList.innerHTML = '';
-    if (snapshot.empty) {
-      notifList.innerHTML = '<p style="color: var(--perfect-rose); text-align: center; padding: 20px 0;">No hay notificaciones.</p>';
+    
+    // Filtramos para mostrar solo las que NO tiene el UID del usuario (o mostrar el mensaje vacío si no hay)
+    const notificacionesPendientes = [];
+    
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (!data.leido_por || !data.leido_por.includes(currentUser.uid)) {
+        notificacionesPendientes.push({ id: doc.id, data: data });
+      }
+    });
+
+    if (notificacionesPendientes.length === 0) {
+      notifList.innerHTML = '<p style="color: var(--perfect-rose); text-align: center; padding: 20px 0;">No hay notificaciones nuevas.</p>';
     } else {
-      snapshot.forEach(doc => {
-        const data = doc.data();
+      notificacionesPendientes.forEach(item => {
+        const data = item.data;
         const div = document.createElement('div');
-        div.className = 'notif-item';
+        div.className = 'notif-item unread'; // Les dejamos el estilo de "no leído" para resaltarlas
         const fecha = data.timestamp ? data.timestamp.toDate().toLocaleString() : 'Recién';
         div.innerHTML = `
           <div>
@@ -445,6 +471,8 @@ modalNickname.addEventListener('click', (e) => { if (e.target === modalNickname)
 btnOpenNotif.addEventListener('click', abrirModalNotificaciones);
 modalNotifClose.addEventListener('click', () => { modalNotif.classList.add('hidden'); });
 modalNotif.addEventListener('click', (e) => { if (e.target === modalNotif) modalNotif.classList.add('hidden'); });
+// 🔥 Event listener para el botón "Limpiar todo"
+btnClearNotifications.addEventListener('click', limpiarTodasLasNotificaciones);
 
 // ==========================================
 // ESTADO DE SESIÓN
@@ -464,8 +492,6 @@ auth.onAuthStateChanged(user => {
     suscribirApodo(user);
     suscribirCategorias();
     suscribirNotificaciones(user);
-
-    // 🔥 LLAMAMOS A LA FUNCIÓN PARA PEDIR PERMISOS DE NOTIFICACIÓN AQUÍ
     requestNotificationPermission();
     
     if (dock) dock.classList.remove('hidden-page');
