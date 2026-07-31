@@ -4,10 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>FINDORA · Despensa</title>
-
-  <!-- ========================================== -->
-  <!-- 🔔 CÓDIGO DE ONESIGNAL                      -->
-  <!-- ========================================== -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
@@ -19,31 +15,13 @@
       });
     });
   </script>
-
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
   <style>
-    /* ===== FUENTE LOCAL ===== */
-    @font-face {
-      font-family: 'Kiltier';
-      src: url('Kiltier-Regular.otf') format('opentype'),
-           url('Kiltier-Regular.ttf') format('truetype'),
-           url('Kiltier-Regular.woff2') format('woff2');
-      font-weight: normal; font-style: normal; font-display: swap;
-    }
-
-    :root {
-      --black-cherry: #2A0C1B;
-      --carousel-pink: #FFE0EB;
-      --perfect-rose: #BE2C55;
-      --white: #ffffff;
-      --bg-color: #FFE0EB;
-      --card-border: rgba(190, 44, 85, 0.15);
-      --dock-bg: rgba(42, 12, 27, 0.85);
-      --font-main: 'Kiltier', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    }
+    /* ... todo tu CSS original (el mismo que tenías) ... */
+    @font-face { font-family: 'Kiltier'; src: url('Kiltier-Regular.otf') format('opentype'), url('Kiltier-Regular.ttf') format('truetype'), url('Kiltier-Regular.woff2') format('woff2'); font-weight: normal; font-style: normal; font-display: swap; }
+    :root { --black-cherry: #2A0C1B; --carousel-pink: #FFE0EB; --perfect-rose: #BE2C55; --white: #ffffff; --bg-color: #FFE0EB; --card-border: rgba(190, 44, 85, 0.15); --dock-bg: rgba(42, 12, 27, 0.85); --font-main: 'Kiltier', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { margin: 0; font-family: var(--font-main); background-color: var(--bg-color); color: var(--black-cherry); min-height: 100vh; padding-bottom: 110px; }
     .app-container { max-width: 480px; margin: 0 auto; padding: 16px; }
@@ -89,10 +67,6 @@
     .config-title { font-size: 1.2rem; font-weight: 600; color: var(--black-cherry); margin-top: 0; margin-bottom: 12px; }
     .config-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0e1e6; color: var(--black-cherry); font-size: 1rem; }
     .config-item:last-child { border-bottom: none; }
-    
-    /* ========================================== */
-    /* TOGGLE SWITCH (INTERRUPTOR) Y BOTÓN APODO  */
-    /* ========================================== */
     .toggle-switch { position: relative; display: inline-block; width: 50px; height: 30px; }
     .toggle-switch input { opacity: 0; width: 0; height: 0; }
     .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #e4e4e4; transition: .4s; border-radius: 34px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); }
@@ -102,99 +76,25 @@
     .btn-nickname { background-color: var(--perfect-rose); color: var(--white); border: none; padding: 6px 18px; border-radius: 30px; font-family: var(--font-main); font-size: 0.9rem; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.2s ease; box-shadow: 0 4px 12px rgba(190, 44, 85, 0.3); outline: none; }
     .btn-nickname:active { transform: scale(0.92); }
     .btn-nickname:hover { background-color: #9a2345; }
-
-    /* ========================================== */
-    /* ESTILOS DE NOTIFICACIONES (CAMPANITA)      */
-    /* ========================================== */
-    .notif-button {
-        position: relative;
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        padding: 0;
-        margin-left: 12px;
-        color: var(--perfect-rose);
-        display: flex;
-        align-items: center;
-        transition: transform 0.2s;
-    }
+    .notif-button { position: relative; background: transparent; border: none; cursor: pointer; padding: 0; margin-left: 12px; color: var(--perfect-rose); display: flex; align-items: center; transition: transform 0.2s; }
     .notif-button:active { transform: scale(0.85); }
-    .notif-badge {
-        position: absolute;
-        top: -4px;
-        right: -4px;
-        background-color: #ff0000;
-        color: white;
-        font-size: 10px;
-        font-weight: bold;
-        border-radius: 50%;
-        width: 18px;
-        height: 18px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 4px rgba(255,0,0,0.4);
-        display: none; /* Oculto por defecto */
-    }
+    .notif-badge { position: absolute; top: -4px; right: -4px; background-color: #ff0000; color: white; font-size: 10px; font-weight: bold; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(255,0,0,0.4); display: none; }
     .notif-badge.visible { display: flex; }
-
-    /* ========================================== */
-    /* MODAL DE NOTIFICACIONES                    */
-    /* ========================================== */
     .notif-list { max-height: 300px; overflow-y: auto; margin-top: 10px; border-top: 1px solid #f0e1e6; padding-top: 10px; }
     .notif-item { padding: 10px 0; border-bottom: 1px solid #f9f2f4; display: flex; justify-content: space-between; align-items: center; }
     .notif-item:last-child { border-bottom: none; }
     .notif-item .msg { font-size: 0.95rem; color: var(--black-cherry); }
     .notif-item .timestamp { font-size: 0.75rem; color: #999; }
     .notif-item.unread { background-color: rgba(190, 44, 85, 0.05); border-radius: 8px; padding: 10px; margin: 0 -10px; }
-
-    /* ========================================== */
-    /* TOAST DE NOTIFICACIONES (Menú emergente)   */
-    /* ========================================== */
-    .toast-container {
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 92%;
-        max-width: 440px;
-        z-index: 99999;
-        pointer-events: none;
-    }
-    .toast {
-        background: var(--white);
-        color: var(--black-cherry);
-        border-left: 5px solid var(--perfect-rose);
-        padding: 12px 16px;
-        border-radius: 12px;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-        margin-bottom: 10px;
-        pointer-events: auto;
-        transform: translateY(-150%);
-        opacity: 0;
-        transition: transform 0.3s ease, opacity 0.3s ease;
-    }
-    .toast.show {
-        transform: translateY(0);
-        opacity: 1;
-    }
+    .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 440px; z-index: 99999; pointer-events: none; }
+    .toast { background: var(--white); color: var(--black-cherry); border-left: 5px solid var(--perfect-rose); padding: 12px 16px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); margin-bottom: 10px; pointer-events: auto; transform: translateY(-150%); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; }
+    .toast.show { transform: translateY(0); opacity: 1; }
     .toast h4 { margin: 0 0 4px 0; font-size: 0.9rem; color: var(--perfect-rose); }
     .toast p { margin: 0; font-size: 0.9rem; }
-
-    /* ========================================== */
-    /* REGLA DE SEGURIDAD PARA OCULTAR EL DOCK   */
-    /* ========================================== */
-    #page-auth:not(.hidden-page) ~ #mainDock {
-        display: none !important;
-    }
-
+    #page-auth:not(.hidden-page) ~ #mainDock { display: none !important; }
     @keyframes modalSpringPop { 0% { opacity: 0; transform: scale(0.65) translateY(40px); } 70% { opacity: 1; transform: scale(1.04) translateY(-4px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
     @keyframes fadeInBackdrop { from { opacity: 0; } to { opacity: 1; } }
     @keyframes pulse-glow { 0% { box-shadow: 0 0 0 0 rgba(190, 44, 85, 0.6); } 70% { box-shadow: 0 0 0 12px rgba(190, 44, 85, 0); } 100% { box-shadow: 0 0 0 0 rgba(190, 44, 85, 0); } }
-
-    /* ========================================== */
-    /* MODO OSCURO                                 */
-    /* ========================================== */
     body.dark-mode { --bg-color: #1a1a1c; --white: #2c2c2e; --black-cherry: #f0e2e7; --card-border: rgba(255, 224, 235, 0.1); background-color: #1a1a1c; }
     body.dark-mode .hero-card, body.dark-mode .config-section, body.dark-mode .modal-content, body.dark-mode .auth-card { background: #2c2c2e; color: #f0e2e7; }
     body.dark-mode .categoria { background: #2c2c2e; color: #f0e2e7; }
@@ -212,8 +112,6 @@
 </head>
 <body>
   <div class="app-container" id="app">
-    
-    <!-- ===== PÁGINA: AUTENTICACIÓN ===== -->
     <div id="page-auth">
       <div class="auth-container">
         <div class="auth-card">
@@ -238,8 +136,6 @@
         </div>
       </div>
     </div>
-
-    <!-- ===== PÁGINA: CATEGORÍAS ===== -->
     <div id="page-categorias" class="hidden-page">
       <div class="hero-card">
         <div class="hero-info">
@@ -259,8 +155,6 @@
       </div>
       <div class="categoria-grid" id="contenedor-categorias"></div>
     </div>
-
-    <!-- ===== PÁGINA: CONFIGURACIÓN ===== -->
     <div id="page-config" class="hidden-page">
       <div class="hero-card" style="margin-top: 20px;">
         <div class="hero-info">
@@ -268,7 +162,6 @@
           <p class="hero-subtitle" style="color: var(--perfect-rose); margin-top: 5px;">Personaliza tu experiencia</p>
         </div>
       </div>
-
       <div class="config-section">
         <h2 class="config-title">👤 Tu perfil</h2>
         <div class="config-item">
@@ -276,7 +169,6 @@
           <button id="btnOpenNicknameModal" class="btn-nickname">Cambiar</button>
         </div>
       </div>
-
       <div class="config-section">
         <h2 class="config-title">General</h2>
         <div class="config-item">
@@ -294,14 +186,12 @@
           </label>
         </div>
       </div>
-
       <div class="config-section">
         <h2 class="config-title">Acerca de</h2>
         <div class="config-item" style="border-bottom: none; justify-content: center; font-size: 0.9rem; color: #8e8e93;">
           <span>FINDORA v1.0 · Despensa inteligente</span>
         </div>
       </div>
-
       <div class="config-section">
         <div class="config-item" style="border-bottom: none; justify-content: center; padding: 0;">
           <button id="btnLogout" class="btn-primary" style="width: 100%; border-radius: 30px; animation: none;">Cerrar sesión</button>
@@ -309,8 +199,6 @@
       </div>
     </div>
   </div>
-
-  <!-- ===== DOCK FLOTANTE ===== -->
   <nav class="floating-dock hidden-page" id="mainDock">
     <button class="dock-item active" data-page="categorias" aria-label="Categorías">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
@@ -320,8 +208,6 @@
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
   </nav>
-
-  <!-- ===== MODAL DE CATEGORÍAS ===== -->
   <div id="modalCategoria" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-content">
       <h2>Nueva Categoría</h2>
@@ -337,8 +223,6 @@
       </form>
     </div>
   </div>
-
-  <!-- ===== MODAL PARA CAMBIAR EL APODO ===== -->
   <div id="modalNickname" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-content">
       <h2>✏️ Cambiar mi apodo</h2>
@@ -353,27 +237,19 @@
       </form>
     </div>
   </div>
-
-  <!-- ===== MODAL DE NOTIFICACIONES ===== -->
   <div id="modalNotificaciones" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-content">
       <h2>🔔 Notificaciones</h2>
       <div id="notifList" class="notif-list">
         <p style="color: var(--perfect-rose); text-align: center; padding: 20px 0;">No hay notificaciones nuevas.</p>
       </div>
-      
-      <!-- Botones del modal -->
       <div class="modal-buttons" style="justify-content: space-between; margin-top: 10px;">
         <button type="button" class="btn-secondary" id="btnClearNotifications" style="border: 1px solid var(--perfect-rose); color: var(--perfect-rose); background: transparent; padding: 6px 16px;">Limpiar todo</button>
         <button type="button" class="btn-secondary" id="modalNotifClose">Cerrar</button>
       </div>
     </div>
   </div>
-
-  <!-- ===== TOAST NOTIFICATIONS (MENÚ EMERGENTE) ===== -->
   <div class="toast-container" id="toastContainer"></div>
-
-  <!-- CARGA EL SCRIPT PRINCIPAL -->
   <script src="app.js"></script>
 </body>
 </html>
