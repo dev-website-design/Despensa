@@ -1,0 +1,62 @@
+[debug] [2026-07-31T18:10:26.942Z] ----------------------------------------------------------------------
+[debug] [2026-07-31T18:10:26.947Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Diiego\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2026-07-31T18:10:26.948Z] CLI Version:   15.25.1
+[debug] [2026-07-31T18:10:26.948Z] Platform:      win32
+[debug] [2026-07-31T18:10:26.949Z] Node Version:  v24.18.1
+[debug] [2026-07-31T18:10:26.949Z] Detected Agent: unknown
+[debug] [2026-07-31T18:10:26.949Z] Time:          Fri Jul 31 2026 20:10:26 GMT+0200 (hora de verano de Europa central)
+[debug] [2026-07-31T18:10:26.950Z] ----------------------------------------------------------------------
+[debug] 
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\Diiego\Desktop\Despensa-Deep
+
+Before we get started, keep in mind:
+
+  * You are initializing within an existing Firebase project directory
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] 
+[debug] [2026-07-31T18:11:10.487Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-07-31T18:11:10.488Z] > authorizing via signed-in user (diegocastro0719@gmail.com)
+[debug] [2026-07-31T18:11:10.524Z] Checked if tokens are valid: true, expires at: 1785522572391
+[debug] [2026-07-31T18:11:10.524Z] Checked if tokens are valid: true, expires at: 1785522572391
+[debug] [2026-07-31T18:11:10.527Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/hogar-e266a [none]
+[debug] [2026-07-31T18:11:11.125Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/hogar-e266a 200
+[debug] [2026-07-31T18:11:11.125Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/hogar-e266a {"projectId":"hogar-e266a","projectNumber":"534168977173","displayName":"Hogar","name":"projects/hogar-e266a","resources":{"hostingSite":"hogar-e266a"},"state":"ACTIVE","labels":{"firebase":"enabled"},"etag":"1_e049930f-b274-4e84-b4ce-8e88479c6ebf"}
+[info] i  Using project hogar-e266a (Hogar) . 
+[info] 
+=== Functions Setup
+[debug] [2026-07-31T18:11:11.130Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-07-31T18:11:11.131Z] > authorizing via signed-in user (diegocastro0719@gmail.com)
+[debug] [2026-07-31T18:11:11.131Z] [iam] checking project hogar-e266a for permissions ["firebase.projects.get"]
+[debug] [2026-07-31T18:11:11.131Z] Checked if tokens are valid: true, expires at: 1785522572391
+[debug] [2026-07-31T18:11:11.132Z] Checked if tokens are valid: true, expires at: 1785522572391
+[debug] [2026-07-31T18:11:11.132Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/hogar-e266a:testIamPermissions [none]
+[debug] [2026-07-31T18:11:11.132Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/hogar-e266a:testIamPermissions  x-goog-user-project=hogar-e266a
+[debug] [2026-07-31T18:11:11.132Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/hogar-e266a:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2026-07-31T18:11:11.630Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/hogar-e266a:testIamPermissions 200
+[debug] [2026-07-31T18:11:11.631Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/hogar-e266a:testIamPermissions {"permissions":["firebase.projects.get"]}
+[info] 
+Detected existing codebase(s): default
+
+[info] 
+Overwriting codebase default...
+
+[info] i  functions/package.json is unchanged 
+[info] +  Wrote functions/index.js 
+[info] i  functions/.gitignore is unchanged 
+[info] 
+=== Agent Skills Setup
+[info] If you are using an AI coding agent, Firebase Agent Skills make it an expert at Firebase.
