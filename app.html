@@ -338,7 +338,8 @@
   </div>
 
   <!-- ===== MODAL DE COMPRA DE FRUTAS (Popup integrado) ===== -->
-  <div class="modal" id="purchase-modal-fv" hidden>
+  <!-- ✅ CORREGIDO: Usamos class="modal hidden" en lugar del atributo hidden -->
+  <div id="purchase-modal-fv" class="modal hidden" role="dialog" aria-modal="true">
       <div class="modal-content" style="text-align: center;">
           <h3 class="modal-title" style="margin: 0 0 5px 0;">Seleccionar Cantidad</h3>
           <p id="modal-product-name-fv" style="color: #666; font-size: 1.1rem; margin: 0 0 20px 0;">Producto</p>
