@@ -1,5 +1,5 @@
 // =====================================================
-// app.js - Versión robusta con FCM y Notificaciones Push
+// app.js - Preferencias de notificaciones por usuario (Firestore)
 // =====================================================
 
 console.log("🚀 Cargando FINDORA...");
@@ -64,12 +64,17 @@ const btnClearNotifications = document.getElementById('btnClearNotifications');
 const notifBadge = document.getElementById('notifBadge');
 const toastContainer = document.getElementById('toastContainer');
 
+// Variables de Configuración y Toggles
+const darkModeToggle = document.getElementById('darkModeToggle');
+const notifToggle = document.getElementById('notificationsToggle');
+
 let isLogin = true;
 let currentUser = null;
 let unsubscribeCategorias = null;
 let unsubscribeUser = null;
 let unsubscribeNotif = null;
 let currentNickname = null; 
+let userNotificationsEnabled = true; // Estado real de las notificaciones del usuario
 let settingsListenersAttached = false;
 
 // 🛡️ Memoria temporal para evitar Toasts duplicados
@@ -85,7 +90,8 @@ function switchPage(pageId) {
     pageCategorias.classList.remove('hidden-page');
   } else if (pageId === 'config' && pageConfig) {
     pageConfig.classList.remove('hidden-page');
-    initSettings();
+    // Cada vez que entramos a configuración, sincronizamos el estado visual de los toggles
+    sincronizarTogglesUI();
   }
   dockItems.forEach(item => item.classList.remove('active'));
   const activeDock = document.querySelector(`.dock-item[data-page="${pageId}"]`);
@@ -100,27 +106,48 @@ dockItems.forEach(item => {
 });
 
 // ==========================================
-// CONFIGURACIÓN
+// CONFIGURACIÓN (MODO OSCURO y NOTIFICACIONES)
 // ==========================================
-function initSettings() {
-    const darkToggle = document.getElementById('darkModeToggle');
-    const notifToggle = document.getElementById('notificationsToggle');
-    if(!darkToggle || !notifToggle) return;
-    const savedDark = localStorage.getItem('darkMode');
-    const savedNotif = localStorage.getItem('notifications');
-    if (savedDark === 'true') { darkToggle.checked = true; document.body.classList.add('dark-mode'); }
-    else { darkToggle.checked = false; document.body.classList.remove('dark-mode'); }
-    if (savedNotif === 'false') { notifToggle.checked = false; }
-    else { notifToggle.checked = true; }
+// Sincroniza los toggles con el estado guardado
+function sincronizarTogglesUI() {
+  // Modo Oscuro (sigue siendo local por tema del navegador)
+  const savedDark = localStorage.getItem('darkMode');
+  if (savedDark === 'true') { 
+    darkModeToggle.checked = true; 
+    document.body.classList.add('dark-mode'); 
+  } else { 
+    darkModeToggle.checked = false; 
+    document.body.classList.remove('dark-mode'); 
+  }
 
-    if (!settingsListenersAttached) {
-        darkToggle.addEventListener('change', () => {
-            localStorage.setItem('darkMode', darkToggle.checked);
-            document.body.classList.toggle('dark-mode', darkToggle.checked);
+  // Notificaciones (basado en Firestore)
+  if (notifToggle) {
+    notifToggle.checked = userNotificationsEnabled;
+  }
+
+  // Asignamos los listeners solo la primera vez que se cargan
+  if (!settingsListenersAttached) {
+    darkModeToggle.addEventListener('change', () => {
+      localStorage.setItem('darkMode', darkModeToggle.checked);
+      document.body.classList.toggle('dark-mode', darkModeToggle.checked);
+    });
+    
+    // 🔥 Guardar preferencia de Notificaciones en FIRESTORE
+    notifToggle.addEventListener('change', () => {
+      if (currentUser) {
+        const userRef = db.collection('usuarios').doc(currentUser.uid);
+        userRef.set({ 
+          notificationsEnabled: notifToggle.checked 
+        }, { merge: true }).catch(err => {
+          console.error("Error al guardar preferencia de notificaciones:", err);
+          // Si falla, revertimos el toggle al estado anterior
+          notifToggle.checked = userNotificationsEnabled;
+          alert("No se pudo guardar la preferencia. Revisa tu conexión.");
         });
-        notifToggle.addEventListener('change', () => { localStorage.setItem('notifications', notifToggle.checked); });
-        settingsListenersAttached = true;
-    }
+      }
+    });
+    settingsListenersAttached = true;
+  }
 }
 
 // ==========================================
@@ -300,27 +327,29 @@ function suscribirNotificaciones(user) {
             if (!ultimaNotif) ultimaNotif = { id: doc.id, data: data };
           }
         });
-        if (notificacionesPendientes > 0) {
-          notifBadge.textContent = notificacionesPendientes > 9 ? '9+' : notificacionesPendientes;
-          notifBadge.classList.add('visible');
+
+        // 🔔 Aquí aplicamos la lógica de "notificaciones desactivadas"
+        // Si el usuario apagó el interruptor, el Badge se oculta y no se muestra nada
+        if (userNotificationsEnabled) {
+          if (notificacionesPendientes > 0) {
+            notifBadge.textContent = notificacionesPendientes > 9 ? '9+' : notificacionesPendientes;
+            notifBadge.classList.add('visible');
+          } else {
+            notifBadge.classList.remove('visible');
+          }
+          
+          if (ultimaNotif && notificacionesPendientes > 0) {
+            if (!processedToastIds.has(ultimaNotif.id)) {
+              mostrarToast(ultimaNotif.data);
+              processedToastIds.add(ultimaNotif.id);
+              if (processedToastIds.size > 50) processedToastIds.clear();
+            }
+          }
         } else {
+          // Si están desactivadas, aseguramos que el badge esté oculto
           notifBadge.classList.remove('visible');
         }
         
-        // 🛡️ Verificamos si ya mostramos un Toast para esta notificación
-        if (ultimaNotif && notificacionesPendientes > 0) {
-          if (!processedToastIds.has(ultimaNotif.id)) {
-            mostrarToast(ultimaNotif.data);
-            processedToastIds.add(ultimaNotif.id);
-            
-            // Limpieza automática para no llenar la memoria
-            if (processedToastIds.size > 50) {
-              processedToastIds.clear();
-            }
-          } else {
-            console.log("🚫 Notificación duplicada bloqueada por el Set de seguridad.");
-          }
-        }
       } catch (innerError) {
         console.error("Error en el bucle de notificaciones:", innerError);
       }
@@ -366,7 +395,7 @@ async function limpiarTodasLasNotificaciones() {
     if (contador > 0) {
       await batch.commit();
       console.log(`✅ ${contador} notificaciones marcadas como leídas.`);
-      processedToastIds.clear(); // Limpiamos el historial de toasts al limpiar la bandeja
+      processedToastIds.clear();
       abrirModalNotificaciones();
     } else {
       abrirModalNotificaciones();
@@ -413,14 +442,16 @@ function abrirModalNotificaciones() {
 }
 
 // ==========================================
-// APODO Y MODALES
+// PERFIL DEL USUARIO (APODO + PREFERENCIAS)
 // ==========================================
-function suscribirApodo(user) {
+function suscribirPerfil(user) {
   if (unsubscribeUser) { unsubscribeUser(); unsubscribeUser = null; }
   const userRef = db.collection('usuarios').doc(user.uid);
   unsubscribeUser = userRef.onSnapshot((doc) => {
     if (doc.exists) {
       const data = doc.data();
+      
+      // 1. Cargar Apodo
       if (data.apodo && data.apodo.trim() !== '') {
         currentNickname = data.apodo;
         userNameSpan.textContent = data.apodo; 
@@ -428,12 +459,23 @@ function suscribirApodo(user) {
         currentNickname = user.displayName || user.email;
         userNameSpan.textContent = currentNickname;
       }
+
+      // 2. Cargar Preferencia de Notificaciones
+      // Si el campo no existe, por defecto estará activado (true)
+      userNotificationsEnabled = data.notificationsEnabled !== undefined ? data.notificationsEnabled : true;
+      
+      // Si la página de configuración está abierta, actualizamos el toggle visualmente
+      if (!pageConfig.classList.contains('hidden-page') && notifToggle) {
+        notifToggle.checked = userNotificationsEnabled;
+      }
+
     } else {
       currentNickname = user.displayName || user.email;
       userNameSpan.textContent = currentNickname;
+      userNotificationsEnabled = true; // Por defecto activado
     }
   }, (error) => {
-    console.error("Error al obtener el apodo:", error);
+    console.error("Error al obtener el perfil:", error);
     userNameSpan.textContent = user.displayName || user.email;
   });
 }
@@ -449,6 +491,9 @@ function guardarApodo(nuevoApodo) {
   });
 }
 
+// ==========================================
+// MODALES
+// ==========================================
 function abrirModal() { modalCategoria.classList.remove('hidden'); nombreCategoria.value = ''; imagenCategoria.value = ''; setTimeout(() => nombreCategoria.focus(), 100); }
 function cerrarModal() { modalCategoria.classList.add('hidden'); formCategoria.reset(); }
 
@@ -515,7 +560,8 @@ auth.onAuthStateChanged(user => {
     pageCategorias.classList.remove('hidden-page');
     if (pageConfig) pageConfig.classList.add('hidden-page');
     
-    suscribirApodo(user);
+    // Unificamos la suscripción del perfil (Apodo + Preferencias)
+    suscribirPerfil(user); 
     suscribirCategorias();
     suscribirNotificaciones(user);
     requestNotificationPermission();
@@ -525,7 +571,7 @@ auth.onAuthStateChanged(user => {
     const activeItem = document.querySelector('.dock-item[data-page="categorias"]');
     if (activeItem) activeItem.classList.add('active');
     
-    initSettings();
+    sincronizarTogglesUI();
   } else {
     console.log("ℹ️ Usuario NO autenticado.");
     pageAuth.classList.remove('hidden-page');
@@ -534,6 +580,7 @@ auth.onAuthStateChanged(user => {
     contenedor.innerHTML = '';
     userNameSpan.textContent = 'Invitado';
     currentNickname = null;
+    userNotificationsEnabled = true; // Resetear al cerrar sesión
     authError.textContent = '';
     if (dock) dock.classList.add('hidden-page');
   }
@@ -547,6 +594,4 @@ authSwitchLink.addEventListener('click', toggleAuthMode);
 btnGoogle.addEventListener('click', loginWithGoogle);
 btnLogout.addEventListener('click', logout);
 
-document.addEventListener('DOMContentLoaded', () => { initSettings(); });
-
-console.log('✅ App cargada, esperando eventos.');
+console.log('✅ App cargada, preferencias de usuario sincronizadas.');
