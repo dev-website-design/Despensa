@@ -344,11 +344,14 @@ function fvOpenPurchaseModal(product) {
   fvCurrentQuantity = 1;
   fvModalProductName.textContent = product.name;
   fvModalQuantity.textContent = fvCurrentQuantity;
-  fvModal.hidden = false; // Mostrar modal
+  
+  // ✅ CORREGIDO: Usamos la clase `.hidden` que está en el CSS
+  fvModal.classList.remove('hidden');
 }
 
 function fvCloseModal() {
-  fvModal.hidden = true;
+  // ✅ CORREGIDO: Usamos la clase `.hidden` que está en el CSS
+  fvModal.classList.add('hidden');
   fvCurrentProduct = null;
 }
 
