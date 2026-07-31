@@ -245,7 +245,10 @@ function agregarCategoria(nombre, imagenBase64) {
     agregadoPor: nombreMostrar, 
     fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
   }).then(() => {
+    // 🔔 NOTIFICACIÓN INTERNA (Toast + Campanita)
     notificarNuevaCategoria(nombre, nombreMostrar);
+    
+    // ✅ ELIMINAMOS EL CÓDIGO DE ONESIGNAL DEL CLIENTE PARA EVITAR DUPLICADOS
   }).catch(error => {
     console.error('Error al agregar categoria:', error);
     if (error.code === 'permission-denied') {
@@ -324,19 +327,15 @@ function mostrarToast(data) {
   }, 4000);
 }
 
-// 🔥 Función para limpiar las notificaciones vistas
 async function limpiarTodasLasNotificaciones() {
   if (!currentUser) return;
-  
   const ref = db.collection('notificaciones_globales');
   try {
     const snapshot = await ref.get();
     const batch = db.batch();
     let contador = 0;
-    
     snapshot.forEach(doc => {
       const data = doc.data();
-      // Solo agregamos el UID a las que aún no lo tienen para no hacer operaciones de más
       if (!data.leido_por || !data.leido_por.includes(currentUser.uid)) {
         batch.update(doc.ref, {
           leido_por: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
@@ -344,15 +343,11 @@ async function limpiarTodasLasNotificaciones() {
         contador++;
       }
     });
-
     if (contador > 0) {
       await batch.commit();
       console.log(`✅ ${contador} notificaciones marcadas como leídas.`);
-      
-      // Recargamos el modal para que se vacíe inmediatamente
       abrirModalNotificaciones();
     } else {
-      // Si ya estaban todas leídas, simplemente recargamos para refrescar
       abrirModalNotificaciones();
     }
   } catch (error) {
@@ -363,29 +358,23 @@ async function limpiarTodasLasNotificaciones() {
 
 function abrirModalNotificaciones() {
   if (!currentUser) return;
-
-  // Ya no marcamos automáticamente al abrir, dejamos que el usuario vea las pendientes y las limpie manualmente.
   const ref = db.collection('notificaciones_globales').orderBy('timestamp', 'desc').limit(50);
   ref.get().then((snapshot) => {
     notifList.innerHTML = '';
-    
-    // Filtramos para mostrar solo las que NO tiene el UID del usuario (o mostrar el mensaje vacío si no hay)
     const notificacionesPendientes = [];
-    
     snapshot.forEach(doc => {
       const data = doc.data();
       if (!data.leido_por || !data.leido_por.includes(currentUser.uid)) {
         notificacionesPendientes.push({ id: doc.id, data: data });
       }
     });
-
     if (notificacionesPendientes.length === 0) {
       notifList.innerHTML = '<p style="color: var(--perfect-rose); text-align: center; padding: 20px 0;">No hay notificaciones nuevas.</p>';
     } else {
       notificacionesPendientes.forEach(item => {
         const data = item.data;
         const div = document.createElement('div');
-        div.className = 'notif-item unread'; // Les dejamos el estilo de "no leído" para resaltarlas
+        div.className = 'notif-item unread';
         const fecha = data.timestamp ? data.timestamp.toDate().toLocaleString() : 'Recién';
         div.innerHTML = `
           <div>
@@ -471,7 +460,6 @@ modalNickname.addEventListener('click', (e) => { if (e.target === modalNickname)
 btnOpenNotif.addEventListener('click', abrirModalNotificaciones);
 modalNotifClose.addEventListener('click', () => { modalNotif.classList.add('hidden'); });
 modalNotif.addEventListener('click', (e) => { if (e.target === modalNotif) modalNotif.classList.add('hidden'); });
-// 🔥 Event listener para el botón "Limpiar todo"
 btnClearNotifications.addEventListener('click', limpiarTodasLasNotificaciones);
 
 // ==========================================
