@@ -1,5 +1,5 @@
 // =====================================================
-// app.js - Botón + inteligente y sincronización en tiempo real de frutas
+// app.js - Editar Categorías (Lápiz ✏️)
 // =====================================================
 
 console.log("🚀 Cargando FINDORA...");
@@ -77,13 +77,21 @@ const fvBtnClose = document.getElementById('btn-close-modal-fv');
 const fvBtnInc = document.getElementById('btn-increment-fv');
 const fvBtnDec = document.getElementById('btn-decrement-fv');
 
-// DOM ELEMENTS - NUEVO MODAL AÑADIR FRUTA
+// DOM ELEMENTS - FRUTAS ADD
 const modalFruta = document.getElementById('modalFruta');
 const formFruta = document.getElementById('formFruta');
 const nombreFruta = document.getElementById('nombreFruta');
 const precioFruta = document.getElementById('precioFruta');
 const imagenFruta = document.getElementById('imagenFruta');
 const modalFrutaCancel = document.getElementById('modalFrutaCancel');
+
+// DOM ELEMENTS - EDITAR CATEGORÍA
+const modalEditarCategoria = document.getElementById('modalEditarCategoria');
+const formEditarCategoria = document.getElementById('formEditarCategoria');
+const nombreEditarCategoria = document.getElementById('nombreEditarCategoria');
+const imagenEditarCategoria = document.getElementById('imagenEditarCategoria');
+const modalEditarCancel = document.getElementById('modalEditarCancel');
+let currentEditCategoryId = null; // Guarda el ID de la categoría que se está editando
 
 // Variables de Configuración y Toggles
 const darkModeToggle = document.getElementById('darkModeToggle');
@@ -93,7 +101,7 @@ const notifToggle = document.getElementById('notificationsToggle');
 let isLogin = true;
 let currentUser = null;
 let unsubscribeCategorias = null;
-let unsubscribeFrutas = null; // Listener de frutas
+let unsubscribeFrutas = null;
 let unsubscribeUser = null;
 let unsubscribeNotif = null;
 let currentNickname = null; 
@@ -116,7 +124,7 @@ function switchPage(pageId) {
     sincronizarTogglesUI();
   } else if (pageId === 'frutas-verduras' && pageFrutas) {
     pageFrutas.classList.remove('hidden-page');
-    suscribirFrutas(); // Iniciar escucha de la colección de frutas
+    suscribirFrutas();
   }
 
   dockItems.forEach(item => item.classList.remove('active'));
@@ -131,13 +139,11 @@ dockItems.forEach(item => {
   });
 });
 
-// 🔥 BOTÓN + INTELIGENTE: Detecta la sección activa
+// BOTÓN + INTELIGENTE
 dockAddBtn.addEventListener('click', function() {
     if (!pageFrutas.classList.contains('hidden-page')) {
-        // Si estamos en Frutas y Verduras, abrimos el modal de Fruta
         abrirModalFruta();
     } else {
-        // Si estamos en cualquier otro lado (Categorías), abrimos el modal de Categoría
         abrirModal();
     }
 });
@@ -229,7 +235,7 @@ async function requestNotificationPermission() {
 }
 
 // ==========================================
-// CATEGORÍAS
+// CATEGORÍAS (Renderizado, Edición y Eliminación)
 // ==========================================
 function getCategoriasRef() { return db.collection('categorias_compartidas'); }
 
@@ -246,19 +252,26 @@ function suscribirCategorias() {
       const estiloFondo = tieneImagen ? `background-image: url('${data.imagen}');` : '';
       const claseImagen = tieneImagen ? 'con-imagen' : '';
       const agregadoPor = data.agregadoPor ? ` (por ${data.agregadoPor})` : '';
+      
+      // 🔥 HEMOS CAMBIADO LA X POR UN LÁPIZ (✏️) CON EL MISMO EVENTO DE DATASET
       html += `
         <div class="categoria ${claseImagen}" style="${estiloFondo}" data-id="${id}" data-nombre="${data.nombre}">
           <div class="categoria-footer">
             <span>${data.nombre}${agregadoPor}</span>
-            <button class="btn-eliminar" data-id="${id}" aria-label="Eliminar">✕</button>
+            <br>
+            <button class="btn-editar" data-id="${id}" aria-label="Editar" style="background:none; border:none; color:var(--perfect-rose); cursor:pointer; font-size:1.1rem; margin-top:5px;">✏️</button>
           </div>
         </div>
       `;
     });
     contenedor.innerHTML = html;
 
+    // Click para entrar a la tienda (Frutas/Verduras)
     document.querySelectorAll('.categoria').forEach(card => {
-      card.addEventListener('click', function() {
+      card.addEventListener('click', function(e) {
+        // Evitar que el click en el botón de editar dispare la navegación
+        if (e.target.closest('.btn-editar')) return;
+
         const nombreCat = this.dataset.nombre;
         if (nombreCat && (nombreCat.toLowerCase().includes('fruta') || nombreCat.toLowerCase().includes('verdura'))) {
           switchPage('frutas-verduras');
@@ -268,16 +281,12 @@ function suscribirCategorias() {
       });
     });
 
-    document.querySelectorAll('.btn-eliminar').forEach(btn => {
+    // 🔥 EVENTO PARA EDITAR (El lápiz)
+    document.querySelectorAll('.btn-editar').forEach(btn => {
       btn.addEventListener('click', function(e) {
-        e.stopPropagation();
+        e.stopPropagation(); // Evita que el clic en el lápiz entre a la categoría
         const id = this.dataset.id;
-        if (confirm('¿Eliminar esta categoría?')) {
-          getCategoriasRef().doc(id).delete().catch(error => {
-            console.error('Error al eliminar:', error);
-            alert('Error al eliminar: ' + error.message);
-          });
-        }
+        abrirModalEditarCategoria(id);
       });
     });
   }, (error) => {
@@ -309,7 +318,88 @@ function agregarCategoria(nombre, imagenBase64) {
 }
 
 // ==========================================
-// 🛒 LÓGICA DE FRUTAS (Colección Firestore + Tiempo real)
+// 🆕 LÓGICA PARA EDITAR CATEGORÍAS
+// ==========================================
+function abrirModalEditarCategoria(id) {
+  currentEditCategoryId = id;
+  // Cargamos los datos actuales de la categoría
+  getCategoriasRef().doc(id).get().then((doc) => {
+    if (doc.exists) {
+      const data = doc.data();
+      nombreEditarCategoria.value = data.nombre || '';
+      // No podemos precargar la imagen en el input de tipo "file" por seguridad
+      imagenEditarCategoria.value = ''; 
+      modalEditarCategoria.classList.remove('hidden');
+      setTimeout(() => nombreEditarCategoria.focus(), 100);
+    }
+  }).catch(error => {
+    console.error("Error al cargar la categoría para editar:", error);
+    alert("No se pudo cargar la categoría para editar.");
+  });
+}
+
+function cerrarModalEditarCategoria() {
+  modalEditarCategoria.classList.add('hidden');
+  formEditarCategoria.reset();
+  currentEditCategoryId = null;
+}
+
+function actualizarCategoria(id, nuevoNombre, nuevaImagenBase64) {
+  const ref = getCategoriasRef().doc(id);
+  const updateData = {
+    nombre: nuevoNombre.trim(),
+    editadoPor: currentNickname || currentUser.email,
+    editadoEn: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  // Solo actualizamos la imagen si el usuario seleccionó una nueva
+  if (nuevaImagenBase64) {
+    updateData.imagen = nuevaImagenBase64;
+  }
+
+  ref.update(updateData).then(() => {
+    cerrarModalEditarCategoria();
+  }).catch(error => {
+    console.error("Error al actualizar categoría:", error);
+    alert("Error al guardar los cambios: " + error.message);
+  });
+}
+
+formEditarCategoria.addEventListener('submit', function(e) {
+  e.preventDefault();
+  if (!currentEditCategoryId) return;
+
+  const submitBtn = this.querySelector('button[type="submit"]');
+  if (submitBtn) submitBtn.disabled = true;
+
+  const nombre = nombreEditarCategoria.value.trim();
+  if (!nombre) {
+    alert("El nombre no puede estar vacío.");
+    if (submitBtn) submitBtn.disabled = false;
+    return;
+  }
+
+  const file = imagenEditarCategoria.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      actualizarCategoria(currentEditCategoryId, nombre, event.target.result);
+      if (submitBtn) submitBtn.disabled = false;
+    };
+    reader.readAsDataURL(file);
+  } else {
+    actualizarCategoria(currentEditCategoryId, nombre, null);
+    if (submitBtn) submitBtn.disabled = false;
+  }
+});
+
+modalEditarCancel.addEventListener('click', cerrarModalEditarCategoria);
+modalEditarCategoria.addEventListener('click', (e) => { 
+  if (e.target === modalEditarCategoria) cerrarModalEditarCategoria(); 
+});
+
+
+// ==========================================
+// 🛒 LÓGICA DE FRUTAS
 // ==========================================
 function getFrutasRef() { return db.collection('frutas_compartidas'); }
 
@@ -420,7 +510,6 @@ fvBtnConfirm.addEventListener('click', function() {
 });
 fvSearchInput.addEventListener('input', function() {
   const text = this.value.toLowerCase();
-  // Filtrado local de los productos renderizados
   const cards = fvGrid.querySelectorAll('.product-card');
   cards.forEach(card => {
     const name = card.querySelector('.product-name').textContent.toLowerCase();
@@ -649,7 +738,7 @@ function guardarApodo(nuevoApodo) {
 }
 
 // ==========================================
-// MODALES DE LA APP
+// MODALES DE LA APP (Nueva, Apodo, Notificaciones)
 // ==========================================
 function abrirModal() { modalCategoria.classList.remove('hidden'); nombreCategoria.value = ''; imagenCategoria.value = ''; setTimeout(() => nombreCategoria.focus(), 100); }
 function cerrarModal() { modalCategoria.classList.add('hidden'); formCategoria.reset(); }
@@ -738,4 +827,4 @@ authSwitchLink.addEventListener('click', toggleAuthMode);
 btnGoogle.addEventListener('click', loginWithGoogle);
 btnLogout.addEventListener('click', logout);
 
-console.log('✅ App cargada, botón + inteligente activado.');
+console.log('✅ App cargada, edición de categorías activada.');
