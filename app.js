@@ -1,5 +1,5 @@
 // =====================================================
-// app.js - Preferencias de notificaciones por usuario (Firestore) y Tienda Frutas
+// app.js - Botón + inteligente y sincronización en tiempo real de frutas
 // =====================================================
 
 console.log("🚀 Cargando FINDORA...");
@@ -31,7 +31,7 @@ try {
 const pageAuth = document.getElementById('page-auth');
 const pageCategorias = document.getElementById('page-categorias');
 const pageConfig = document.getElementById('page-config');
-const pageFrutas = document.getElementById('page-frutas-verduras'); // NUEVA PÁGINA
+const pageFrutas = document.getElementById('page-frutas-verduras');
 const dock = document.getElementById('mainDock');
 const dockItems = document.querySelectorAll('.dock-item');
 const authForm = document.getElementById('authForm');
@@ -65,7 +65,7 @@ const btnClearNotifications = document.getElementById('btnClearNotifications');
 const notifBadge = document.getElementById('notifBadge');
 const toastContainer = document.getElementById('toastContainer');
 
-// DOM ELEMENTS - FRUTAS Y VERDURAS
+// DOM ELEMENTS - FRUTAS
 const btnBackCategorias = document.getElementById('btn-back-categorias');
 const fvSearchInput = document.getElementById('search-input-frutas');
 const fvGrid = document.getElementById('product-grid-frutas');
@@ -77,6 +77,14 @@ const fvBtnClose = document.getElementById('btn-close-modal-fv');
 const fvBtnInc = document.getElementById('btn-increment-fv');
 const fvBtnDec = document.getElementById('btn-decrement-fv');
 
+// DOM ELEMENTS - NUEVO MODAL AÑADIR FRUTA
+const modalFruta = document.getElementById('modalFruta');
+const formFruta = document.getElementById('formFruta');
+const nombreFruta = document.getElementById('nombreFruta');
+const precioFruta = document.getElementById('precioFruta');
+const imagenFruta = document.getElementById('imagenFruta');
+const modalFrutaCancel = document.getElementById('modalFrutaCancel');
+
 // Variables de Configuración y Toggles
 const darkModeToggle = document.getElementById('darkModeToggle');
 const notifToggle = document.getElementById('notificationsToggle');
@@ -85,6 +93,7 @@ const notifToggle = document.getElementById('notificationsToggle');
 let isLogin = true;
 let currentUser = null;
 let unsubscribeCategorias = null;
+let unsubscribeFrutas = null; // Listener de frutas
 let unsubscribeUser = null;
 let unsubscribeNotif = null;
 let currentNickname = null; 
@@ -93,15 +102,13 @@ let settingsListenersAttached = false;
 const processedToastIds = new Set();
 
 // ==========================================
-// LÓGICA DE NAVEGACIÓN (Categorías / Configuración / Frutas)
+// LÓGICA DE NAVEGACIÓN
 // ==========================================
 function switchPage(pageId) {
-  // Ocultar todas las páginas
   if (pageCategorias) pageCategorias.classList.add('hidden-page');
   if (pageConfig) pageConfig.classList.add('hidden-page');
   if (pageFrutas) pageFrutas.classList.add('hidden-page');
   
-  // Mostrar la seleccionada
   if (pageId === 'categorias' && pageCategorias) {
     pageCategorias.classList.remove('hidden-page');
   } else if (pageId === 'config' && pageConfig) {
@@ -109,10 +116,9 @@ function switchPage(pageId) {
     sincronizarTogglesUI();
   } else if (pageId === 'frutas-verduras' && pageFrutas) {
     pageFrutas.classList.remove('hidden-page');
-    renderizarFrutas(fvProducts); // Renderizar los productos al entrar
+    suscribirFrutas(); // Iniciar escucha de la colección de frutas
   }
 
-  // Actualizar Dock activo
   dockItems.forEach(item => item.classList.remove('active'));
   const activeDock = document.querySelector(`.dock-item[data-page="${pageId}"]`);
   if (activeDock) activeDock.classList.add('active');
@@ -125,8 +131,19 @@ dockItems.forEach(item => {
   });
 });
 
+// 🔥 BOTÓN + INTELIGENTE: Detecta la sección activa
+dockAddBtn.addEventListener('click', function() {
+    if (!pageFrutas.classList.contains('hidden-page')) {
+        // Si estamos en Frutas y Verduras, abrimos el modal de Fruta
+        abrirModalFruta();
+    } else {
+        // Si estamos en cualquier otro lado (Categorías), abrimos el modal de Categoría
+        abrirModal();
+    }
+});
+
 // ==========================================
-// CONFIGURACIÓN (MODO OSCURO y NOTIFICACIONES)
+// CONFIGURACIÓN
 // ==========================================
 function sincronizarTogglesUI() {
   const savedDark = localStorage.getItem('darkMode');
@@ -212,7 +229,7 @@ async function requestNotificationPermission() {
 }
 
 // ==========================================
-// CATEGORÍAS (Carga de datos + Navegación a Frutas)
+// CATEGORÍAS
 // ==========================================
 function getCategoriasRef() { return db.collection('categorias_compartidas'); }
 
@@ -240,7 +257,6 @@ function suscribirCategorias() {
     });
     contenedor.innerHTML = html;
 
-    // 🔥 Navegación al hacer clic en una categoría (Frutas o Verduras)
     document.querySelectorAll('.categoria').forEach(card => {
       card.addEventListener('click', function() {
         const nombreCat = this.dataset.nombre;
@@ -286,76 +302,101 @@ function agregarCategoria(nombre, imagenBase64) {
     isSavingCategory = false;
   }).catch(error => {
     console.error('Error al agregar categoria:', error);
-    if (error.code === 'permission-denied') alert("⚠️ ERROR DE PERMISOS. Ve a Firebase > Firestore > Reglas y pega las reglas de seguridad colaborativas.");
+    if (error.code === 'permission-denied') alert("⚠️ ERROR DE PERMISOS. Revisa las reglas de Firestore.");
     else alert('Error al guardar: ' + error.message);
     isSavingCategory = false;
   });
 }
 
 // ==========================================
-// 🛒 LÓGICA DE FRUTAS Y VERDURAS (Renderizado, Búsqueda, Modal)
+// 🛒 LÓGICA DE FRUTAS (Colección Firestore + Tiempo real)
 // ==========================================
-const fvProducts = [
-  { id: 1, name: 'Kiwi Fruits', price: 160, image: 'https://images.unsplash.com/photo-1585059895524-0a78f916b202?w=200&h=200&fit=crop' },
-  { id: 2, name: 'Apple', price: 75, image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=200&h=200&fit=crop' },
-  { id: 3, name: 'Tomato', price: 25, image: 'https://images.unsplash.com/photo-1592924357228-91a078e5c814?w=200&h=200&fit=crop' },
-  { id: 4, name: 'Lemon', price: 48, image: 'https://images.unsplash.com/photo-1586281380349-632531f09622?w=200&h=200&fit=crop' },
-  { id: 5, name: 'Pineapple', price: 120, image: 'https://images.unsplash.com/photo-1550989460-0adf9ea622e2?w=200&h=200&fit=crop' },
-  { id: 6, name: 'Watermelon', price: 85, image: 'https://images.unsplash.com/photo-1589984662646-e7b2e4962f18?w=200&h=200&fit=crop' }
-];
+function getFrutasRef() { return db.collection('frutas_compartidas'); }
+
+function suscribirFrutas() {
+  if (unsubscribeFrutas) { unsubscribeFrutas(); unsubscribeFrutas = null; }
+  const ref = getFrutasRef();
+  unsubscribeFrutas = ref.orderBy('fechaCreacion', 'asc').onSnapshot((snapshot) => {
+    if (snapshot.empty) {
+      fvGrid.innerHTML = `<div class="empty-state">No hay productos aún. ¡Añade uno con el botón +!</div>`;
+      return;
+    }
+    let html = '';
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const id = doc.id;
+      const tieneImagen = data.imagen && data.imagen.startsWith('data:image');
+      const imgHtml = tieneImagen ? `<img src="${data.imagen}" alt="${data.nombre}" class="product-image" onerror="this.src='https://via.placeholder.com/100?text=Producto'">` : `<div style="height:90px; display:flex; align-items:center; justify-content:center; color:#888;">Sin imagen</div>`;
+      
+      html += `
+        <div class="product-card">
+          <span class="heart-icon">♡</span>
+          ${imgHtml}
+          <span class="product-name">${data.nombre}</span>
+          <div class="card-footer">
+            <span class="price">₹ ${data.precio}</span>
+            <button class="btn-comprar" data-id="${id}">COMPRAR</button>
+          </div>
+        </div>
+      `;
+    });
+    fvGrid.innerHTML = html;
+    
+    document.querySelectorAll('.btn-comprar').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const id = this.dataset.id;
+        getFrutasRef().doc(id).get().then((docSnap) => {
+          if (docSnap.exists) {
+            const product = docSnap.data();
+            fvOpenPurchaseModal({ id: docSnap.id, name: product.nombre, price: product.precio, image: product.imagen });
+          }
+        });
+      });
+    });
+
+  }, (error) => {
+    console.error('Error en tiempo real de frutas:', error);
+    fvGrid.innerHTML = `<div class="empty-state" style="color:red;">Error al cargar frutas. Revisa la consola.</div>`;
+  });
+}
+
+function agregarFruta(nombre, precio, imagenBase64) {
+  const ref = getFrutasRef();
+  const nombreMostrar = currentNickname || (currentUser ? currentUser.email : 'Invitado');
+  const precioNumerico = parseFloat(precio);
+  if (isNaN(precioNumerico)) { alert("Por favor, ingresa un precio válido."); return; }
+
+  ref.add({
+    nombre: nombre.trim(),
+    precio: precioNumerico,
+    imagen: imagenBase64 || '',
+    agregadoPor: nombreMostrar, 
+    fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => {
+    cerrarModalFruta();
+  }).catch(error => {
+    console.error('Error al agregar fruta:', error);
+    if (error.code === 'permission-denied') alert("⚠️ ERROR DE PERMISOS. Revisa las reglas de Firestore.");
+    else alert('Error al guardar: ' + error.message);
+  });
+}
 
 let fvCurrentProduct = null;
 let fvCurrentQuantity = 1;
 
-// Renderizar productos
-function renderizarFrutas(filteredData) {
-  fvGrid.innerHTML = ''; 
-  if (filteredData.length === 0) {
-    fvGrid.innerHTML = `<div class="empty-state">No se encontraron productos 😞</div>`;
-    return;
-  }
-  filteredData.forEach(product => {
-    const card = document.createElement('div');
-    card.className = 'product-card';
-    card.innerHTML = `
-      <span class="heart-icon">♡</span>
-      <img src="${product.image}" alt="${product.name}" class="product-image" onerror="this.src='https://via.placeholder.com/100?text=Producto'">
-      <span class="product-name">${product.name}</span>
-      <div class="card-footer">
-        <span class="price">₹ ${product.price}</span>
-        <button class="btn-comprar" data-id="${product.id}">COMPRAR</button>
-      </div>
-    `;
-    fvGrid.appendChild(card);
-  });
-
-  document.querySelectorAll('.btn-comprar').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const id = parseInt(this.getAttribute('data-id'));
-      const product = fvProducts.find(p => p.id === id);
-      fvOpenPurchaseModal(product);
-    });
-  });
-}
-
-// Funciones del Modal de Frutas
 function fvOpenPurchaseModal(product) {
   fvCurrentProduct = product;
   fvCurrentQuantity = 1;
   fvModalProductName.textContent = product.name;
   fvModalQuantity.textContent = fvCurrentQuantity;
-  
-  // ✅ CORREGIDO: Usamos la clase `.hidden` que está en el CSS
   fvModal.classList.remove('hidden');
 }
 
 function fvCloseModal() {
-  // ✅ CORREGIDO: Usamos la clase `.hidden` que está en el CSS
   fvModal.classList.add('hidden');
   fvCurrentProduct = null;
 }
 
-// Eventos de Frutas
 fvModal.addEventListener('click', function(e) {
   if (e.target === this) fvCloseModal();
 });
@@ -377,21 +418,72 @@ fvBtnConfirm.addEventListener('click', function() {
     fvCloseModal();
   }
 });
-
-// Búsqueda en tiempo real
 fvSearchInput.addEventListener('input', function() {
   const text = this.value.toLowerCase();
-  const filtered = fvProducts.filter(p => p.name.toLowerCase().includes(text));
-  renderizarFrutas(filtered);
+  // Filtrado local de los productos renderizados
+  const cards = fvGrid.querySelectorAll('.product-card');
+  cards.forEach(card => {
+    const name = card.querySelector('.product-name').textContent.toLowerCase();
+    if (name.includes(text)) {
+      card.style.display = 'flex';
+    } else {
+      card.style.display = 'none';
+    }
+  });
 });
-
-// Botón "Atrás" (←) para regresar a Categorías
 btnBackCategorias.addEventListener('click', function() {
     switchPage('categorias');
 });
 
 // ==========================================
-// NOTIFICACIONES INTERNAS (TOAST, BADGE Y MODAL)
+// MODAL AÑADIR FRUTA
+// ==========================================
+function abrirModalFruta() {
+  modalFruta.classList.remove('hidden');
+  nombreFruta.value = '';
+  precioFruta.value = '';
+  imagenFruta.value = '';
+  setTimeout(() => nombreFruta.focus(), 100);
+}
+
+function cerrarModalFruta() {
+  modalFruta.classList.add('hidden');
+  formFruta.reset();
+}
+
+formFruta.addEventListener('submit', function(e) {
+  e.preventDefault();
+  const submitBtn = this.querySelector('button[type="submit"]');
+  if (submitBtn) submitBtn.disabled = true;
+
+  const nombre = nombreFruta.value.trim();
+  const precio = precioFruta.value.trim();
+  
+  if (!nombre || !precio) { 
+    alert('El nombre y el precio son obligatorios.'); 
+    if (submitBtn) submitBtn.disabled = false; 
+    return; 
+  }
+
+  const file = imagenFruta.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (event) => { 
+      agregarFruta(nombre, precio, event.target.result); 
+      if (submitBtn) submitBtn.disabled = false;
+    };
+    reader.readAsDataURL(file);
+  } else { 
+    agregarFruta(nombre, precio, ''); 
+    if (submitBtn) submitBtn.disabled = false;
+  }
+});
+
+modalFrutaCancel.addEventListener('click', cerrarModalFruta);
+modalFruta.addEventListener('click', (e) => { if (e.target === modalFruta) cerrarModalFruta(); });
+
+// ==========================================
+// NOTIFICACIONES INTERNAS
 // ==========================================
 function notificarNuevaCategoria(nombreCategoria, usuarioEmisor) {
   if (!currentUser) return; 
@@ -515,7 +607,7 @@ function abrirModalNotificaciones() {
 }
 
 // ==========================================
-// PERFIL DEL USUARIO (APODO + PREFERENCIAS)
+// PERFIL Y APODO
 // ==========================================
 function suscribirPerfil(user) {
   if (unsubscribeUser) { unsubscribeUser(); unsubscribeUser = null; }
@@ -577,7 +669,6 @@ formCategoria.addEventListener('submit', function(e) {
 });
 modalCancel.addEventListener('click', cerrarModal);
 modalCategoria.addEventListener('click', (e) => { if (e.target === modalCategoria) cerrarModal(); });
-dockAddBtn.addEventListener('click', abrirModal);
 
 function abrirModalNickname() { modalNickname.classList.remove('hidden'); inputNickname.value = currentNickname || ''; setTimeout(() => inputNickname.focus(), 100); }
 function cerrarModalNickname() { modalNickname.classList.add('hidden'); formNickname.reset(); }
@@ -601,8 +692,10 @@ btnClearNotifications.addEventListener('click', limpiarTodasLasNotificaciones);
 // ==========================================
 auth.onAuthStateChanged(user => {
   if (unsubscribeCategorias) { unsubscribeCategorias(); unsubscribeCategorias = null; }
+  if (unsubscribeFrutas) { unsubscribeFrutas(); unsubscribeFrutas = null; }
   if (unsubscribeUser) { unsubscribeUser(); unsubscribeUser = null; }
   if (unsubscribeNotif) { unsubscribeNotif(); unsubscribeNotif = null; }
+  
   currentUser = user;
   if (user) {
     console.log("✅ Usuario autenticado:", user.email);
@@ -645,4 +738,4 @@ authSwitchLink.addEventListener('click', toggleAuthMode);
 btnGoogle.addEventListener('click', loginWithGoogle);
 btnLogout.addEventListener('click', logout);
 
-console.log('✅ App cargada, preferencias de usuario sincronizadas.');
+console.log('✅ App cargada, botón + inteligente activado.');
