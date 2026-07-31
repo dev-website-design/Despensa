@@ -72,6 +72,9 @@ let unsubscribeNotif = null;
 let currentNickname = null; 
 let settingsListenersAttached = false;
 
+// 🛡️ Memoria temporal para evitar Toasts duplicados
+const processedToastIds = new Set();
+
 // ==========================================
 // LÓGICA DE NAVEGACIÓN
 // ==========================================
@@ -236,11 +239,9 @@ function suscribirCategorias() {
   });
 }
 
-// ⚠️ Variable para evitar guardados duplicados
 let isSavingCategory = false;
 
 function agregarCategoria(nombre, imagenBase64) {
-  // Protección contra doble clic
   if (isSavingCategory) return;
   isSavingCategory = true;
 
@@ -254,7 +255,7 @@ function agregarCategoria(nombre, imagenBase64) {
     fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
   }).then(() => {
     notificarNuevaCategoria(nombre, nombreMostrar);
-    isSavingCategory = false; // Desbloquear después de guardar
+    isSavingCategory = false;
   }).catch(error => {
     console.error('Error al agregar categoria:', error);
     if (error.code === 'permission-denied') {
@@ -262,7 +263,7 @@ function agregarCategoria(nombre, imagenBase64) {
     } else {
       alert('Error al guardar: ' + error.message);
     }
-    isSavingCategory = false; // Desbloquear incluso si hay error
+    isSavingCategory = false;
   });
 }
 
@@ -305,8 +306,20 @@ function suscribirNotificaciones(user) {
         } else {
           notifBadge.classList.remove('visible');
         }
+        
+        // 🛡️ Verificamos si ya mostramos un Toast para esta notificación
         if (ultimaNotif && notificacionesPendientes > 0) {
-          mostrarToast(ultimaNotif.data);
+          if (!processedToastIds.has(ultimaNotif.id)) {
+            mostrarToast(ultimaNotif.data);
+            processedToastIds.add(ultimaNotif.id);
+            
+            // Limpieza automática para no llenar la memoria
+            if (processedToastIds.size > 50) {
+              processedToastIds.clear();
+            }
+          } else {
+            console.log("🚫 Notificación duplicada bloqueada por el Set de seguridad.");
+          }
         }
       } catch (innerError) {
         console.error("Error en el bucle de notificaciones:", innerError);
@@ -353,6 +366,7 @@ async function limpiarTodasLasNotificaciones() {
     if (contador > 0) {
       await batch.commit();
       console.log(`✅ ${contador} notificaciones marcadas como leídas.`);
+      processedToastIds.clear(); // Limpiamos el historial de toasts al limpiar la bandeja
       abrirModalNotificaciones();
     } else {
       abrirModalNotificaciones();
@@ -438,11 +452,8 @@ function guardarApodo(nuevoApodo) {
 function abrirModal() { modalCategoria.classList.remove('hidden'); nombreCategoria.value = ''; imagenCategoria.value = ''; setTimeout(() => nombreCategoria.focus(), 100); }
 function cerrarModal() { modalCategoria.classList.add('hidden'); formCategoria.reset(); }
 
-// Manejo del envío del formulario de categorías
 formCategoria.addEventListener('submit', function(e) {
   e.preventDefault();
-  
-  // Evitamos que el botón se presione varias veces seguidas
   const submitBtn = this.querySelector('button[type="submit"]');
   if (submitBtn) submitBtn.disabled = true;
 
@@ -458,13 +469,13 @@ formCategoria.addEventListener('submit', function(e) {
     reader.onload = (event) => { 
       agregarCategoria(nombre, event.target.result); 
       cerrarModal();
-      if (submitBtn) submitBtn.disabled = false; // Reactivar botón al finalizar
+      if (submitBtn) submitBtn.disabled = false;
     };
     reader.readAsDataURL(file);
   } else { 
     agregarCategoria(nombre, ''); 
     cerrarModal();
-    if (submitBtn) submitBtn.disabled = false; // Reactivar botón al finalizar
+    if (submitBtn) submitBtn.disabled = false;
   }
 });
 
