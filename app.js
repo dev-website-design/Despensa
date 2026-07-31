@@ -236,19 +236,25 @@ function suscribirCategorias() {
   });
 }
 
+// ⚠️ Variable para evitar guardados duplicados
+let isSavingCategory = false;
+
 function agregarCategoria(nombre, imagenBase64) {
+  // Protección contra doble clic
+  if (isSavingCategory) return;
+  isSavingCategory = true;
+
   const ref = getCategoriasRef();
   const nombreMostrar = currentNickname || (currentUser ? currentUser.email : 'Invitado');
+  
   ref.add({
     nombre: nombre.trim(),
     imagen: imagenBase64 || '',
     agregadoPor: nombreMostrar, 
     fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
   }).then(() => {
-    // 🔔 NOTIFICACIÓN INTERNA (Toast + Campanita)
     notificarNuevaCategoria(nombre, nombreMostrar);
-    
-    // ✅ ELIMINAMOS EL CÓDIGO DE ONESIGNAL DEL CLIENTE PARA EVITAR DUPLICADOS
+    isSavingCategory = false; // Desbloquear después de guardar
   }).catch(error => {
     console.error('Error al agregar categoria:', error);
     if (error.code === 'permission-denied') {
@@ -256,6 +262,7 @@ function agregarCategoria(nombre, imagenBase64) {
     } else {
       alert('Error al guardar: ' + error.message);
     }
+    isSavingCategory = false; // Desbloquear incluso si hay error
   });
 }
 
@@ -430,17 +437,37 @@ function guardarApodo(nuevoApodo) {
 
 function abrirModal() { modalCategoria.classList.remove('hidden'); nombreCategoria.value = ''; imagenCategoria.value = ''; setTimeout(() => nombreCategoria.focus(), 100); }
 function cerrarModal() { modalCategoria.classList.add('hidden'); formCategoria.reset(); }
+
+// Manejo del envío del formulario de categorías
 formCategoria.addEventListener('submit', function(e) {
   e.preventDefault();
+  
+  // Evitamos que el botón se presione varias veces seguidas
+  const submitBtn = this.querySelector('button[type="submit"]');
+  if (submitBtn) submitBtn.disabled = true;
+
   const nombre = nombreCategoria.value.trim();
-  if (!nombre) { alert('El nombre es obligatorio'); return; }
+  if (!nombre) { 
+    alert('El nombre es obligatorio'); 
+    if (submitBtn) submitBtn.disabled = false;
+    return; 
+  }
   const file = imagenCategoria.files[0];
   if (file) {
     const reader = new FileReader();
-    reader.onload = (event) => { agregarCategoria(nombre, event.target.result); cerrarModal(); };
+    reader.onload = (event) => { 
+      agregarCategoria(nombre, event.target.result); 
+      cerrarModal();
+      if (submitBtn) submitBtn.disabled = false; // Reactivar botón al finalizar
+    };
     reader.readAsDataURL(file);
-  } else { agregarCategoria(nombre, ''); cerrarModal(); }
+  } else { 
+    agregarCategoria(nombre, ''); 
+    cerrarModal();
+    if (submitBtn) submitBtn.disabled = false; // Reactivar botón al finalizar
+  }
 });
+
 modalCancel.addEventListener('click', cerrarModal);
 modalCategoria.addEventListener('click', (e) => { if (e.target === modalCategoria) cerrarModal(); });
 dockAddBtn.addEventListener('click', abrirModal);
