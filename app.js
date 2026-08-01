@@ -1,5 +1,5 @@
 // =====================================================
-// app.js - Navegación Robusta y Depuración de Clicks
+// app.js - Edición de productos en tiendas (Lápiz ✏️)
 // =====================================================
 
 console.log("🚀 Cargando FINDORA...");
@@ -76,6 +76,15 @@ const modalEditarCancel = document.getElementById('modalEditarCancel');
 const btnEditarEliminar = document.getElementById('btnEditarEliminar');
 let currentEditCategoryId = null;
 
+// DOM ELEMENTS - EDITAR PRODUCTO
+const modalEditarItem = document.getElementById('modalEditarItem');
+const formEditarItem = document.getElementById('formEditarItem');
+const nombreEditarItem = document.getElementById('nombreEditarItem');
+const precioEditarItem = document.getElementById('precioEditarItem');
+const imagenEditarItem = document.getElementById('imagenEditarItem');
+const modalEditarItemCancel = document.getElementById('modalEditarItemCancel');
+const btnEditarItemEliminar = document.getElementById('btnEditarItemEliminar');
+
 // Variables de Configuración y Toggles
 const darkModeToggle = document.getElementById('darkModeToggle');
 const notifToggle = document.getElementById('notificationsToggle');
@@ -91,26 +100,25 @@ let userNotificationsEnabled = true;
 let settingsListenersAttached = false;
 const processedToastIds = new Set();
 
+// 🆕 Para manejar el producto que se está editando
+let currentEditItemData = { tienda: null, id: null };
+
 // ==========================================
-// 🆕 LÓGICA DE NAVEGACIÓN SPA (A PRUEBA DE FALLOS)
+// 🆕 LÓGICA DE NAVEGACIÓN SPA (CON SOPORTE PARA ATRÁS)
 // ==========================================
 let isNavigating = false; // Evita bucles
 
 function switchPage(pageId, updateHistory = true) {
-    // Si ya estamos navegando, salimos para evitar bucles
     if (isNavigating) return;
     isNavigating = true;
-    
     console.log(`🔄 [SwitchPage] Cambiando a: ${pageId}`);
 
-    // 1. Ocultar todas las páginas
     if (pageCategorias) pageCategorias.classList.add('hidden-page');
     if (pageConfig) pageConfig.classList.add('hidden-page');
     if (pageFrutas) pageFrutas.classList.add('hidden-page');
     if (pageCocina) pageCocina.classList.add('hidden-page');
     if (pageSalon) pageSalon.classList.add('hidden-page');
     
-    // 2. Mostrar la página seleccionada y CARGAR SUS DATOS
     if (pageId === 'categorias' && pageCategorias) {
         pageCategorias.classList.remove('hidden-page');
     } else if (pageId === 'config' && pageConfig) {
@@ -127,23 +135,16 @@ function switchPage(pageId, updateHistory = true) {
         suscribirSalones(); 
     }
     
-    // 3. Actualizar el Dock visualmente
     dockItems.forEach(item => item.classList.remove('active'));
     const activeDock = document.querySelector(`.dock-item[data-page="${pageId}"]`);
     if (activeDock) activeDock.classList.add('active');
 
-    // 4. Actualizar el hash de la URL (para que el botón de atrás funcione)
     if (updateHistory && pageId) {
         window.location.hash = pageId;
     }
-
-    // Desbloquear navegación tras un pequeño retraso para que el DOM se estabilice
-    setTimeout(() => {
-        isNavigating = false;
-    }, 100);
+    setTimeout(() => { isNavigating = false; }, 100);
 }
 
-// Detectar el botón de "Atrás" del navegador
 window.addEventListener('hashchange', () => {
     if (isNavigating) return;
     if (window.location.hash) {
@@ -152,25 +153,16 @@ window.addEventListener('hashchange', () => {
             switchPage(pageId, false);
         }
     } else {
-        // Si se borra el hash, vuelve a categorías
         if (pageCategorias && pageCategorias.classList.contains('hidden-page')) {
             switchPage('categorias', false);
         }
     }
 });
 
-// ==========================================
-// EVENTOS DEL DOCK (CON DEPURACIÓN)
-// ==========================================
 dockItems.forEach(item => {
     item.addEventListener('click', function() {
         const page = this.dataset.page;
-        console.log(`👆 [Dock Click] Botón presionado: ${page}`);
-        if (page) {
-            switchPage(page);
-        } else {
-            console.error("El botón del dock no tiene atributo data-page");
-        }
+        if (page) switchPage(page);
     });
 });
 
@@ -261,7 +253,7 @@ async function requestNotificationPermission() {
 }
 
 // ==========================================
-// CATEGORÍAS (El resto del código se mantiene igual)
+// CATEGORÍAS
 // ==========================================
 function getCategoriasRef() { return db.collection('categorias_compartidas'); }
 
@@ -435,9 +427,12 @@ function suscribirFrutas() {
       const id = doc.id;
       const tieneImagen = data.imagen && data.imagen.startsWith('data:image');
       const imgHtml = tieneImagen ? `<img src="${data.imagen}" alt="${data.nombre}" class="product-image" onerror="this.src='https://via.placeholder.com/100?text=Producto'">` : `<div style="height:90px; display:flex; align-items:center; justify-content:center; color:#888;">Sin imagen</div>`;
+      
+      // 🔥 HTML PARA EL LÁPIZ (Izquierda) Y CORAZÓN (Derecha)
       html += `
         <div class="product-card-tienda">
           <span class="heart-icon">♡</span>
+          <button class="btn-editar-item" data-id="${id}" data-tienda="frutas">✏️</button>
           ${imgHtml}
           <span class="product-name">${data.nombre}</span>
           <div class="card-footer">
@@ -487,9 +482,12 @@ function suscribirCocinas() {
       const id = doc.id;
       const tieneImagen = data.imagen && data.imagen.startsWith('data:image');
       const imgHtml = tieneImagen ? `<img src="${data.imagen}" alt="${data.nombre}" class="product-image" onerror="this.src='https://via.placeholder.com/100?text=Producto'">` : `<div style="height:90px; display:flex; align-items:center; justify-content:center; color:#888;">Sin imagen</div>`;
+      
+      // 🔥 HTML PARA EL LÁPIZ (Izquierda) Y CORAZÓN (Derecha)
       html += `
         <div class="product-card-tienda">
           <span class="heart-icon">♡</span>
+          <button class="btn-editar-item" data-id="${id}" data-tienda="cocina">✏️</button>
           ${imgHtml}
           <span class="product-name">${data.nombre}</span>
           <div class="card-footer">
@@ -539,9 +537,12 @@ function suscribirSalones() {
       const id = doc.id;
       const tieneImagen = data.imagen && data.imagen.startsWith('data:image');
       const imgHtml = tieneImagen ? `<img src="${data.imagen}" alt="${data.nombre}" class="product-image" onerror="this.src='https://via.placeholder.com/100?text=Producto'">` : `<div style="height:90px; display:flex; align-items:center; justify-content:center; color:#888;">Sin imagen</div>`;
+      
+      // 🔥 HTML PARA EL LÁPIZ (Izquierda) Y CORAZÓN (Derecha)
       html += `
         <div class="product-card-tienda">
           <span class="heart-icon">♡</span>
+          <button class="btn-editar-item" data-id="${id}" data-tienda="salon">✏️</button>
           ${imgHtml}
           <span class="product-name">${data.nombre}</span>
           <div class="card-footer">
@@ -675,7 +676,6 @@ function suscribirCarritos() {
     if (count > 0) { badge.textContent = count > 9 ? '9+' : count; badge.classList.add('visible'); } else { badge.classList.remove('visible'); }
   });
 
-  // EVENTOS PARA ELIMINAR DEL CARRITO (se ejecuta cada vez que se renderiza el carrito)
   document.addEventListener('click', function(e) {
     if (e.target.classList.contains('btn-remove-cart')) {
       if (confirm('¿Quieres eliminar este producto del carrito?')) {
@@ -687,6 +687,13 @@ function suscribirCarritos() {
         else if (refName === 'carrito_salon') ref = getCarritoSalonRef().doc(id);
         if (ref) ref.delete().catch(err => console.error("Error al eliminar del carrito:", err));
       }
+    }
+    
+    // 🔥 EVENTO PARA EDITAR PRODUCTOS
+    if (e.target.classList.contains('btn-editar-item')) {
+        const id = e.target.dataset.id;
+        const tienda = e.target.dataset.tienda;
+        abrirModalEditarItem(tienda, id);
     }
   });
 }
@@ -896,6 +903,119 @@ document.getElementById('formAddSalon').addEventListener('submit', function(e) {
 });
 
 // ==========================================
+// 🆕 LÓGICA PARA EDITAR Y ELIMINAR PRODUCTOS
+// ==========================================
+function abrirModalEditarItem(tienda, id) {
+    currentEditItemData.tienda = tienda;
+    currentEditItemData.id = id;
+
+    let ref;
+    if (tienda === 'frutas') ref = getFrutasRef().doc(id);
+    else if (tienda === 'cocina') ref = getCocinasRef().doc(id);
+    else if (tienda === 'salon') ref = getSalonesRef().doc(id);
+
+    if (!ref) return;
+
+    ref.get().then((doc) => {
+        if (doc.exists) {
+            const data = doc.data();
+            nombreEditarItem.value = data.nombre || '';
+            precioEditarItem.value = data.precio || '';
+            imagenEditarItem.value = '';
+            modalEditarItem.classList.remove('hidden');
+            setTimeout(() => nombreEditarItem.focus(), 100);
+        }
+    }).catch(error => {
+        console.error("Error al cargar el producto para editar:", error);
+        alert("No se pudo cargar el producto.");
+    });
+}
+
+function cerrarModalEditarItem() {
+    modalEditarItem.classList.add('hidden');
+    formEditarItem.reset();
+    currentEditItemData = { tienda: null, id: null };
+}
+
+function actualizarItem(tienda, id, nuevoNombre, nuevoPrecio, nuevaImagenBase64) {
+    let ref;
+    if (tienda === 'frutas') ref = getFrutasRef().doc(id);
+    else if (tienda === 'cocina') ref = getCocinasRef().doc(id);
+    else if (tienda === 'salon') ref = getSalonesRef().doc(id);
+
+    const updateData = {
+        nombre: nuevoNombre.trim(),
+        precio: parseFloat(nuevoPrecio)
+    };
+    if (nuevaImagenBase64) {
+        updateData.imagen = nuevaImagenBase64;
+    }
+
+    ref.update(updateData).then(() => {
+        cerrarModalEditarItem();
+    }).catch(error => {
+        console.error("Error al actualizar producto:", error);
+        alert("Error al guardar los cambios: " + error.message);
+    });
+}
+
+function eliminarItem(tienda, id) {
+    let ref;
+    if (tienda === 'frutas') ref = getFrutasRef().doc(id);
+    else if (tienda === 'cocina') ref = getCocinasRef().doc(id);
+    else if (tienda === 'salon') ref = getSalonesRef().doc(id);
+
+    if (confirm('¿Estás seguro de que quieres eliminar este producto?\nEsta acción no se puede deshacer.')) {
+        ref.delete().then(() => {
+            cerrarModalEditarItem();
+        }).catch(error => {
+            console.error('Error al eliminar el producto:', error);
+            alert('Error al eliminar: ' + error.message);
+        });
+    }
+}
+
+modalEditarItemCancel.addEventListener('click', cerrarModalEditarItem);
+modalEditarItem.addEventListener('click', (e) => { if (e.target === modalEditarItem) cerrarModalEditarItem(); });
+
+formEditarItem.addEventListener('submit', function(e) {
+  e.preventDefault();
+  if (!currentEditItemData.tienda || !currentEditItemData.id) return;
+  const submitBtn = this.querySelector('button[type="submit"]');
+  if (submitBtn) submitBtn.disabled = true;
+
+  const nombre = nombreEditarItem.value.trim();
+  const precio = precioEditarItem.value.trim();
+  
+  if (!nombre || !precio) {
+    alert("El nombre y el precio no pueden estar vacíos.");
+    if (submitBtn) submitBtn.disabled = false;
+    return;
+  }
+
+  const file = imagenEditarItem.files[0];
+  const { tienda, id } = currentEditItemData;
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      actualizarItem(tienda, id, nombre, precio, event.target.result);
+      if (submitBtn) submitBtn.disabled = false;
+    };
+    reader.readAsDataURL(file);
+  } else {
+    actualizarItem(tienda, id, nombre, precio, null);
+    if (submitBtn) submitBtn.disabled = false;
+  }
+});
+
+btnEditarItemEliminar.addEventListener('click', function() {
+    if (currentEditItemData.tienda && currentEditItemData.id) {
+        eliminarItem(currentEditItemData.tienda, currentEditItemData.id);
+    }
+});
+
+// ==========================================
 // NOTIFICACIONES INTERNAS
 // ==========================================
 function notificarNuevaCategoria(nombreCategoria, usuarioEmisor) {
@@ -966,155 +1086,4 @@ async function limpiarTodasLasNotificaciones() {
         contador++;
       }
     });
-    if (contador > 0) { await batch.commit(); processedToastIds.clear(); abrirModalNotificaciones(); } else { abrirModalNotificaciones(); }
-  } catch (error) { console.error("❌ Error al limpiar notificaciones:", error); alert("Hubo un error al intentar limpiar las notificaciones."); }
-}
-
-function abrirModalNotificaciones() {
-  if (!currentUser) return;
-  const ref = db.collection('notificaciones_globales').orderBy('timestamp', 'desc').limit(50);
-  ref.get().then((snapshot) => {
-    notifList.innerHTML = '';
-    const notificacionesPendientes = [];
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      if (!data.leido_por || !data.leido_por.includes(currentUser.uid)) {
-        notificacionesPendientes.push({ id: doc.id, data: data });
-      }
-    });
-    if (notificacionesPendientes.length === 0) { notifList.innerHTML = '<p style="color: var(--perfect-rose); text-align: center; padding: 20px 0;">No hay notificaciones nuevas.</p>'; } else {
-      notificacionesPendientes.forEach(item => {
-        const data = item.data;
-        const div = document.createElement('div');
-        div.className = 'notif-item unread';
-        const fecha = data.timestamp ? data.timestamp.toDate().toLocaleString() : 'Recién';
-        div.innerHTML = `<div><div class="msg"><strong>${data.emisor_nick || 'Alguien'}</strong> agregó <strong>"${data.nombre_categoria || 'sin nombre'}"</strong></div><div class="timestamp">${fecha}</div></div>`;
-        notifList.appendChild(div);
-      });
-    }
-    modalNotif.classList.remove('hidden');
-  }).catch(error => { console.error("Error al cargar la lista de notificaciones:", error); });
-}
-
-// ==========================================
-// PERFIL Y APODO
-// ==========================================
-function suscribirPerfil(user) {
-  if (unsubscribeUser) { unsubscribeUser(); unsubscribeUser = null; }
-  const userRef = db.collection('usuarios').doc(user.uid);
-  unsubscribeUser = userRef.onSnapshot((doc) => {
-    if (doc.exists) {
-      const data = doc.data();
-      if (data.apodo && data.apodo.trim() !== '') { currentNickname = data.apodo; userNameSpan.textContent = data.apodo; } 
-      else { currentNickname = user.displayName || user.email; userNameSpan.textContent = currentNickname; }
-      userNotificationsEnabled = data.notificationsEnabled !== undefined ? data.notificationsEnabled : true;
-      if (!pageConfig.classList.contains('hidden-page') && notifToggle) { notifToggle.checked = userNotificationsEnabled; }
-    } else { currentNickname = user.displayName || user.email; userNameSpan.textContent = currentNickname; userNotificationsEnabled = true; }
-  }, (error) => { console.error("Error al obtener el perfil:", error); userNameSpan.textContent = user.displayName || user.email; });
-}
-
-function guardarApodo(nuevoApodo) {
-  if (!currentUser) return;
-  const userRef = db.collection('usuarios').doc(currentUser.uid);
-  userRef.set({ apodo: nuevoApodo.trim() }, { merge: true })
-  .then(() => { cerrarModalNickname(); })
-  .catch((error) => { console.error("Error al guardar apodo:", error); alert("Hubo un error al guardar tu apodo: " + error.message); });
-}
-
-// ==========================================
-// MODALES DE LA APP (Nueva, Apodo, Notificaciones)
-// ==========================================
-function abrirModal() { modalCategoria.classList.remove('hidden'); nombreCategoria.value = ''; imagenCategoria.value = ''; setTimeout(() => nombreCategoria.focus(), 100); }
-function cerrarModal() { modalCategoria.classList.add('hidden'); formCategoria.reset(); }
-
-formCategoria.addEventListener('submit', function(e) {
-  e.preventDefault();
-  const submitBtn = this.querySelector('button[type="submit"]');
-  if (submitBtn) submitBtn.disabled = true;
-  const nombre = nombreCategoria.value.trim();
-  if (!nombre) { alert('El nombre es obligatorio'); if (submitBtn) submitBtn.disabled = false; return; }
-  const file = imagenCategoria.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (event) => { agregarCategoria(nombre, event.target.result); cerrarModal(); if (submitBtn) submitBtn.disabled = false; };
-    reader.readAsDataURL(file);
-  } else { agregarCategoria(nombre, ''); cerrarModal(); if (submitBtn) submitBtn.disabled = false; }
-});
-modalCancel.addEventListener('click', cerrarModal);
-modalCategoria.addEventListener('click', (e) => { if (e.target === modalCategoria) cerrarModal(); });
-
-function abrirModalNickname() { modalNickname.classList.remove('hidden'); inputNickname.value = currentNickname || ''; setTimeout(() => inputNickname.focus(), 100); }
-function cerrarModalNickname() { modalNickname.classList.add('hidden'); formNickname.reset(); }
-formNickname.addEventListener('submit', function(e) {
-  e.preventDefault();
-  const nuevoApodo = inputNickname.value.trim();
-  if (!nuevoApodo) { alert('El apodo no puede estar vacío'); return; }
-  guardarApodo(nuevoApodo);
-});
-btnOpenNicknameModal.addEventListener('click', abrirModalNickname);
-modalNickCancel.addEventListener('click', cerrarModalNickname);
-modalNickname.addEventListener('click', (e) => { if (e.target === modalNickname) cerrarModalNickname(); });
-
-btnOpenNotif.addEventListener('click', abrirModalNotificaciones);
-modalNotifClose.addEventListener('click', () => { modalNotif.classList.add('hidden'); });
-modalNotif.addEventListener('click', (e) => { if (e.target === modalNotif) modalNotif.classList.add('hidden'); });
-btnClearNotifications.addEventListener('click', limpiarTodasLasNotificaciones);
-
-// ==========================================
-// ESTADO DE SESIÓN
-// ==========================================
-auth.onAuthStateChanged(user => {
-  if (unsubscribeCategorias) { unsubscribeCategorias(); unsubscribeCategorias = null; }
-  if (unsubscribeFrutas) { unsubscribeFrutas(); unsubscribeFrutas = null; }
-  if (unsubscribeCocinas) { unsubscribeCocinas(); unsubscribeCocinas = null; }
-  if (unsubscribeSalones) { unsubscribeSalones(); unsubscribeSalones = null; }
-  if (unsubscribeUser) { unsubscribeUser(); unsubscribeUser = null; }
-  if (unsubscribeNotif) { unsubscribeNotif(); unsubscribeNotif = null; }
-  
-  currentUser = user;
-  if (user) {
-    console.log("✅ Usuario autenticado:", user.email);
-    pageAuth.classList.add('hidden-page');
-    
-    // 🔥 Utilizamos el sistema de navegación por hash para la carga inicial
-    const currentHash = window.location.hash.replace('#', '');
-    const targetPage = (currentHash && document.getElementById('page-' + currentHash)) ? currentHash : 'categorias';
-    switchPage(targetPage, true);
-    
-    suscribirPerfil(user);
-    suscribirCategorias();
-    suscribirNotificaciones(user);
-    suscribirCarritos();
-    requestNotificationPermission();
-    
-    if (dock) dock.classList.remove('hidden-page');
-    sincronizarTogglesUI();
-  } else {
-    console.log("ℹ️ Usuario NO autenticado.");
-    pageAuth.classList.remove('hidden-page');
-    
-    // Ocultar todas las secciones internas manualmente
-    if (pageCategorias) pageCategorias.classList.add('hidden-page');
-    if (pageConfig) pageConfig.classList.add('hidden-page');
-    if (pageFrutas) pageFrutas.classList.add('hidden-page');
-    if (pageCocina) pageCocina.classList.add('hidden-page');
-    if (pageSalon) pageSalon.classList.add('hidden-page');
-    
-    contenedor.innerHTML = '';
-    userNameSpan.textContent = 'Invitado';
-    currentNickname = null;
-    userNotificationsEnabled = true;
-    authError.textContent = '';
-    if (dock) dock.classList.add('hidden-page');
-  }
-});
-
-// ==========================================
-// EVENTOS UI
-// ==========================================
-authForm.addEventListener('submit', handleAuthSubmit);
-authSwitchLink.addEventListener('click', toggleAuthMode);
-btnGoogle.addEventListener('click', loginWithGoogle);
-btnLogout.addEventListener('click', logout);
-
-console.log('✅ App cargada. ¡Listo para pruebas!');
+    if (contador > 0) { await batch.commit(); processedToastIds.clear(); abrirModalNotificaciones(); } else {
