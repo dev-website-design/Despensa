@@ -1,5 +1,5 @@
 // =====================================================
-// app.js - Modo COLABORATIVO con Ruteo por Hash (Atrás del móvil)
+// app.js - Navegación Robusta y Depuración de Clicks
 // =====================================================
 
 console.log("🚀 Cargando FINDORA...");
@@ -92,14 +92,16 @@ let settingsListenersAttached = false;
 const processedToastIds = new Set();
 
 // ==========================================
-// 🆕 LÓGICA DE NAVEGACIÓN SPA (CON SOPORTE PARA ATRÁS)
+// 🆕 LÓGICA DE NAVEGACIÓN SPA (A PRUEBA DE FALLOS)
 // ==========================================
-let isNavigating = false; // Evita que el cambio de hash se llame a sí mismo en bucle
+let isNavigating = false; // Evita bucles
 
 function switchPage(pageId, updateHistory = true) {
     // Si ya estamos navegando, salimos para evitar bucles
     if (isNavigating) return;
     isNavigating = true;
+    
+    console.log(`🔄 [SwitchPage] Cambiando a: ${pageId}`);
 
     // 1. Ocultar todas las páginas
     if (pageCategorias) pageCategorias.classList.add('hidden-page');
@@ -116,46 +118,60 @@ function switchPage(pageId, updateHistory = true) {
         sincronizarTogglesUI();
     } else if (pageId === 'frutas-verduras' && pageFrutas) {
         pageFrutas.classList.remove('hidden-page');
-        suscribirFrutas(); // 🔥 ¡Estaba faltando esto!
+        suscribirFrutas(); 
     } else if (pageId === 'cocina' && pageCocina) {
         pageCocina.classList.remove('hidden-page');
-        suscribirCocinas(); // 🔥 ¡Estaba faltando esto!
+        suscribirCocinas(); 
     } else if (pageId === 'salon' && pageSalon) {
         pageSalon.classList.remove('hidden-page');
-        suscribirSalones(); // 🔥 ¡Estaba faltando esto!
+        suscribirSalones(); 
     }
     
-    // 3. Actualizar el Dock y el estado activo
-    if (pageId) {
-        dockItems.forEach(item => item.classList.remove('active'));
-        const activeDock = document.querySelector(`.dock-item[data-page="${pageId}"]`);
-        if (activeDock) activeDock.classList.add('active');
-    }
+    // 3. Actualizar el Dock visualmente
+    dockItems.forEach(item => item.classList.remove('active'));
+    const activeDock = document.querySelector(`.dock-item[data-page="${pageId}"]`);
+    if (activeDock) activeDock.classList.add('active');
 
     // 4. Actualizar el hash de la URL (para que el botón de atrás funcione)
-    if (updateHistory && pageId && window.location.hash !== '#' + pageId) {
+    if (updateHistory && pageId) {
         window.location.hash = pageId;
     }
 
-    isNavigating = false;
+    // Desbloquear navegación tras un pequeño retraso para que el DOM se estabilice
+    setTimeout(() => {
+        isNavigating = false;
+    }, 100);
 }
 
-// 🆕 Detectar el botón de "Atrás" del navegador y actuar en consecuencia
+// Detectar el botón de "Atrás" del navegador
 window.addEventListener('hashchange', () => {
-    // Si el cambio de hash lo hicimos nosotros (switchPage), isNavigating es true y esto se ignora
-    if (!isNavigating && window.location.hash) {
+    if (isNavigating) return;
+    if (window.location.hash) {
         const pageId = window.location.hash.replace('#', '');
-        // Nos aseguramos de que la página exista antes de intentar cambiar
         if (pageId && document.getElementById('page-' + pageId)) {
-            // Llamamos a switchPage con updateHistory = false para evitar un bucle infinito
             switchPage(pageId, false);
         }
-    } else if (!isNavigating && !window.location.hash) {
-        // Si el usuario borra el hash o vuelve a la raíz, lo mandamos a Categorías si no estaba ya allí
+    } else {
+        // Si se borra el hash, vuelve a categorías
         if (pageCategorias && pageCategorias.classList.contains('hidden-page')) {
             switchPage('categorias', false);
         }
     }
+});
+
+// ==========================================
+// EVENTOS DEL DOCK (CON DEPURACIÓN)
+// ==========================================
+dockItems.forEach(item => {
+    item.addEventListener('click', function() {
+        const page = this.dataset.page;
+        console.log(`👆 [Dock Click] Botón presionado: ${page}`);
+        if (page) {
+            switchPage(page);
+        } else {
+            console.error("El botón del dock no tiene atributo data-page");
+        }
+    });
 });
 
 // ==========================================
@@ -245,7 +261,7 @@ async function requestNotificationPermission() {
 }
 
 // ==========================================
-// CATEGORÍAS
+// CATEGORÍAS (El resto del código se mantiene igual)
 // ==========================================
 function getCategoriasRef() { return db.collection('categorias_compartidas'); }
 
@@ -675,7 +691,6 @@ function suscribirCarritos() {
   });
 }
 
-// Función para agregar al carrito de la tienda correspondiente
 function agregarAlCarrito(tienda, producto, cantidad) {
   let ref;
   if (tienda === 'frutas') ref = getCarritoFrutasRef();
@@ -748,7 +763,7 @@ document.getElementById('btnOpenCartSalon').addEventListener('click', () => { do
 document.getElementById('modalCarritoSalonClose').addEventListener('click', () => { document.getElementById('modalCarritoSalon').classList.add('hidden'); });
 document.getElementById('modalCarritoSalon').addEventListener('click', (e) => { if (e.target === e.currentTarget) e.currentTarget.classList.add('hidden'); });
 
-// VOLVER ATRÁS EN LAS TIENDAS (Botones de retroceso internos)
+// VOLVER ATRÁS EN LAS TIENDAS
 document.getElementById('btn-back-frutas').addEventListener('click', () => switchPage('categorias'));
 document.getElementById('btn-back-cocina').addEventListener('click', () => switchPage('categorias'));
 document.getElementById('btn-back-salon').addEventListener('click', () => switchPage('categorias'));
@@ -1102,4 +1117,4 @@ authSwitchLink.addEventListener('click', toggleAuthMode);
 btnGoogle.addEventListener('click', loginWithGoogle);
 btnLogout.addEventListener('click', logout);
 
-console.log('✅ App cargada con soporte para botón de retroceso y categorías funcionales!');
+console.log('✅ App cargada. ¡Listo para pruebas!');
