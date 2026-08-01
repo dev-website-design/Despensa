@@ -1086,4 +1086,153 @@ async function limpiarTodasLasNotificaciones() {
         contador++;
       }
     });
-    if (contador > 0) { await batch.commit(); processedToastIds.clear(); abrirModalNotificaciones(); } else {
+    if (contador > 0) { await batch.commit(); processedToastIds.clear(); abrirModalNotificaciones(); } else { abrirModalNotificaciones(); }
+  } catch (error) { console.error("❌ Error al limpiar notificaciones:", error); alert("Hubo un error al intentar limpiar las notificaciones."); }
+}
+
+function abrirModalNotificaciones() {
+  if (!currentUser) return;
+  const ref = db.collection('notificaciones_globales').orderBy('timestamp', 'desc').limit(50);
+  ref.get().then((snapshot) => {
+    notifList.innerHTML = '';
+    const notificacionesPendientes = [];
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (!data.leido_por || !data.leido_por.includes(currentUser.uid)) {
+        notificacionesPendientes.push({ id: doc.id, data: data });
+      }
+    });
+    if (notificacionesPendientes.length === 0) { notifList.innerHTML = '<p style="color: var(--perfect-rose); text-align: center; padding: 20px 0;">No hay notificaciones nuevas.</p>'; } else {
+      notificacionesPendientes.forEach(item => {
+        const data = item.data;
+        const div = document.createElement('div');
+        div.className = 'notif-item unread';
+        const fecha = data.timestamp ? data.timestamp.toDate().toLocaleString() : 'Recién';
+        div.innerHTML = `<div><div class="msg"><strong>${data.emisor_nick || 'Alguien'}</strong> agregó <strong>"${data.nombre_categoria || 'sin nombre'}"</strong></div><div class="timestamp">${fecha}</div></div>`;
+        notifList.appendChild(div);
+      });
+    }
+    modalNotif.classList.remove('hidden');
+  }).catch(error => { console.error("Error al cargar la lista de notificaciones:", error); });
+}
+
+// ==========================================
+// PERFIL Y APODO
+// ==========================================
+function suscribirPerfil(user) {
+  if (unsubscribeUser) { unsubscribeUser(); unsubscribeUser = null; }
+  const userRef = db.collection('usuarios').doc(user.uid);
+  unsubscribeUser = userRef.onSnapshot((doc) => {
+    if (doc.exists) {
+      const data = doc.data();
+      if (data.apodo && data.apodo.trim() !== '') { currentNickname = data.apodo; userNameSpan.textContent = data.apodo; } 
+      else { currentNickname = user.displayName || user.email; userNameSpan.textContent = currentNickname; }
+      userNotificationsEnabled = data.notificationsEnabled !== undefined ? data.notificationsEnabled : true;
+      if (!pageConfig.classList.contains('hidden-page') && notifToggle) { notifToggle.checked = userNotificationsEnabled; }
+    } else { currentNickname = user.displayName || user.email; userNameSpan.textContent = currentNickname; userNotificationsEnabled = true; }
+  }, (error) => { console.error("Error al obtener el perfil:", error); userNameSpan.textContent = user.displayName || user.email; });
+}
+
+function guardarApodo(nuevoApodo) {
+  if (!currentUser) return;
+  const userRef = db.collection('usuarios').doc(currentUser.uid);
+  userRef.set({ apodo: nuevoApodo.trim() }, { merge: true })
+  .then(() => { cerrarModalNickname(); })
+  .catch((error) => { console.error("Error al guardar apodo:", error); alert("Hubo un error al guardar tu apodo: " + error.message); });
+}
+
+// ==========================================
+// MODALES DE LA APP (Nueva, Apodo, Notificaciones)
+// ==========================================
+function abrirModal() { modalCategoria.classList.remove('hidden'); nombreCategoria.value = ''; imagenCategoria.value = ''; setTimeout(() => nombreCategoria.focus(), 100); }
+function cerrarModal() { modalCategoria.classList.add('hidden'); formCategoria.reset(); }
+
+formCategoria.addEventListener('submit', function(e) {
+  e.preventDefault();
+  const submitBtn = this.querySelector('button[type="submit"]');
+  if (submitBtn) submitBtn.disabled = true;
+  const nombre = nombreCategoria.value.trim();
+  if (!nombre) { alert('El nombre es obligatorio'); if (submitBtn) submitBtn.disabled = false; return; }
+  const file = imagenCategoria.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (event) => { agregarCategoria(nombre, event.target.result); cerrarModal(); if (submitBtn) submitBtn.disabled = false; };
+    reader.readAsDataURL(file);
+  } else { agregarCategoria(nombre, ''); cerrarModal(); if (submitBtn) submitBtn.disabled = false; }
+});
+modalCancel.addEventListener('click', cerrarModal);
+modalCategoria.addEventListener('click', (e) => { if (e.target === modalCategoria) cerrarModal(); });
+
+function abrirModalNickname() { modalNickname.classList.remove('hidden'); inputNickname.value = currentNickname || ''; setTimeout(() => inputNickname.focus(), 100); }
+function cerrarModalNickname() { modalNickname.classList.add('hidden'); formNickname.reset(); }
+formNickname.addEventListener('submit', function(e) {
+  e.preventDefault();
+  const nuevoApodo = inputNickname.value.trim();
+  if (!nuevoApodo) { alert('El apodo no puede estar vacío'); return; }
+  guardarApodo(nuevoApodo);
+});
+btnOpenNicknameModal.addEventListener('click', abrirModalNickname);
+modalNickCancel.addEventListener('click', cerrarModalNickname);
+modalNickname.addEventListener('click', (e) => { if (e.target === modalNickname) cerrarModalNickname(); });
+
+btnOpenNotif.addEventListener('click', abrirModalNotificaciones);
+modalNotifClose.addEventListener('click', () => { modalNotif.classList.add('hidden'); });
+modalNotif.addEventListener('click', (e) => { if (e.target === modalNotif) modalNotif.classList.add('hidden'); });
+btnClearNotifications.addEventListener('click', limpiarTodasLasNotificaciones);
+
+// ==========================================
+// ESTADO DE SESIÓN
+// ==========================================
+auth.onAuthStateChanged(user => {
+  if (unsubscribeCategorias) { unsubscribeCategorias(); unsubscribeCategorias = null; }
+  if (unsubscribeFrutas) { unsubscribeFrutas(); unsubscribeFrutas = null; }
+  if (unsubscribeCocinas) { unsubscribeCocinas(); unsubscribeCocinas = null; }
+  if (unsubscribeSalones) { unsubscribeSalones(); unsubscribeSalones = null; }
+  if (unsubscribeUser) { unsubscribeUser(); unsubscribeUser = null; }
+  if (unsubscribeNotif) { unsubscribeNotif(); unsubscribeNotif = null; }
+  
+  currentUser = user;
+  if (user) {
+    console.log("✅ Usuario autenticado:", user.email);
+    pageAuth.classList.add('hidden-page');
+    
+    const currentHash = window.location.hash.replace('#', '');
+    const targetPage = (currentHash && document.getElementById('page-' + currentHash)) ? currentHash : 'categorias';
+    switchPage(targetPage, true);
+    
+    suscribirPerfil(user);
+    suscribirCategorias();
+    suscribirNotificaciones(user);
+    suscribirCarritos();
+    requestNotificationPermission();
+    
+    if (dock) dock.classList.remove('hidden-page');
+    sincronizarTogglesUI();
+  } else {
+    console.log("ℹ️ Usuario NO autenticado.");
+    pageAuth.classList.remove('hidden-page');
+    
+    if (pageCategorias) pageCategorias.classList.add('hidden-page');
+    if (pageConfig) pageConfig.classList.add('hidden-page');
+    if (pageFrutas) pageFrutas.classList.add('hidden-page');
+    if (pageCocina) pageCocina.classList.add('hidden-page');
+    if (pageSalon) pageSalon.classList.add('hidden-page');
+    
+    contenedor.innerHTML = '';
+    userNameSpan.textContent = 'Invitado';
+    currentNickname = null;
+    userNotificationsEnabled = true;
+    authError.textContent = '';
+    if (dock) dock.classList.add('hidden-page');
+  }
+});
+
+// ==========================================
+// EVENTOS UI
+// ==========================================
+authForm.addEventListener('submit', handleAuthSubmit);
+authSwitchLink.addEventListener('click', toggleAuthMode);
+btnGoogle.addEventListener('click', loginWithGoogle);
+btnLogout.addEventListener('click', logout);
+
+console.log('✅ App cargada. ¡Ahora puedes editar y eliminar productos con el lápiz!');
