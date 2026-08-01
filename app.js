@@ -108,12 +108,22 @@ function switchPage(pageId, updateHistory = true) {
     if (pageCocina) pageCocina.classList.add('hidden-page');
     if (pageSalon) pageSalon.classList.add('hidden-page');
     
-    // 2. Mostrar la página seleccionada
-    if (pageId === 'categorias' && pageCategorias) pageCategorias.classList.remove('hidden-page');
-    else if (pageId === 'config' && pageConfig) pageConfig.classList.remove('hidden-page');
-    else if (pageId === 'frutas-verduras' && pageFrutas) pageFrutas.classList.remove('hidden-page');
-    else if (pageId === 'cocina' && pageCocina) pageCocina.classList.remove('hidden-page');
-    else if (pageId === 'salon' && pageSalon) pageSalon.classList.remove('hidden-page');
+    // 2. Mostrar la página seleccionada y CARGAR SUS DATOS
+    if (pageId === 'categorias' && pageCategorias) {
+        pageCategorias.classList.remove('hidden-page');
+    } else if (pageId === 'config' && pageConfig) {
+        pageConfig.classList.remove('hidden-page');
+        sincronizarTogglesUI();
+    } else if (pageId === 'frutas-verduras' && pageFrutas) {
+        pageFrutas.classList.remove('hidden-page');
+        suscribirFrutas(); // 🔥 ¡Estaba faltando esto!
+    } else if (pageId === 'cocina' && pageCocina) {
+        pageCocina.classList.remove('hidden-page');
+        suscribirCocinas(); // 🔥 ¡Estaba faltando esto!
+    } else if (pageId === 'salon' && pageSalon) {
+        pageSalon.classList.remove('hidden-page');
+        suscribirSalones(); // 🔥 ¡Estaba faltando esto!
+    }
     
     // 3. Actualizar el Dock y el estado activo
     if (pageId) {
@@ -738,7 +748,7 @@ document.getElementById('btnOpenCartSalon').addEventListener('click', () => { do
 document.getElementById('modalCarritoSalonClose').addEventListener('click', () => { document.getElementById('modalCarritoSalon').classList.add('hidden'); });
 document.getElementById('modalCarritoSalon').addEventListener('click', (e) => { if (e.target === e.currentTarget) e.currentTarget.classList.add('hidden'); });
 
-// VOLVER ATRÁS EN LAS TIENDAS
+// VOLVER ATRÁS EN LAS TIENDAS (Botones de retroceso internos)
 document.getElementById('btn-back-frutas').addEventListener('click', () => switchPage('categorias'));
 document.getElementById('btn-back-cocina').addEventListener('click', () => switchPage('categorias'));
 document.getElementById('btn-back-salon').addEventListener('click', () => switchPage('categorias'));
@@ -1092,4 +1102,4 @@ authSwitchLink.addEventListener('click', toggleAuthMode);
 btnGoogle.addEventListener('click', loginWithGoogle);
 btnLogout.addEventListener('click', logout);
 
-console.log('✅ App cargada con soporte para botón de retroceso!');
+console.log('✅ App cargada con soporte para botón de retroceso y categorías funcionales!');
