@@ -39,7 +39,7 @@
     .app-container { max-width: 480px; margin: 0 auto; padding: 16px; }
     
     /* 🆕 ESTILO GLASS APLICADO A LAS TARJETAS Y MODALES */
-    .hero-card, .categoria, .config-section, .auth-card, .modal-content, .product-card {
+    .hero-card, .categoria, .config-section, .auth-card, .modal-content, .product-card-tienda {
         background: var(--glass-bg);
         backdrop-filter: blur(var(--glass-blur));
         -webkit-backdrop-filter: blur(var(--glass-blur));
@@ -150,7 +150,7 @@
       --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
       --glass-input-bg: rgba(44, 44, 46, 0.7);
     }
-    body.dark-mode .hero-card, body.dark-mode .config-section, body.dark-mode .modal-content, body.dark-mode .auth-card, body.dark-mode .categoria, body.dark-mode .product-card {
+    body.dark-mode .hero-card, body.dark-mode .config-section, body.dark-mode .modal-content, body.dark-mode .auth-card, body.dark-mode .categoria, body.dark-mode .product-card-tienda {
       color: #f0e2e7;
     }
     body.dark-mode .categoria span { color: #f0e2e7; }
@@ -169,7 +169,7 @@
     body.dark-mode .auth-card .btn-google { background: rgba(44, 44, 46, 0.7); color: #f0e2e7; border-color: rgba(255, 255, 255, 0.1); }
 
     /* ========================================== */
-    /* 🛒 ESTILOS PARA LAS TIENDAS (Frutas, Cocina, Salón) */
+    /* 🛒 ESTILOS PARA LAS TIENDAS                 */
     /* ========================================== */
     .tienda-container { padding: 0; }
     .header-tienda { background-color: #FF6B6B; padding: 15px; display: flex; align-items: center; justify-content: space-between; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; margin-top: -16px; margin-left: -16px; margin-right: -16px; position: relative; }
@@ -181,9 +181,16 @@
     .section-header-tienda { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; }
     .section-title-tienda { font-size: 18px; font-weight: 700; color: #222; }
     body.dark-mode .section-title-tienda { color: #f0e2e7; }
-    #product-grid-tienda { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding-bottom: 20px; }
+    #product-grid-frutas, #product-grid-cocina, #product-grid-salon { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding-bottom: 20px; }
+    
+    /* 🆕 ESTILOS DE LAS TARJETAS DE PRODUCTO */
     .product-card-tienda { padding: 15px; display: flex; flex-direction: column; align-items: center; position: relative; }
-    .product-card-tienda .heart-icon { position: absolute; top: 12px; left: 12px; color: #dc3545; font-size: 18px; cursor: pointer; }
+    
+    /* 🔥 CORAZÓN A LA DERECHA */
+    .product-card-tienda .heart-icon { position: absolute; top: 12px; right: 12px; left: auto; color: #dc3545; font-size: 18px; cursor: pointer; }
+    /* 🔥 LÁPIZ DE EDICIÓN A LA IZQUIERDA */
+    .product-card-tienda .btn-editar-item { position: absolute; top: 12px; left: 12px; background:none; border:none; color: var(--perfect-rose); cursor:pointer; font-size:1.1rem; }
+    
     .product-card-tienda .product-image { width: 90px; height: 90px; object-fit: contain; margin: 10px 0; }
     .product-card-tienda .product-name { font-size: 15px; font-weight: 600; color: #333; align-self: flex-start; margin-bottom: 8px; }
     body.dark-mode .product-card-tienda .product-name { color: #f0e2e7; }
@@ -368,7 +375,7 @@
     </button>
     <button class="dock-add-btn" id="dockAddBtn">+</button>
     <button class="dock-item" data-page="config" aria-label="Configuración">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
   </nav>
 
@@ -572,6 +579,31 @@
         <div class="modal-buttons" style="justify-content: center; margin-top: 10px;">
             <button type="button" class="btn-secondary" id="modalCarritoSalonClose">Cerrar</button>
         </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 🆕 MODAL PARA EDITAR PRODUCTOS DE LAS TIENDAS -->
+  <!-- ========================================== -->
+  <div id="modalEditarItem" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <h2>✏️ Editar Producto</h2>
+      <form id="formEditarItem">
+        <label for="nombreEditarItem">Nombre del producto</label>
+        <input type="text" id="nombreEditarItem" required>
+        <label for="precioEditarItem">Precio (₹)</label>
+        <input type="number" id="precioEditarItem" step="0.01" required>
+        <label for="imagenEditarItem">Imagen (opcional - sube una nueva para cambiarla)</label>
+        <input type="file" id="imagenEditarItem" accept="image/*">
+        <div class="modal-buttons" style="justify-content: space-between;">
+          <!-- Botón para ELIMINAR (Rojo, a la izquierda) -->
+          <button type="button" id="btnEditarItemEliminar" style="background-color: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 12px; font-family: var(--font-main); cursor: pointer;">Eliminar producto</button>
+          <div style="display: flex; gap: 10px;">
+            <button type="button" class="btn-secondary" id="modalEditarItemCancel">Cancelar</button>
+            <button type="submit" class="btn-primary">Guardar cambios</button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 
