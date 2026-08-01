@@ -41,14 +41,14 @@
     .categoria.con-imagen .categoria-footer span { color: var(--white); text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4); }
     .floating-dock { position: fixed; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); width: min(88%, 350px); height: 60px; 
         /* ========================================== */
-        /* 🔥 NUEVO DISEÑO DEL DOCK: DEGRADADO Y SIN BORDE */
+        /* 🔥 NUEVO DEGRADADO SUTIL DESDE LA MITAD    */
         /* ========================================== */
-        background: linear-gradient(to top, var(--black-cherry) 0%, rgba(42, 12, 27, 0.8) 60%, rgba(42, 12, 27, 0) 100%);
+        background: linear-gradient(to top, var(--black-cherry) 0%, var(--black-cherry) 45%, rgba(42, 12, 27, 0.6) 70%, rgba(42, 12, 27, 0.2) 85%, rgba(42, 12, 27, 0) 100%);
         -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
-        border: none; /* Se eliminó el borde sólido */
+        border: none;
         border-radius: 35px;
         display: flex; align-items: center; justify-content: space-around; padding: 0 8px;
-        box-shadow: 0 10px 30px rgba(42, 12, 27, 0.15); /* Sombra suave */
+        box-shadow: 0 10px 30px rgba(42, 12, 27, 0.15);
         z-index: 9999;
     }
     
