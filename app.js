@@ -1,5 +1,5 @@
 // =====================================================
-// app.js - Editar Categorías (Lápiz ✏️) + Botón Eliminar
+// app.js - Editar Categorías (Lápiz ✏️) + Botón Eliminar + Carrito Compartido
 // =====================================================
 
 console.log("🚀 Cargando FINDORA...");
@@ -91,8 +91,16 @@ const formEditarCategoria = document.getElementById('formEditarCategoria');
 const nombreEditarCategoria = document.getElementById('nombreEditarCategoria');
 const imagenEditarCategoria = document.getElementById('imagenEditarCategoria');
 const modalEditarCancel = document.getElementById('modalEditarCancel');
-const btnEditarEliminar = document.getElementById('btnEditarEliminar'); // Nuevo botón Eliminar
-let currentEditCategoryId = null; // Guarda el ID de la categoría que se está editando
+const btnEditarEliminar = document.getElementById('btnEditarEliminar');
+let currentEditCategoryId = null;
+
+// 🆕 DOM ELEMENTS - CARRITO
+const btnOpenCart = document.getElementById('btnOpenCart');
+const cartBadge = document.getElementById('cartBadge');
+const modalCarrito = document.getElementById('modalCarrito');
+const cartList = document.getElementById('cartList');
+const cartTotal = document.getElementById('cartTotal');
+const modalCarritoClose = document.getElementById('modalCarritoClose');
 
 // Variables de Configuración y Toggles
 const darkModeToggle = document.getElementById('darkModeToggle');
@@ -103,6 +111,7 @@ let isLogin = true;
 let currentUser = null;
 let unsubscribeCategorias = null;
 let unsubscribeFrutas = null;
+let unsubscribeCarrito = null; // 🔥 Listener del carrito
 let unsubscribeUser = null;
 let unsubscribeNotif = null;
 let currentNickname = null; 
@@ -236,7 +245,7 @@ async function requestNotificationPermission() {
 }
 
 // ==========================================
-// CATEGORÍAS (Renderizado, Edición y Eliminación)
+// CATEGORÍAS
 // ==========================================
 function getCategoriasRef() { return db.collection('categorias_compartidas'); }
 
@@ -266,12 +275,9 @@ function suscribirCategorias() {
     });
     contenedor.innerHTML = html;
 
-    // Click para entrar a la tienda (Frutas/Verduras)
     document.querySelectorAll('.categoria').forEach(card => {
       card.addEventListener('click', function(e) {
-        // Evitar que el click en el botón de editar dispare la navegación
         if (e.target.closest('.btn-editar')) return;
-
         const nombreCat = this.dataset.nombre;
         if (nombreCat && (nombreCat.toLowerCase().includes('fruta') || nombreCat.toLowerCase().includes('verdura'))) {
           switchPage('frutas-verduras');
@@ -281,10 +287,9 @@ function suscribirCategorias() {
       });
     });
 
-    // EVENTO PARA EDITAR (El lápiz)
     document.querySelectorAll('.btn-editar').forEach(btn => {
       btn.addEventListener('click', function(e) {
-        e.stopPropagation(); // Evita que el clic en el lápiz entre a la categoría
+        e.stopPropagation();
         const id = this.dataset.id;
         abrirModalEditarCategoria(id);
       });
@@ -322,7 +327,6 @@ function agregarCategoria(nombre, imagenBase64) {
 // ==========================================
 function abrirModalEditarCategoria(id) {
   currentEditCategoryId = id;
-  // Cargamos los datos actuales de la categoría
   getCategoriasRef().doc(id).get().then((doc) => {
     if (doc.exists) {
       const data = doc.data();
@@ -350,7 +354,6 @@ function actualizarCategoria(id, nuevoNombre, nuevaImagenBase64) {
     editadoPor: currentNickname || currentUser.email,
     editadoEn: firebase.firestore.FieldValue.serverTimestamp()
   };
-  // Solo actualizamos la imagen si el usuario seleccionó una nueva
   if (nuevaImagenBase64) {
     updateData.imagen = nuevaImagenBase64;
   }
@@ -363,10 +366,8 @@ function actualizarCategoria(id, nuevoNombre, nuevaImagenBase64) {
   });
 }
 
-// 🔥 Lógica para el botón ELIMINAR dentro del modal de edición
 btnEditarEliminar.addEventListener('click', function() {
     if (!currentEditCategoryId) return;
-
     if (confirm('¿Estás seguro de que quieres eliminar esta categoría?\nEsta acción no se puede deshacer.')) {
         const ref = getCategoriasRef().doc(currentEditCategoryId);
         ref.delete().then(() => {
@@ -382,17 +383,14 @@ btnEditarEliminar.addEventListener('click', function() {
 formEditarCategoria.addEventListener('submit', function(e) {
   e.preventDefault();
   if (!currentEditCategoryId) return;
-
   const submitBtn = this.querySelector('button[type="submit"]');
   if (submitBtn) submitBtn.disabled = true;
-
   const nombre = nombreEditarCategoria.value.trim();
   if (!nombre) {
     alert("El nombre no puede estar vacío.");
     if (submitBtn) submitBtn.disabled = false;
     return;
   }
-
   const file = imagenEditarCategoria.files[0];
   if (file) {
     const reader = new FileReader();
@@ -515,13 +513,6 @@ fvBtnDec.addEventListener('click', function() {
     fvModalQuantity.textContent = fvCurrentQuantity;
   }
 });
-fvBtnConfirm.addEventListener('click', function() {
-  if (fvCurrentProduct) {
-    const totalPrice = fvCurrentProduct.price * fvCurrentQuantity;
-    alert(`¡Compra exitosa!\nHas agregado ${fvCurrentQuantity} ${fvCurrentProduct.name}(s) a tu carrito.\nTotal a pagar: ₹ ${totalPrice}`);
-    fvCloseModal();
-  }
-});
 fvSearchInput.addEventListener('input', function() {
   const text = this.value.toLowerCase();
   const cards = fvGrid.querySelectorAll('.product-card');
@@ -558,16 +549,13 @@ formFruta.addEventListener('submit', function(e) {
   e.preventDefault();
   const submitBtn = this.querySelector('button[type="submit"]');
   if (submitBtn) submitBtn.disabled = true;
-
   const nombre = nombreFruta.value.trim();
   const precio = precioFruta.value.trim();
-  
   if (!nombre || !precio) { 
     alert('El nombre y el precio son obligatorios.'); 
     if (submitBtn) submitBtn.disabled = false; 
     return; 
   }
-
   const file = imagenFruta.files[0];
   if (file) {
     const reader = new FileReader();
@@ -584,6 +572,133 @@ formFruta.addEventListener('submit', function(e) {
 
 modalFrutaCancel.addEventListener('click', cerrarModalFruta);
 modalFruta.addEventListener('click', (e) => { if (e.target === modalFruta) cerrarModalFruta(); });
+
+// ==========================================
+// 🆕 LÓGICA DEL CARRITO COMPARTIDO
+// ==========================================
+function getCarritoRef() { return db.collection('carrito_compartido'); }
+
+function suscribirCarrito() {
+  if (unsubscribeCarrito) { unsubscribeCarrito(); unsubscribeCarrito = null; }
+  const ref = getCarritoRef();
+  unsubscribeCarrito = ref.onSnapshot((snapshot) => {
+    if (snapshot.empty) {
+      cartList.innerHTML = `<p style="color: var(--perfect-rose); text-align: center; padding: 20px 0;">El carrito está vacío.</p>`;
+      cartTotal.textContent = 'Total: ₹ 0';
+      cartBadge.classList.remove('visible');
+      return;
+    }
+    
+    let html = '';
+    let total = 0;
+    let itemCount = 0;
+
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const id = doc.id;
+      const subtotal = data.precio * data.cantidad;
+      total += subtotal;
+      itemCount += data.cantidad;
+
+      html += `
+        <div class="cart-item">
+          <div class="cart-item-info">
+            <span class="cart-item-name">${data.nombre}</span>
+            <span class="cart-item-price">₹ ${data.precio}</span>
+            <span class="cart-item-qty">Cantidad: ${data.cantidad}</span>
+          </div>
+          <div class="cart-item-actions">
+            <button class="btn-remove-cart" data-id="${id}">🗑️</button>
+          </div>
+        </div>
+      `;
+    });
+
+    cartList.innerHTML = html;
+    cartTotal.textContent = `Total: ₹ ${total}`;
+
+    // Mostrar el badge si hay items
+    if (itemCount > 0) {
+      cartBadge.textContent = itemCount > 9 ? '9+' : itemCount;
+      cartBadge.classList.add('visible');
+    } else {
+      cartBadge.classList.remove('visible');
+    }
+
+    // Eventos para eliminar del carrito
+    document.querySelectorAll('.btn-remove-cart').forEach(btn => {
+      btn.addEventListener('click', function() {
+        if (confirm('¿Quieres eliminar este producto del carrito?')) {
+          getCarritoRef().doc(this.dataset.id).delete().catch(err => {
+            console.error("Error al eliminar del carrito:", err);
+          });
+        }
+      });
+    });
+
+  }, (error) => {
+    console.error("Error al escuchar el carrito:", error);
+  });
+}
+
+// 🔥 Función para agregar al carrito
+function agregarAlCarrito(producto) {
+  const ref = getCarritoRef();
+  // Buscamos si ya existe este producto en el carrito
+  ref.where('nombre', '==', producto.name).get().then((snapshot) => {
+    let batch = db.batch();
+    let existe = false;
+
+    snapshot.forEach(doc => {
+      existe = true;
+      // Si existe, incrementamos la cantidad
+      const nuevaCantidad = doc.data().cantidad + fvCurrentQuantity;
+      batch.update(doc.ref, { cantidad: nuevaCantidad });
+    });
+
+    if (!existe) {
+      // Si no existe, lo creamos desde cero
+      const nuevoItemRef = ref.doc();
+      batch.set(nuevoItemRef, {
+        nombre: producto.name,
+        precio: producto.price,
+        imagen: producto.image || '',
+        cantidad: fvCurrentQuantity,
+        fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+
+    // Ejecutamos la operación en lote (atómica)
+    batch.commit().then(() => {
+      console.log(`✅ ${fvCurrentQuantity} ${producto.name}(s) agregado(s) al carrito.`);
+      // Cerramos el modal y mostramos un mensaje
+      fvCloseModal();
+      // (Opcional) Podrías mostrar un toast
+      // mostrarToast({ emisor_nick: 'Carrito', nombre_categoria: `${fvCurrentQuantity} ${producto.name} añadido` });
+    }).catch(error => {
+      console.error("Error al agregar al carrito:", error);
+      alert("Hubo un error al agregar el producto al carrito.");
+    });
+  });
+}
+
+// 🔥 Botón confirmar compra
+fvBtnConfirm.addEventListener('click', function() {
+  if (fvCurrentProduct) {
+    agregarAlCarrito(fvCurrentProduct);
+  }
+});
+
+// 🔥 Eventos del Modal Carrito
+btnOpenCart.addEventListener('click', () => {
+  modalCarrito.classList.remove('hidden');
+});
+modalCarritoClose.addEventListener('click', () => {
+  modalCarrito.classList.add('hidden');
+});
+modalCarrito.addEventListener('click', (e) => {
+  if (e.target === modalCarrito) modalCarrito.classList.add('hidden');
+});
 
 // ==========================================
 // NOTIFICACIONES INTERNAS
@@ -752,7 +867,7 @@ function guardarApodo(nuevoApodo) {
 }
 
 // ==========================================
-// MODALES DE LA APP (Nueva, Apodo, Notificaciones)
+// MODALES DE LA APP
 // ==========================================
 function abrirModal() { modalCategoria.classList.remove('hidden'); nombreCategoria.value = ''; imagenCategoria.value = ''; setTimeout(() => nombreCategoria.focus(), 100); }
 function cerrarModal() { modalCategoria.classList.add('hidden'); formCategoria.reset(); }
@@ -796,6 +911,7 @@ btnClearNotifications.addEventListener('click', limpiarTodasLasNotificaciones);
 auth.onAuthStateChanged(user => {
   if (unsubscribeCategorias) { unsubscribeCategorias(); unsubscribeCategorias = null; }
   if (unsubscribeFrutas) { unsubscribeFrutas(); unsubscribeFrutas = null; }
+  if (unsubscribeCarrito) { unsubscribeCarrito(); unsubscribeCarrito = null; } // 🔥 Limpiamos el listener del carrito
   if (unsubscribeUser) { unsubscribeUser(); unsubscribeUser = null; }
   if (unsubscribeNotif) { unsubscribeNotif(); unsubscribeNotif = null; }
   
@@ -809,6 +925,8 @@ auth.onAuthStateChanged(user => {
     
     suscribirPerfil(user);
     suscribirCategorias();
+    suscribirFrutas();       // Solo se ejecuta al abrir la página de frutas, pero la dejamos aquí para precarga segura
+    suscribirCarrito();      // 🔥 Iniciamos la escucha del carrito
     suscribirNotificaciones(user);
     requestNotificationPermission();
     
@@ -841,4 +959,4 @@ authSwitchLink.addEventListener('click', toggleAuthMode);
 btnGoogle.addEventListener('click', loginWithGoogle);
 btnLogout.addEventListener('click', logout);
 
-console.log('✅ App cargada, edición y eliminación de categorías activadas.');
+console.log('✅ App cargada, edición, eliminación y carrito compartido activados.');
