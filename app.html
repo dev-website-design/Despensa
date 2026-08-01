@@ -39,67 +39,31 @@
     .categoria span { display: block; font-size: 1.2rem; color: var(--black-cherry); letter-spacing: 0.5px; word-break: break-word; text-align: center; }
     .categoria.con-imagen::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(42, 12, 27, 0.85) 0%, rgba(42, 12, 27, 0.1) 70%, transparent 100%); z-index: 1; }
     .categoria.con-imagen .categoria-footer span { color: var(--white); text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4); }
-    .floating-dock { position: fixed; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); width: min(88%, 350px); height: 60px; background: var(--dock-bg); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255, 224, 235, 0.2); border-radius: 35px; display: flex; align-items: center; justify-content: space-around; padding: 0 8px; box-shadow: 0 10px 30px rgba(42, 12, 27, 0.3); z-index: 9999; }
+    .floating-dock { position: fixed; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); width: min(88%, 350px); height: 60px; 
+        /* ========================================== */
+        /* 🔥 NUEVO DISEÑO DEL DOCK: DEGRADADO Y SIN BORDE */
+        /* ========================================== */
+        background: linear-gradient(to top, var(--black-cherry) 0%, rgba(42, 12, 27, 0.8) 60%, rgba(42, 12, 27, 0) 100%);
+        -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+        border: none; /* Se eliminó el borde sólido */
+        border-radius: 35px;
+        display: flex; align-items: center; justify-content: space-around; padding: 0 8px;
+        box-shadow: 0 10px 30px rgba(42, 12, 27, 0.15); /* Sombra suave */
+        z-index: 9999;
+    }
     
     /* ========================================== */
-    /* 🔥 NUEVO EFECTO DOCK (ESTILO MACOS)         */
+    /* 🔥 EFECTO DOCK (ESTILO MACOS)               */
     /* ========================================== */
     .dock-item { 
-        background: transparent; 
-        border: none; 
-        color: rgba(255, 255, 255, 0.5); 
-        cursor: pointer; 
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        width: 40px; 
-        height: 40px; 
-        border-radius: 50%; 
-        text-decoration: none; 
-        outline: none; 
-        /* Transición de resorte para que salte al tocar */
-        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background-color 0.2s ease;
+        background: transparent; border: none; color: rgba(255, 255, 255, 0.5); cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; text-decoration: none; outline: none; transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background-color 0.2s ease;
     }
-    .dock-item:hover {
-        transform: scale(1.35) translateY(-8px); /* Se agranda mucho más y se eleva */
-        box-shadow: 0 10px 25px rgba(0,0,0,0.4); /* Sombra 3D flotante */
-        color: rgba(255, 255, 255, 1);
-    }
-    .dock-item:active {
-        transform: scale(0.90) translateY(0);
-    }
-    .dock-item.active { 
-        background-color: var(--carousel-pink); 
-        color: var(--black-cherry); 
-        transform: scale(1.25) translateY(-6px); /* Se mantiene elevado cuando está activo */
-        box-shadow: 0 8px 20px rgba(42, 12, 27, 0.3);
-    }
-
-    .dock-add-btn { 
-        background-color: var(--perfect-rose); 
-        color: var(--white); 
-        border: none; 
-        width: 46px; 
-        height: 46px; 
-        border-radius: 50%; 
-        font-family: var(--font-main); 
-        font-size: 1.8rem; 
-        cursor: pointer; 
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        box-shadow: 0 4px 14px rgba(190, 44, 85, 0.4); 
-        outline: none; 
-        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
-    }
-    .dock-add-btn:hover {
-        transform: scale(1.2) translateY(-5px);
-        box-shadow: 0 10px 30px rgba(190, 44, 85, 0.6);
-    }
-    .dock-add-btn:active { 
-        transform: scale(0.85) rotate(90deg) translateY(0); 
-    }
-    /* ========================================== */
+    .dock-item:hover { transform: scale(1.35) translateY(-8px); box-shadow: 0 10px 25px rgba(0,0,0,0.4); color: rgba(255, 255, 255, 1); }
+    .dock-item:active { transform: scale(0.90) translateY(0); }
+    .dock-item.active { background-color: var(--carousel-pink); color: var(--black-cherry); transform: scale(1.25) translateY(-6px); box-shadow: 0 8px 20px rgba(42, 12, 27, 0.3); }
+    .dock-add-btn { background-color: var(--perfect-rose); color: var(--white); border: none; width: 46px; height: 46px; border-radius: 50%; font-family: var(--font-main); font-size: 1.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(190, 44, 85, 0.4); outline: none; transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease; }
+    .dock-add-btn:hover { transform: scale(1.2) translateY(-5px); box-shadow: 0 10px 30px rgba(190, 44, 85, 0.6); }
+    .dock-add-btn:active { transform: scale(0.85) rotate(90deg) translateY(0); }
 
     .modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(42, 12, 27, 0.65); display: flex; align-items: center; justify-content: center; z-index: 10000; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); animation: fadeInBackdrop 0.3s ease forwards; }
     .hidden { display: none !important; }
