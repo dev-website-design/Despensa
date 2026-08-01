@@ -1,5 +1,5 @@
 // =====================================================
-// app.js - Editar Categorías (Lápiz ✏️)
+// app.js - Editar Categorías (Lápiz ✏️) + Botón Eliminar
 // =====================================================
 
 console.log("🚀 Cargando FINDORA...");
@@ -91,6 +91,7 @@ const formEditarCategoria = document.getElementById('formEditarCategoria');
 const nombreEditarCategoria = document.getElementById('nombreEditarCategoria');
 const imagenEditarCategoria = document.getElementById('imagenEditarCategoria');
 const modalEditarCancel = document.getElementById('modalEditarCancel');
+const btnEditarEliminar = document.getElementById('btnEditarEliminar'); // Nuevo botón Eliminar
 let currentEditCategoryId = null; // Guarda el ID de la categoría que se está editando
 
 // Variables de Configuración y Toggles
@@ -253,7 +254,6 @@ function suscribirCategorias() {
       const claseImagen = tieneImagen ? 'con-imagen' : '';
       const agregadoPor = data.agregadoPor ? ` (por ${data.agregadoPor})` : '';
       
-      // 🔥 HEMOS CAMBIADO LA X POR UN LÁPIZ (✏️) CON EL MISMO EVENTO DE DATASET
       html += `
         <div class="categoria ${claseImagen}" style="${estiloFondo}" data-id="${id}" data-nombre="${data.nombre}">
           <div class="categoria-footer">
@@ -281,7 +281,7 @@ function suscribirCategorias() {
       });
     });
 
-    // 🔥 EVENTO PARA EDITAR (El lápiz)
+    // EVENTO PARA EDITAR (El lápiz)
     document.querySelectorAll('.btn-editar').forEach(btn => {
       btn.addEventListener('click', function(e) {
         e.stopPropagation(); // Evita que el clic en el lápiz entre a la categoría
@@ -318,7 +318,7 @@ function agregarCategoria(nombre, imagenBase64) {
 }
 
 // ==========================================
-// 🆕 LÓGICA PARA EDITAR CATEGORÍAS
+// LÓGICA PARA EDITAR CATEGORÍAS
 // ==========================================
 function abrirModalEditarCategoria(id) {
   currentEditCategoryId = id;
@@ -327,7 +327,6 @@ function abrirModalEditarCategoria(id) {
     if (doc.exists) {
       const data = doc.data();
       nombreEditarCategoria.value = data.nombre || '';
-      // No podemos precargar la imagen en el input de tipo "file" por seguridad
       imagenEditarCategoria.value = ''; 
       modalEditarCategoria.classList.remove('hidden');
       setTimeout(() => nombreEditarCategoria.focus(), 100);
@@ -364,6 +363,22 @@ function actualizarCategoria(id, nuevoNombre, nuevaImagenBase64) {
   });
 }
 
+// 🔥 Lógica para el botón ELIMINAR dentro del modal de edición
+btnEditarEliminar.addEventListener('click', function() {
+    if (!currentEditCategoryId) return;
+
+    if (confirm('¿Estás seguro de que quieres eliminar esta categoría?\nEsta acción no se puede deshacer.')) {
+        const ref = getCategoriasRef().doc(currentEditCategoryId);
+        ref.delete().then(() => {
+            console.log("🗑️ Categoría eliminada correctamente.");
+            cerrarModalEditarCategoria();
+        }).catch(error => {
+            console.error('Error al eliminar la categoría:', error);
+            alert('Error al eliminar: ' + error.message);
+        });
+    }
+});
+
 formEditarCategoria.addEventListener('submit', function(e) {
   e.preventDefault();
   if (!currentEditCategoryId) return;
@@ -396,7 +411,6 @@ modalEditarCancel.addEventListener('click', cerrarModalEditarCategoria);
 modalEditarCategoria.addEventListener('click', (e) => { 
   if (e.target === modalEditarCategoria) cerrarModalEditarCategoria(); 
 });
-
 
 // ==========================================
 // 🛒 LÓGICA DE FRUTAS
@@ -827,4 +841,4 @@ authSwitchLink.addEventListener('click', toggleAuthMode);
 btnGoogle.addEventListener('click', loginWithGoogle);
 btnLogout.addEventListener('click', logout);
 
-console.log('✅ App cargada, edición de categorías activada.');
+console.log('✅ App cargada, edición y eliminación de categorías activadas.');
