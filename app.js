@@ -1,5 +1,5 @@
 // =====================================================
-// app.js - Modo COLABORATIVO con Tiendas Independientes
+// app.js - Modo COLABORATIVO con Ruteo por Hash (Atrás del móvil)
 // =====================================================
 
 console.log("🚀 Cargando FINDORA...");
@@ -92,41 +92,60 @@ let settingsListenersAttached = false;
 const processedToastIds = new Set();
 
 // ==========================================
-// LÓGICA DE NAVEGACIÓN
+// 🆕 LÓGICA DE NAVEGACIÓN SPA (CON SOPORTE PARA ATRÁS)
 // ==========================================
-function switchPage(pageId) {
-  if (pageCategorias) pageCategorias.classList.add('hidden-page');
-  if (pageConfig) pageConfig.classList.add('hidden-page');
-  if (pageFrutas) pageFrutas.classList.add('hidden-page');
-  if (pageCocina) pageCocina.classList.add('hidden-page');
-  if (pageSalon) pageSalon.classList.add('hidden-page');
-  
-  if (pageId === 'categorias' && pageCategorias) {
-    pageCategorias.classList.remove('hidden-page');
-  } else if (pageId === 'config' && pageConfig) {
-    pageConfig.classList.remove('hidden-page');
-    sincronizarTogglesUI();
-  } else if (pageId === 'frutas-verduras' && pageFrutas) {
-    pageFrutas.classList.remove('hidden-page');
-    suscribirFrutas();
-  } else if (pageId === 'cocina' && pageCocina) {
-    pageCocina.classList.remove('hidden-page');
-    suscribirCocinas();
-  } else if (pageId === 'salon' && pageSalon) {
-    pageSalon.classList.remove('hidden-page');
-    suscribirSalones();
-  }
+let isNavigating = false; // Evita que el cambio de hash se llame a sí mismo en bucle
 
-  dockItems.forEach(item => item.classList.remove('active'));
-  const activeDock = document.querySelector(`.dock-item[data-page="${pageId}"]`);
-  if (activeDock) activeDock.classList.add('active');
+function switchPage(pageId, updateHistory = true) {
+    // Si ya estamos navegando, salimos para evitar bucles
+    if (isNavigating) return;
+    isNavigating = true;
+
+    // 1. Ocultar todas las páginas
+    if (pageCategorias) pageCategorias.classList.add('hidden-page');
+    if (pageConfig) pageConfig.classList.add('hidden-page');
+    if (pageFrutas) pageFrutas.classList.add('hidden-page');
+    if (pageCocina) pageCocina.classList.add('hidden-page');
+    if (pageSalon) pageSalon.classList.add('hidden-page');
+    
+    // 2. Mostrar la página seleccionada
+    if (pageId === 'categorias' && pageCategorias) pageCategorias.classList.remove('hidden-page');
+    else if (pageId === 'config' && pageConfig) pageConfig.classList.remove('hidden-page');
+    else if (pageId === 'frutas-verduras' && pageFrutas) pageFrutas.classList.remove('hidden-page');
+    else if (pageId === 'cocina' && pageCocina) pageCocina.classList.remove('hidden-page');
+    else if (pageId === 'salon' && pageSalon) pageSalon.classList.remove('hidden-page');
+    
+    // 3. Actualizar el Dock y el estado activo
+    if (pageId) {
+        dockItems.forEach(item => item.classList.remove('active'));
+        const activeDock = document.querySelector(`.dock-item[data-page="${pageId}"]`);
+        if (activeDock) activeDock.classList.add('active');
+    }
+
+    // 4. Actualizar el hash de la URL (para que el botón de atrás funcione)
+    if (updateHistory && pageId && window.location.hash !== '#' + pageId) {
+        window.location.hash = pageId;
+    }
+
+    isNavigating = false;
 }
 
-dockItems.forEach(item => {
-  item.addEventListener('click', function() {
-    const page = this.dataset.page;
-    if (page) switchPage(page);
-  });
+// 🆕 Detectar el botón de "Atrás" del navegador y actuar en consecuencia
+window.addEventListener('hashchange', () => {
+    // Si el cambio de hash lo hicimos nosotros (switchPage), isNavigating es true y esto se ignora
+    if (!isNavigating && window.location.hash) {
+        const pageId = window.location.hash.replace('#', '');
+        // Nos aseguramos de que la página exista antes de intentar cambiar
+        if (pageId && document.getElementById('page-' + pageId)) {
+            // Llamamos a switchPage con updateHistory = false para evitar un bucle infinito
+            switchPage(pageId, false);
+        }
+    } else if (!isNavigating && !window.location.hash) {
+        // Si el usuario borra el hash o vuelve a la raíz, lo mandamos a Categorías si no estaba ya allí
+        if (pageCategorias && pageCategorias.classList.contains('hidden-page')) {
+            switchPage('categorias', false);
+        }
+    }
 });
 
 // ==========================================
@@ -793,7 +812,7 @@ document.getElementById('formAddFrutas').addEventListener('submit', function(e) 
   }
 });
 
-// Añadir Producto Cocina (Misma lógica pero con getCocinasRef)
+// Añadir Producto Cocina
 document.getElementById('modalAddCocinaCancel').addEventListener('click', () => cerrarAddModal('modalAddCocina', 'formAddCocina'));
 document.getElementById('modalAddCocina').addEventListener('click', (e) => { if (e.target === e.currentTarget) cerrarAddModal('modalAddCocina', 'formAddCocina'); });
 document.getElementById('formAddCocina').addEventListener('submit', function(e) {
@@ -822,7 +841,7 @@ document.getElementById('formAddCocina').addEventListener('submit', function(e) 
   }
 });
 
-// Añadir Producto Salón (Misma lógica pero con getSalonesRef)
+// Añadir Producto Salón
 document.getElementById('modalAddSalonCancel').addEventListener('click', () => cerrarAddModal('modalAddSalon', 'formAddSalon'));
 document.getElementById('modalAddSalon').addEventListener('click', (e) => { if (e.target === e.currentTarget) cerrarAddModal('modalAddSalon', 'formAddSalon'); });
 document.getElementById('formAddSalon').addEventListener('submit', function(e) {
@@ -1031,11 +1050,11 @@ auth.onAuthStateChanged(user => {
   if (user) {
     console.log("✅ Usuario autenticado:", user.email);
     pageAuth.classList.add('hidden-page');
-    pageCategorias.classList.remove('hidden-page');
-    if (pageConfig) pageConfig.classList.add('hidden-page');
-    if (pageFrutas) pageFrutas.classList.add('hidden-page');
-    if (pageCocina) pageCocina.classList.add('hidden-page');
-    if (pageSalon) pageSalon.classList.add('hidden-page');
+    
+    // 🔥 Utilizamos el sistema de navegación por hash para la carga inicial
+    const currentHash = window.location.hash.replace('#', '');
+    const targetPage = (currentHash && document.getElementById('page-' + currentHash)) ? currentHash : 'categorias';
+    switchPage(targetPage, true);
     
     suscribirPerfil(user);
     suscribirCategorias();
@@ -1044,18 +1063,18 @@ auth.onAuthStateChanged(user => {
     requestNotificationPermission();
     
     if (dock) dock.classList.remove('hidden-page');
-    dockItems.forEach(item => item.classList.remove('active'));
-    const activeItem = document.querySelector('.dock-item[data-page="categorias"]');
-    if (activeItem) activeItem.classList.add('active');
     sincronizarTogglesUI();
   } else {
     console.log("ℹ️ Usuario NO autenticado.");
     pageAuth.classList.remove('hidden-page');
-    pageCategorias.classList.add('hidden-page');
+    
+    // Ocultar todas las secciones internas manualmente
+    if (pageCategorias) pageCategorias.classList.add('hidden-page');
     if (pageConfig) pageConfig.classList.add('hidden-page');
     if (pageFrutas) pageFrutas.classList.add('hidden-page');
     if (pageCocina) pageCocina.classList.add('hidden-page');
     if (pageSalon) pageSalon.classList.add('hidden-page');
+    
     contenedor.innerHTML = '';
     userNameSpan.textContent = 'Invitado';
     currentNickname = null;
@@ -1073,4 +1092,4 @@ authSwitchLink.addEventListener('click', toggleAuthMode);
 btnGoogle.addEventListener('click', loginWithGoogle);
 btnLogout.addEventListener('click', logout);
 
-console.log('✅ App cargada con Cocina y Salón independientes!');
+console.log('✅ App cargada con soporte para botón de retroceso!');
