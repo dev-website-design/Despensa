@@ -115,9 +115,9 @@
     /* ========================================== */
     #page-frutas-verduras { background-color: #f9f9f9; }
     body.dark-mode #page-frutas-verduras { background-color: #1a1a1c; }
-    .header-frutas { background-color: #FF6B6B; padding: 15px; display: flex; align-items: center; justify-content: space-between; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; margin-top: -16px; margin-left: -16px; margin-right: -16px; }
+    .header-frutas { background-color: #FF6B6B; padding: 15px; display: flex; align-items: center; justify-content: space-between; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; margin-top: -16px; margin-left: -16px; margin-right: -16px; position: relative; }
     body.dark-mode .header-frutas { background-color: #BE2C55; }
-    .header-frutas .icon { color: white; font-size: 24px; cursor: pointer; padding: 0 5px; user-select: none; }
+    .header-frutas .icon { color: white; font-size: 24px; cursor: pointer; padding: 0 5px; user-select: none; position: relative; }
     .search-input-frutas-wrapper { flex: 1; margin: 0 10px; }
     .search-input-frutas { width: 100%; padding: 8px 12px; border-radius: 6px; border: none; outline: none; font-size: 14px; background: #fff; color: #333; }
     .search-input-frutas::placeholder { color: #999; }
@@ -137,6 +137,26 @@
     .btn-comprar { background-color: #FFB300; color: white; font-weight: bold; font-size: 12px; padding: 6px 14px; border: none; border-radius: 20px; cursor: pointer; transition: opacity 0.2s; }
     .btn-comprar:active { opacity: 0.8; }
     .empty-state { grid-column: span 2; text-align: center; padding: 40px 0; color: #888; }
+
+    /* ========================================== */
+    /* 🆕 ESTILOS PARA EL MODAL DEL CARRITO        */
+    /* ========================================== */
+    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0e1e6; }
+    .cart-item:last-child { border-bottom: none; }
+    .cart-item-info { display: flex; flex-direction: column; }
+    .cart-item-name { font-weight: 600; color: var(--black-cherry); }
+    .cart-item-price { font-size: 0.9rem; color: #666; }
+    .cart-item-qty { font-size: 0.9rem; color: var(--perfect-rose); }
+    .cart-item-actions { display: flex; align-items: center; gap: 10px; }
+    .btn-remove-cart { background: none; border: none; color: #dc3545; cursor: pointer; font-size: 1.2rem; }
+    .cart-total { text-align: right; font-weight: bold; margin-top: 10px; font-size: 1.1rem; color: var(--black-cherry); }
+    .cart-badge { position: absolute; top: -4px; right: -4px; background-color: #ff0000; color: white; font-size: 10px; font-weight: bold; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(255,0,0,0.4); display: none; }
+    .cart-badge.visible { display: flex; }
+    /* Ajustes modo oscuro para el carrito */
+    body.dark-mode .cart-item { border-bottom-color: #3a3a3c; }
+    body.dark-mode .cart-item-name { color: #f0e2e7; }
+    body.dark-mode .cart-item-price { color: #999; }
+    body.dark-mode .cart-total { color: #f0e2e7; }
   </style>
 </head>
 <body>
@@ -243,7 +263,8 @@
             <div class="search-input-frutas-wrapper">
                 <input type="text" id="search-input-frutas" class="search-input-frutas" placeholder="Buscar producto...">
             </div>
-            <span class="icon">🛒</span>
+            <!-- 🛒 Icono de Carrito con su Badge -->
+            <span class="icon" id="btnOpenCart">🛒 <span id="cartBadge" class="cart-badge">0</span></span>
         </div>
         <div class="section-header-frutas">
             <span class="section-title-frutas">Frutas & Verduras</span>
@@ -348,9 +369,7 @@
       </div>
   </div>
 
-  <!-- ========================================== -->
-  <!-- 🆕 MODAL PARA EDITAR CATEGORÍAS (CON ELIMINAR) -->
-  <!-- ========================================== -->
+  <!-- ===== MODAL PARA EDITAR CATEGORÍAS ===== -->
   <div id="modalEditarCategoria" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-content">
       <h2>✏️ Editar Categoría</h2>
@@ -359,18 +378,30 @@
         <input type="text" id="nombreEditarCategoria" placeholder="Ej. Frutas, Verduras..." required>
         <label for="imagenEditarCategoria">Imagen (opcional - sube una nueva para cambiarla)</label>
         <input type="file" id="imagenEditarCategoria" accept="image/*">
-        
         <div class="modal-buttons" style="justify-content: space-between;">
-          <!-- Botón para ELIMINAR (Rojo, a la izquierda) -->
           <button type="button" id="btnEditarEliminar" style="background-color: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 12px; font-family: var(--font-main); cursor: pointer;">Eliminar</button>
-          
-          <!-- Botones de Cancelar y Guardar (a la derecha) -->
           <div style="display: flex; gap: 10px;">
             <button type="button" class="btn-secondary" id="modalEditarCancel">Cancelar</button>
             <button type="submit" class="btn-primary">Guardar cambios</button>
           </div>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 🆕 MODAL DEL CARRITO DE COMPRAS              -->
+  <!-- ========================================== -->
+  <div id="modalCarrito" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-content">
+        <h2>🛒 Tu Carrito</h2>
+        <div id="cartList" class="notif-list" style="border-top: 1px solid #f0e1e6;">
+            <p style="color: var(--perfect-rose); text-align: center; padding: 20px 0;">El carrito está vacío.</p>
+        </div>
+        <div class="cart-total" id="cartTotal">Total: ₹ 0</div>
+        <div class="modal-buttons" style="justify-content: center; margin-top: 10px;">
+            <button type="button" class="btn-secondary" id="modalCarritoClose">Cerrar</button>
+        </div>
     </div>
   </div>
 
