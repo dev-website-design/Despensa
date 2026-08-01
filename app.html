@@ -169,30 +169,30 @@
     body.dark-mode .auth-card .btn-google { background: rgba(44, 44, 46, 0.7); color: #f0e2e7; border-color: rgba(255, 255, 255, 0.1); }
 
     /* ========================================== */
-    /* 🛒 ESTILOS ESPECÍFICOS PARA FRUTAS Y VERDURAS */
+    /* 🛒 ESTILOS PARA LAS TIENDAS (Frutas, Cocina, Salón) */
     /* ========================================== */
-    #page-frutas-verduras { padding: 0; }
-    .header-frutas { background-color: #FF6B6B; padding: 15px; display: flex; align-items: center; justify-content: space-between; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; margin-top: -16px; margin-left: -16px; margin-right: -16px; position: relative; }
-    body.dark-mode .header-frutas { background-color: #BE2C55; }
-    .header-frutas .icon { color: white; font-size: 24px; cursor: pointer; padding: 0 5px; user-select: none; position: relative; }
-    .search-input-frutas-wrapper { flex: 1; margin: 0 10px; }
-    .search-input-frutas { width: 100%; padding: 8px 12px; border-radius: 6px; border: none; outline: none; font-size: 14px; background: #fff; color: #333; }
-    .search-input-frutas::placeholder { color: #999; }
-    .section-header-frutas { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; }
-    .section-title-frutas { font-size: 18px; font-weight: 700; color: #222; }
-    body.dark-mode .section-title-frutas { color: #f0e2e7; }
-    #product-grid-frutas { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding-bottom: 20px; }
-    .product-card { padding: 15px; display: flex; flex-direction: column; align-items: center; position: relative; }
-    .heart-icon { position: absolute; top: 12px; left: 12px; color: #dc3545; font-size: 18px; cursor: pointer; }
-    .product-image { width: 90px; height: 90px; object-fit: contain; margin: 10px 0; }
-    .product-name { font-size: 15px; font-weight: 600; color: #333; align-self: flex-start; margin-bottom: 8px; }
-    body.dark-mode .product-name { color: #f0e2e7; }
-    .card-footer { width: 100%; display: flex; justify-content: space-between; align-items: center; }
-    .price { font-weight: 700; color: #444; font-size: 16px; }
-    body.dark-mode .price { color: #e0e0e0; }
-    .btn-comprar { background-color: #FFB300; color: white; font-weight: bold; font-size: 12px; padding: 6px 14px; border: none; border-radius: 20px; cursor: pointer; transition: opacity 0.2s; }
-    .btn-comprar:active { opacity: 0.8; }
-    .empty-state { grid-column: span 2; text-align: center; padding: 40px 0; color: #888; }
+    .tienda-container { padding: 0; }
+    .header-tienda { background-color: #FF6B6B; padding: 15px; display: flex; align-items: center; justify-content: space-between; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; margin-top: -16px; margin-left: -16px; margin-right: -16px; position: relative; }
+    body.dark-mode .header-tienda { background-color: #BE2C55; }
+    .header-tienda .icon { color: white; font-size: 24px; cursor: pointer; padding: 0 5px; user-select: none; position: relative; }
+    .search-input-tienda-wrapper { flex: 1; margin: 0 10px; }
+    .search-input-tienda { width: 100%; padding: 8px 12px; border-radius: 6px; border: none; outline: none; font-size: 14px; background: #fff; color: #333; }
+    .search-input-tienda::placeholder { color: #999; }
+    .section-header-tienda { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; }
+    .section-title-tienda { font-size: 18px; font-weight: 700; color: #222; }
+    body.dark-mode .section-title-tienda { color: #f0e2e7; }
+    #product-grid-tienda { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding-bottom: 20px; }
+    .product-card-tienda { padding: 15px; display: flex; flex-direction: column; align-items: center; position: relative; }
+    .product-card-tienda .heart-icon { position: absolute; top: 12px; left: 12px; color: #dc3545; font-size: 18px; cursor: pointer; }
+    .product-card-tienda .product-image { width: 90px; height: 90px; object-fit: contain; margin: 10px 0; }
+    .product-card-tienda .product-name { font-size: 15px; font-weight: 600; color: #333; align-self: flex-start; margin-bottom: 8px; }
+    body.dark-mode .product-card-tienda .product-name { color: #f0e2e7; }
+    .product-card-tienda .card-footer { width: 100%; display: flex; justify-content: space-between; align-items: center; }
+    .product-card-tienda .price { font-weight: 700; color: #444; font-size: 16px; }
+    body.dark-mode .product-card-tienda .price { color: #e0e0e0; }
+    .btn-comprar-tienda { background-color: #FFB300; color: white; font-weight: bold; font-size: 12px; padding: 6px 14px; border: none; border-radius: 20px; cursor: pointer; transition: opacity 0.2s; }
+    .btn-comprar-tienda:active { opacity: 0.8; }
+    .empty-state-tienda { grid-column: span 2; text-align: center; padding: 40px 0; color: #888; }
 
     /* ========================================== */
     /* 🆕 ESTILOS PARA EL MODAL DEL CARRITO        */
@@ -308,19 +308,55 @@
     <!-- ========================================== -->
     <!-- 🛒 PÁGINA: FRUTAS Y VERDURAS                -->
     <!-- ========================================== -->
-    <div id="page-frutas-verduras" class="hidden-page">
-        <div class="header-frutas">
-            <span class="icon" id="btn-back-categorias">←</span>
-            <div class="search-input-frutas-wrapper">
-                <input type="text" id="search-input-frutas" class="search-input-frutas" placeholder="Buscar producto...">
+    <div id="page-frutas-verduras" class="hidden-page tienda-container">
+        <div class="header-tienda">
+            <span class="icon" id="btn-back-frutas">←</span>
+            <div class="search-input-tienda-wrapper">
+                <input type="text" id="search-input-frutas" class="search-input-tienda" placeholder="Buscar producto...">
             </div>
-            <span class="icon" id="btnOpenCart">🛒 <span id="cartBadge" class="cart-badge">0</span></span>
+            <span class="icon" id="btnOpenCartFrutas">🛒 <span id="cartBadgeFrutas" class="cart-badge">0</span></span>
         </div>
-        <div class="section-header-frutas">
-            <span class="section-title-frutas">Frutas & Verduras</span>
+        <div class="section-header-tienda">
+            <span class="section-title-tienda">Frutas & Verduras</span>
             <span class="grid-icon">▦</span>
         </div>
-        <div id="product-grid-frutas"></div>
+        <div id="product-grid-frutas" class="product-grid-tienda"></div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 🛒 PÁGINA: COCINA                           -->
+    <!-- ========================================== -->
+    <div id="page-cocina" class="hidden-page tienda-container">
+        <div class="header-tienda">
+            <span class="icon" id="btn-back-cocina">←</span>
+            <div class="search-input-tienda-wrapper">
+                <input type="text" id="search-input-cocina" class="search-input-tienda" placeholder="Buscar producto...">
+            </div>
+            <span class="icon" id="btnOpenCartCocina">🛒 <span id="cartBadgeCocina" class="cart-badge">0</span></span>
+        </div>
+        <div class="section-header-tienda">
+            <span class="section-title-tienda">Cocina</span>
+            <span class="grid-icon">▦</span>
+        </div>
+        <div id="product-grid-cocina" class="product-grid-tienda"></div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 🛒 PÁGINA: SALÓN                            -->
+    <!-- ========================================== -->
+    <div id="page-salon" class="hidden-page tienda-container">
+        <div class="header-tienda">
+            <span class="icon" id="btn-back-salon">←</span>
+            <div class="search-input-tienda-wrapper">
+                <input type="text" id="search-input-salon" class="search-input-tienda" placeholder="Buscar producto...">
+            </div>
+            <span class="icon" id="btnOpenCartSalon">🛒 <span id="cartBadgeSalon" class="cart-badge">0</span></span>
+        </div>
+        <div class="section-header-tienda">
+            <span class="section-title-tienda">Salón</span>
+            <span class="grid-icon">▦</span>
+        </div>
+        <div id="product-grid-salon" class="product-grid-tienda"></div>
     </div>
 
   </div>
@@ -383,36 +419,104 @@
     </div>
   </div>
 
-  <!-- ===== MODAL DE COMPRA DE FRUTAS ===== -->
-  <div id="purchase-modal-fv" class="modal hidden" role="dialog" aria-modal="true">
+  <!-- ===== MODALES DE COMPRA DE LAS TRES TIENDAS ===== -->
+  <div id="purchase-modal-frutas" class="modal hidden" role="dialog" aria-modal="true">
       <div class="modal-content" style="text-align: center;">
           <h3 class="modal-title" style="margin: 0 0 5px 0;">Seleccionar Cantidad</h3>
-          <p id="modal-product-name-fv" style="color: #666; font-size: 1.1rem; margin: 0 0 20px 0;">Producto</p>
+          <p id="modal-product-name-frutas" style="color: #666; font-size: 1.1rem; margin: 0 0 20px 0;">Producto</p>
           <div class="quantity-selector" style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 25px;">
-              <button class="qty-btn" id="btn-decrement-fv" style="width: 35px; height: 35px; background: #f0f0f0; border-radius: 50%; border: none; font-size: 20px; font-weight: bold; cursor: pointer;">-</button>
-              <span class="qty-number" id="modal-quantity-fv" style="font-size: 20px; font-weight: bold; min-width: 30px; text-align: center;">1</span>
-              <button class="qty-btn" id="btn-increment-fv" style="width: 35px; height: 35px; background: #f0f0f0; border-radius: 50%; border: none; font-size: 20px; font-weight: bold; cursor: pointer;">+</button>
+              <button class="qty-btn" id="btn-decrement-frutas" style="width: 35px; height: 35px; background: #f0f0f0; border-radius: 50%; border: none; font-size: 20px; font-weight: bold; cursor: pointer;">-</button>
+              <span class="qty-number" id="modal-quantity-frutas" style="font-size: 20px; font-weight: bold; min-width: 30px; text-align: center;">1</span>
+              <button class="qty-btn" id="btn-increment-frutas" style="width: 35px; height: 35px; background: #f0f0f0; border-radius: 50%; border: none; font-size: 20px; font-weight: bold; cursor: pointer;">+</button>
           </div>
           <div class="modal-actions" style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
-              <button class="btn-primary" id="btn-confirm-purchase-fv" style="width: 100%; animation: none;">Confirmar Compra</button>
-              <button class="btn-secondary" id="btn-close-modal-fv" style="width: 100%;">Cancelar</button>
+              <button class="btn-primary" id="btn-confirm-purchase-frutas" style="width: 100%; animation: none;">Confirmar Compra</button>
+              <button class="btn-secondary" id="btn-close-modal-frutas" style="width: 100%;">Cancelar</button>
           </div>
       </div>
   </div>
 
-  <!-- ===== MODAL PARA AÑADIR FRUTAS Y VERDURAS ===== -->
-  <div id="modalFruta" class="modal hidden" role="dialog" aria-modal="true">
+  <div id="purchase-modal-cocina" class="modal hidden" role="dialog" aria-modal="true">
+      <div class="modal-content" style="text-align: center;">
+          <h3 class="modal-title" style="margin: 0 0 5px 0;">Seleccionar Cantidad</h3>
+          <p id="modal-product-name-cocina" style="color: #666; font-size: 1.1rem; margin: 0 0 20px 0;">Producto</p>
+          <div class="quantity-selector" style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 25px;">
+              <button class="qty-btn" id="btn-decrement-cocina" style="width: 35px; height: 35px; background: #f0f0f0; border-radius: 50%; border: none; font-size: 20px; font-weight: bold; cursor: pointer;">-</button>
+              <span class="qty-number" id="modal-quantity-cocina" style="font-size: 20px; font-weight: bold; min-width: 30px; text-align: center;">1</span>
+              <button class="qty-btn" id="btn-increment-cocina" style="width: 35px; height: 35px; background: #f0f0f0; border-radius: 50%; border: none; font-size: 20px; font-weight: bold; cursor: pointer;">+</button>
+          </div>
+          <div class="modal-actions" style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+              <button class="btn-primary" id="btn-confirm-purchase-cocina" style="width: 100%; animation: none;">Confirmar Compra</button>
+              <button class="btn-secondary" id="btn-close-modal-cocina" style="width: 100%;">Cancelar</button>
+          </div>
+      </div>
+  </div>
+
+  <div id="purchase-modal-salon" class="modal hidden" role="dialog" aria-modal="true">
+      <div class="modal-content" style="text-align: center;">
+          <h3 class="modal-title" style="margin: 0 0 5px 0;">Seleccionar Cantidad</h3>
+          <p id="modal-product-name-salon" style="color: #666; font-size: 1.1rem; margin: 0 0 20px 0;">Producto</p>
+          <div class="quantity-selector" style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 25px;">
+              <button class="qty-btn" id="btn-decrement-salon" style="width: 35px; height: 35px; background: #f0f0f0; border-radius: 50%; border: none; font-size: 20px; font-weight: bold; cursor: pointer;">-</button>
+              <span class="qty-number" id="modal-quantity-salon" style="font-size: 20px; font-weight: bold; min-width: 30px; text-align: center;">1</span>
+              <button class="qty-btn" id="btn-increment-salon" style="width: 35px; height: 35px; background: #f0f0f0; border-radius: 50%; border: none; font-size: 20px; font-weight: bold; cursor: pointer;">+</button>
+          </div>
+          <div class="modal-actions" style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+              <button class="btn-primary" id="btn-confirm-purchase-salon" style="width: 100%; animation: none;">Confirmar Compra</button>
+              <button class="btn-secondary" id="btn-close-modal-salon" style="width: 100%;">Cancelar</button>
+          </div>
+      </div>
+  </div>
+
+  <!-- ===== MODALES PARA AÑADIR PRODUCTOS A LAS TRES TIENDAS ===== -->
+  <div id="modalAddFrutas" class="modal hidden" role="dialog" aria-modal="true">
       <div class="modal-content">
           <h2>Añadir Fruta / Verdura</h2>
-          <form id="formFruta">
-              <label for="nombreFruta">Nombre del producto</label>
-              <input type="text" id="nombreFruta" placeholder="Ej. Manzana, Lechuga..." required>
-              <label for="precioFruta">Precio (₹)</label>
-              <input type="number" id="precioFruta" placeholder="Ej. 75" step="0.01" required>
-              <label for="imagenFruta">Imagen (opcional)</label>
-              <input type="file" id="imagenFruta" accept="image/*">
+          <form id="formAddFrutas">
+              <label for="nombreAddFrutas">Nombre del producto</label>
+              <input type="text" id="nombreAddFrutas" placeholder="Ej. Manzana, Lechuga..." required>
+              <label for="precioAddFrutas">Precio (₹)</label>
+              <input type="number" id="precioAddFrutas" placeholder="Ej. 75" step="0.01" required>
+              <label for="imagenAddFrutas">Imagen (opcional)</label>
+              <input type="file" id="imagenAddFrutas" accept="image/*">
               <div class="modal-buttons">
-                  <button type="button" class="btn-secondary" id="modalFrutaCancel">Cancelar</button>
+                  <button type="button" class="btn-secondary" id="modalAddFrutasCancel">Cancelar</button>
+                  <button type="submit" class="btn-primary">Guardar producto</button>
+              </div>
+          </form>
+      </div>
+  </div>
+
+  <div id="modalAddCocina" class="modal hidden" role="dialog" aria-modal="true">
+      <div class="modal-content">
+          <h2>Añadir Producto de Cocina</h2>
+          <form id="formAddCocina">
+              <label for="nombreAddCocina">Nombre del producto</label>
+              <input type="text" id="nombreAddCocina" placeholder="Ej. Sartén, Cuchara..." required>
+              <label for="precioAddCocina">Precio (₹)</label>
+              <input type="number" id="precioAddCocina" placeholder="Ej. 75" step="0.01" required>
+              <label for="imagenAddCocina">Imagen (opcional)</label>
+              <input type="file" id="imagenAddCocina" accept="image/*">
+              <div class="modal-buttons">
+                  <button type="button" class="btn-secondary" id="modalAddCocinaCancel">Cancelar</button>
+                  <button type="submit" class="btn-primary">Guardar producto</button>
+              </div>
+          </form>
+      </div>
+  </div>
+
+  <div id="modalAddSalon" class="modal hidden" role="dialog" aria-modal="true">
+      <div class="modal-content">
+          <h2>Añadir Producto de Salón</h2>
+          <form id="formAddSalon">
+              <label for="nombreAddSalon">Nombre del producto</label>
+              <input type="text" id="nombreAddSalon" placeholder="Ej. Cojín, Lámpara..." required>
+              <label for="precioAddSalon">Precio (₹)</label>
+              <input type="number" id="precioAddSalon" placeholder="Ej. 75" step="0.01" required>
+              <label for="imagenAddSalon">Imagen (opcional)</label>
+              <input type="file" id="imagenAddSalon" accept="image/*">
+              <div class="modal-buttons">
+                  <button type="button" class="btn-secondary" id="modalAddSalonCancel">Cancelar</button>
                   <button type="submit" class="btn-primary">Guardar producto</button>
               </div>
           </form>
@@ -439,16 +543,34 @@
     </div>
   </div>
 
-  <!-- ===== MODAL DEL CARRITO DE COMPRAS ===== -->
-  <div id="modalCarrito" class="modal hidden" role="dialog" aria-modal="true">
+  <!-- ===== MODALES DE CARRITO PARA CADA TIENDA ===== -->
+  <div id="modalCarritoFrutas" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-content">
-        <h2>🛒 Tu Carrito</h2>
-        <div id="cartList" class="notif-list" style="border-top: 1px solid #f0e1e6;">
-            <p style="color: var(--perfect-rose); text-align: center; padding: 20px 0;">El carrito está vacío.</p>
-        </div>
-        <div class="cart-total" id="cartTotal">Total: ₹ 0</div>
+        <h2>🛒 Carrito - Frutas</h2>
+        <div id="cartListFrutas" class="notif-list" style="border-top: 1px solid rgba(190, 44, 85, 0.15);"><p style="color: var(--perfect-rose); text-align: center; padding: 20px 0;">El carrito está vacío.</p></div>
+        <div class="cart-total" id="cartTotalFrutas">Total: ₹ 0</div>
         <div class="modal-buttons" style="justify-content: center; margin-top: 10px;">
-            <button type="button" class="btn-secondary" id="modalCarritoClose">Cerrar</button>
+            <button type="button" class="btn-secondary" id="modalCarritoFrutasClose">Cerrar</button>
+        </div>
+    </div>
+  </div>
+  <div id="modalCarritoCocina" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-content">
+        <h2>🛒 Carrito - Cocina</h2>
+        <div id="cartListCocina" class="notif-list" style="border-top: 1px solid rgba(190, 44, 85, 0.15);"><p style="color: var(--perfect-rose); text-align: center; padding: 20px 0;">El carrito está vacío.</p></div>
+        <div class="cart-total" id="cartTotalCocina">Total: ₹ 0</div>
+        <div class="modal-buttons" style="justify-content: center; margin-top: 10px;">
+            <button type="button" class="btn-secondary" id="modalCarritoCocinaClose">Cerrar</button>
+        </div>
+    </div>
+  </div>
+  <div id="modalCarritoSalon" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-content">
+        <h2>🛒 Carrito - Salón</h2>
+        <div id="cartListSalon" class="notif-list" style="border-top: 1px solid rgba(190, 44, 85, 0.15);"><p style="color: var(--perfect-rose); text-align: center; padding: 20px 0;">El carrito está vacío.</p></div>
+        <div class="cart-total" id="cartTotalSalon">Total: ₹ 0</div>
+        <div class="modal-buttons" style="justify-content: center; margin-top: 10px;">
+            <button type="button" class="btn-secondary" id="modalCarritoSalonClose">Cerrar</button>
         </div>
     </div>
   </div>
