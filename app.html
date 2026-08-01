@@ -39,7 +39,6 @@
     .categoria span { display: block; font-size: 1.2rem; color: var(--black-cherry); letter-spacing: 0.5px; word-break: break-word; text-align: center; }
     .categoria.con-imagen::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(42, 12, 27, 0.85) 0%, rgba(42, 12, 27, 0.1) 70%, transparent 100%); z-index: 1; }
     .categoria.con-imagen .categoria-footer span { color: var(--white); text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4); }
-    .btn-eliminar { background: none; border: none; color: var(--perfect-rose); font-size: 0.8rem; margin-top: 6px; cursor: pointer; }
     .floating-dock { position: fixed; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); width: min(88%, 350px); height: 60px; background: var(--dock-bg); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255, 224, 235, 0.2); border-radius: 35px; display: flex; align-items: center; justify-content: space-around; padding: 0 8px; box-shadow: 0 10px 30px rgba(42, 12, 27, 0.3); z-index: 9999; }
     .dock-item { background: transparent; border: none; color: rgba(255, 255, 255, 0.5); cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; text-decoration: none; outline: none; transition: 0.2s; }
     .dock-item.active { background-color: var(--carousel-pink); color: var(--black-cherry); transform: scale(1.08); }
@@ -350,7 +349,7 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- 🆕 NUEVO MODAL PARA EDITAR CATEGORÍAS        -->
+  <!-- 🆕 MODAL PARA EDITAR CATEGORÍAS (CON ELIMINAR) -->
   <!-- ========================================== -->
   <div id="modalEditarCategoria" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-content">
@@ -360,9 +359,16 @@
         <input type="text" id="nombreEditarCategoria" placeholder="Ej. Frutas, Verduras..." required>
         <label for="imagenEditarCategoria">Imagen (opcional - sube una nueva para cambiarla)</label>
         <input type="file" id="imagenEditarCategoria" accept="image/*">
-        <div class="modal-buttons">
-          <button type="button" class="btn-secondary" id="modalEditarCancel">Cancelar</button>
-          <button type="submit" class="btn-primary">Guardar cambios</button>
+        
+        <div class="modal-buttons" style="justify-content: space-between;">
+          <!-- Botón para ELIMINAR (Rojo, a la izquierda) -->
+          <button type="button" id="btnEditarEliminar" style="background-color: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 12px; font-family: var(--font-main); cursor: pointer;">Eliminar</button>
+          
+          <!-- Botones de Cancelar y Guardar (a la derecha) -->
+          <div style="display: flex; gap: 10px;">
+            <button type="button" class="btn-secondary" id="modalEditarCancel">Cancelar</button>
+            <button type="submit" class="btn-primary">Guardar cambios</button>
+          </div>
         </div>
       </form>
     </div>
