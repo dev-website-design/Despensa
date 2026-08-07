@@ -102,7 +102,7 @@
     body.dark-mode .hero-card, body.dark-mode .config-section, body.dark-mode .modal-content, body.dark-mode .auth-card, body.dark-mode .product-card-tienda { background: #2c2c2e; color: #f0e2e7; }
     body.dark-mode .categoria { background: #2c2c2e; color: #f0e2e7; }
     body.dark-mode .categoria span { color: #f0e2e7; }
-    
+
     /* REGLA DE SEGURIDAD OCULTAR DOCK EN LOGIN */
     #page-auth:not(.hidden-page) ~ #mainDock { display: none !important; }
 
@@ -111,7 +111,7 @@
 </head>
 <body>
   <div class="app-container" id="app">
-    
+
     <div id="page-auth">
       <div class="auth-container">
         <div class="auth-card">
@@ -217,6 +217,24 @@
 
   <!-- MODAL CARRITO DINÁMICO -->
   <div id="modalCarritoDinamico" class="modal hidden"><div class="modal-content"><h2 style="display:flex; gap:10px; align-items:center;">🛒 Carrito</h2><div id="cartListDinamico"></div><div id="cartTotalDinamico" style="text-align:right; font-weight:bold; font-size:1.2rem; margin-top:16px;"></div><div class="modal-buttons" style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;"><button class="btn-secondary" id="modalCarritoDinamicoClose">Cerrar</button></div></div></div>
+
+  <!-- ===== NUEVO MODAL EDITAR CATEGORÍA AÑADIDO ===== -->
+  <div id="modalEditarCategoria" class="modal hidden">
+    <div class="modal-content">
+      <h2>✏️ Editar Categoría</h2>
+      <form id="formEditarCategoria">
+        <label for="nombreEditarCategoria">Nombre</label>
+        <input type="text" id="nombreEditarCategoria" placeholder="Ej. Frutas, Verduras..." required>
+        <label for="imagenEditarCategoria">Imagen (opcional)</label>
+        <input type="file" id="imagenEditarCategoria" accept="image/*">
+        <div class="modal-buttons" style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+          <button type="button" class="btn-secondary" id="modalEditarCancel">Cancelar</button>
+          <button type="button" class="btn-secondary" id="btnEditarEliminar" style="background:#e2d0d7; color:var(--perfect-rose);">🗑️ Eliminar</button>
+          <button type="submit" class="btn-primary">Guardar cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <div class="toast-container" id="toastContainer"></div>
 
