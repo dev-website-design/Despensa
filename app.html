@@ -218,7 +218,26 @@
   <!-- MODAL CARRITO DINÁMICO -->
   <div id="modalCarritoDinamico" class="modal hidden"><div class="modal-content"><h2 style="display:flex; gap:10px; align-items:center;">🛒 Carrito</h2><div id="cartListDinamico"></div><div id="cartTotalDinamico" style="text-align:right; font-weight:bold; font-size:1.2rem; margin-top:16px;"></div><div class="modal-buttons" style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;"><button class="btn-secondary" id="modalCarritoDinamicoClose">Cerrar</button></div></div></div>
 
-  <!-- ===== NUEVO MODAL EDITAR CATEGORÍA AÑADIDO ===== -->
+  <!-- ===== NUEVO MODAL PARA AGREGAR PRODUCTOS ===== -->
+  <div id="modalAddProducto" class="modal hidden">
+    <div class="modal-content">
+      <h2>➕ Nuevo Producto</h2>
+      <form id="formAddProducto">
+        <label for="nombreAddProducto">Nombre</label>
+        <input type="text" id="nombreAddProducto" placeholder="Ej. Arroz, Detergente..." required>
+        <label for="precioAddProducto">Precio (₹)</label>
+        <input type="number" id="precioAddProducto" placeholder="100" step="0.01" required>
+        <label for="imagenAddProducto">Imagen (opcional)</label>
+        <input type="file" id="imagenAddProducto" accept="image/*">
+        <div class="modal-buttons" style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+          <button type="button" class="btn-secondary" id="modalAddProductoCancel">Cancelar</button>
+          <button type="submit" class="btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== MODAL PARA EDITAR CATEGORÍA ===== -->
   <div id="modalEditarCategoria" class="modal hidden">
     <div class="modal-content">
       <h2>✏️ Editar Categoría</h2>
