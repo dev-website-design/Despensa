@@ -78,7 +78,7 @@ const modalCarritoDinamico = document.getElementById('modalCarritoDinamico');
 const cartListDinamico = document.getElementById('cartListDinamico');
 const cartTotalDinamico = document.getElementById('cartTotalDinamico');
 
-// 🔥 NUEVAS REFERENCIAS AÑADIDAS PARA QUE EL LÁPIZ PUEDA EDITAR
+// 🔥 REFERENCIAS DEL MODAL DE EDICIÓN (Si no existen en el HTML, serán null y no romperán la app)
 const modalEditarCategoria = document.getElementById('modalEditarCategoria');
 const formEditarCategoria = document.getElementById('formEditarCategoria');
 const nombreEditarCategoria = document.getElementById('nombreEditarCategoria');
@@ -89,8 +89,8 @@ const btnEditarEliminar = document.getElementById('btnEditarEliminar');
 // Variables de Estado Globales
 let isLogin = true;
 let currentUser = null;
-let currentTiendaId = null;      // ID de la categoría que estamos viendo
-let currentTiendaNombre = null;  // Nombre de la categoría que estamos viendo
+let currentTiendaId = null;      
+let currentTiendaNombre = null;  
 let userNotificationsEnabled = true;
 let settingsListenersAttached = false;
 const processedToastIds = new Set();
@@ -101,9 +101,9 @@ let unsubscribeCarritoTienda = null;
 let unsubscribeUser = null;
 let unsubscribeNotif = null;
 let currentNickname = null; 
-let currentProduct = null;       // Producto seleccionado en el modal de compra
+let currentProduct = null;       
 let currentQuantity = 1;
-let currentEditCategoryId = null; // 🔥 Variable para guardar el ID de la categoría que se está editando
+let currentEditCategoryId = null; 
 
 // ==========================================
 // NAVEGACIÓN DINÁMICA
@@ -137,7 +137,6 @@ function switchPage(pageId, data = null) {
     const activeDock = document.querySelector(`.dock-item[data-page="${pageId}"]`);
     if (activeDock) activeDock.classList.add('active');
 
-    // Gestión de Hash y Recarga
     if (pageId === 'tienda') {
         window.location.hash = `tienda-${data.id}`;
     } else {
@@ -272,14 +271,19 @@ function suscribirCategorias() {
       });
     });
 
-    // 🔥 CAMBIO ESENCIAL: Dejamos de usar el alert y llamamos al modal de edición
-    document.querySelectorAll('.btn-editar').forEach(btn => {
-      btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        const id = this.dataset.id;
-        abrirModalEditarCategoria(id);
-      });
-    });
+    // 🔥 SI EL MODAL EXISTE, ACTIVAMOS EL LÁPIZ. SI NO, IGNORAMOS ESTO Y EL LOGIN SIGUE FUNCIONANDO.
+    if (modalEditarCategoria) {
+        document.querySelectorAll('.btn-editar').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const id = this.dataset.id;
+            abrirModalEditarCategoria(id);
+          });
+        });
+    } else {
+        console.warn("⚠️ modalEditarCategoria no encontrado en el HTML. El botón de editar no hará nada.");
+    }
+
   }, (error) => {
     console.error('Error en tiempo real de categorías:', error);
     contenedor.innerHTML = `<p style="color:red;">Error de conexión. Revisa la consola (F12).</p>`;
@@ -449,77 +453,80 @@ modalCarritoDinamico.addEventListener('click', (e) => { if (e.target === modalCa
 btnBackDinamico.addEventListener('click', () => { switchPage('categorias'); });
 
 // ==========================================
-// 🔥 LÓGICA COMPLETA DE EDICIÓN DE CATEGORÍAS (Reemplaza al alert)
+// 🔥 LÓGICA DE EDICIÓN DE CATEGORÍAS (Solo se ejecuta si el modal existe en el HTML)
 // ==========================================
-function abrirModalEditarCategoria(id) {
-  currentEditCategoryId = id;
-  getCategoriasRef().doc(id).get().then((doc) => {
-    if (doc.exists) {
-      const data = doc.data();
-      nombreEditarCategoria.value = data.nombre || '';
-      imagenEditarCategoria.value = '';
-      modalEditarCategoria.classList.remove('hidden');
-      setTimeout(() => nombreEditarCategoria.focus(), 100);
+if (modalEditarCategoria) {
+
+    function abrirModalEditarCategoria(id) {
+      currentEditCategoryId = id;
+      getCategoriasRef().doc(id).get().then((doc) => {
+        if (doc.exists) {
+          const data = doc.data();
+          nombreEditarCategoria.value = data.nombre || '';
+          imagenEditarCategoria.value = '';
+          modalEditarCategoria.classList.remove('hidden');
+          setTimeout(() => nombreEditarCategoria.focus(), 100);
+        }
+      }).catch(error => {
+        console.error("Error al cargar la categoría para editar:", error);
+        alert("No se pudo cargar la categoría.");
+      });
     }
-  }).catch(error => {
-    console.error("Error al cargar la categoría para editar:", error);
-    alert("No se pudo cargar la categoría.");
-  });
-}
 
-function cerrarModalEditarCategoria() {
-  modalEditarCategoria.classList.add('hidden');
-  formEditarCategoria.reset();
-  currentEditCategoryId = null;
-}
+    function cerrarModalEditarCategoria() {
+      modalEditarCategoria.classList.add('hidden');
+      formEditarCategoria.reset();
+      currentEditCategoryId = null;
+    }
 
-function actualizarCategoria(id, nuevoNombre, nuevaImagenBase64) {
-  const ref = getCategoriasRef().doc(id);
-  const updateData = {
-    nombre: nuevoNombre.trim(),
-    editadoPor: currentNickname || currentUser.email,
-    editadoEn: firebase.firestore.FieldValue.serverTimestamp()
-  };
-  if (nuevaImagenBase64) { updateData.imagen = nuevaImagenBase64; }
-  ref.update(updateData).then(() => {
-    cerrarModalEditarCategoria();
-  }).catch(error => {
-    console.error("Error al actualizar categoría:", error);
-    alert("Error al guardar los cambios: " + error.message);
-  });
-}
+    function actualizarCategoria(id, nuevoNombre, nuevaImagenBase64) {
+      const ref = getCategoriasRef().doc(id);
+      const updateData = {
+        nombre: nuevoNombre.trim(),
+        editadoPor: currentNickname || currentUser.email,
+        editadoEn: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      if (nuevaImagenBase64) { updateData.imagen = nuevaImagenBase64; }
+      ref.update(updateData).then(() => {
+        cerrarModalEditarCategoria();
+      }).catch(error => {
+        console.error("Error al actualizar categoría:", error);
+        alert("Error al guardar los cambios: " + error.message);
+      });
+    }
 
-btnEditarEliminar.addEventListener('click', function() {
-  if (!currentEditCategoryId) return;
-  if (confirm('¿Estás seguro de que quieres eliminar esta categoría?\nEsta acción no se puede deshacer.')) {
-    getCategoriasRef().doc(currentEditCategoryId).delete().then(() => {
-      cerrarModalEditarCategoria();
-    }).catch(error => {
-      console.error('Error al eliminar la categoría:', error);
-      alert('Error al eliminar: ' + error.message);
+    btnEditarEliminar.addEventListener('click', function() {
+      if (!currentEditCategoryId) return;
+      if (confirm('¿Estás seguro de que quieres eliminar esta categoría?\nEsta acción no se puede deshacer.')) {
+        getCategoriasRef().doc(currentEditCategoryId).delete().then(() => {
+          cerrarModalEditarCategoria();
+        }).catch(error => {
+          console.error('Error al eliminar la categoría:', error);
+          alert('Error al eliminar: ' + error.message);
+        });
+      }
     });
-  }
-});
 
-formEditarCategoria.addEventListener('submit', function(e) {
-  e.preventDefault();
-  if (!currentEditCategoryId) return;
-  const nombre = nombreEditarCategoria.value.trim();
-  if (!nombre) { alert("El nombre no puede estar vacío."); return; }
-  const file = imagenEditarCategoria.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      actualizarCategoria(currentEditCategoryId, nombre, event.target.result);
-    };
-    reader.readAsDataURL(file);
-  } else {
-    actualizarCategoria(currentEditCategoryId, nombre, null);
-  }
-});
+    formEditarCategoria.addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (!currentEditCategoryId) return;
+      const nombre = nombreEditarCategoria.value.trim();
+      if (!nombre) { alert("El nombre no puede estar vacío."); return; }
+      const file = imagenEditarCategoria.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          actualizarCategoria(currentEditCategoryId, nombre, event.target.result);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        actualizarCategoria(currentEditCategoryId, nombre, null);
+      }
+    });
 
-modalEditarCancel.addEventListener('click', cerrarModalEditarCategoria);
-modalEditarCategoria.addEventListener('click', (e) => { if (e.target === modalEditarCategoria) cerrarModalEditarCategoria(); });
+    modalEditarCancel.addEventListener('click', cerrarModalEditarCategoria);
+    modalEditarCategoria.addEventListener('click', (e) => { if (e.target === modalEditarCategoria) cerrarModalEditarCategoria(); });
+}
 
 // ==========================================
 // BOTÓN + INTELIGENTE (Dinámico)
@@ -773,4 +780,4 @@ authSwitchLink.addEventListener('click', toggleAuthMode);
 btnGoogle.addEventListener('click', loginWithGoogle);
 btnLogout.addEventListener('click', logout);
 
-console.log('✅ App cargada. ¡Lápiz de edición activado y funcionando!');
+console.log('✅ App cargada. Lápiz protegido contra errores.');
