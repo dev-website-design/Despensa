@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>FINDORA · Despensa</title>
-  <!-- Código OneSignal -->
+  <!-- 🔥 RUTA CORREGIDA AL MANIFEST -->
+  <link rel="manifest" href="assets/manifest.json">
+
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
@@ -40,15 +42,11 @@
     .categoria.con-imagen::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(42, 12, 27, 0.85) 0%, rgba(42, 12, 27, 0.1) 70%, transparent 100%); z-index: 1; }
     .categoria.con-imagen .categoria-footer span { color: var(--white); text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4); }
     .btn-eliminar, .btn-editar { background: none; border: none; color: var(--perfect-rose); font-size: 0.8rem; margin-top: 6px; cursor: pointer; }
-    
-    /* ===== ESTILOS DEL DOCK (RESTAURADOS A LA VERSIÓN ANTERIOR) ===== */
     .floating-dock { position: fixed; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); width: min(88%, 350px); height: 60px; background: var(--dock-bg); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgba(255, 224, 235, 0.2); border-radius: 35px; display: flex; align-items: center; justify-content: space-around; padding: 0 8px; box-shadow: 0 10px 30px rgba(42, 12, 27, 0.3); z-index: 9999; }
     .dock-item { background: transparent; border: none; color: rgba(255, 255, 255, 0.5); cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; text-decoration: none; outline: none; transition: 0.2s; }
     .dock-item.active { background-color: var(--carousel-pink); color: var(--black-cherry); transform: scale(1.08); }
     .dock-add-btn { background-color: var(--perfect-rose); color: var(--white); border: none; width: 46px; height: 46px; border-radius: 50%; font-family: var(--font-main); font-size: 1.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(190, 44, 85, 0.4); outline: none; transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
     .dock-add-btn:active { transform: scale(0.85) rotate(90deg); }
-    /* ========================================== */
-
     .modal { position: fixed; inset: 0; background: rgba(42, 12, 27, 0.65); display: flex; align-items: center; justify-content: center; z-index: 10000; backdrop-filter: blur(6px); }
     .hidden { display: none !important; }
     .hidden-page { display: none !important; }
@@ -76,7 +74,6 @@
     .toast h4 { margin: 0 0 4px 0; font-size: 0.9rem; color: var(--perfect-rose); }
     .toast p { margin: 0; font-size: 0.9rem; }
 
-    /* ===== ESTILOS DE TIENDA DINÁMICA ===== */
     .tienda-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; margin-top: 10px; }
     .tienda-header h2 { margin: 0; font-weight: normal; font-size: 1.4rem; }
     .btn-back { background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: var(--perfect-rose); }
@@ -92,8 +89,6 @@
     .btn-carrito { background: transparent; border: none; position: relative; cursor: pointer; color: var(--black-cherry); }
     .cart-badge { position: absolute; top: -6px; right: -6px; background: var(--perfect-rose); color: white; font-size: 10px; border-radius: 50%; width: 18px; height: 18px; display: none; justify-content: center; align-items: center; }
     .cart-badge.visible { display: flex; }
-
-    /* ===== MODAL DE CARRITO ===== */
     .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0e1e6; }
     .cart-item-info { display: flex; flex-direction: column; }
     .cart-item-name { font-weight: 600; }
@@ -101,22 +96,16 @@
     .cart-item-qty { font-size: 0.85rem; }
     .btn-remove-cart { background: transparent; border: none; font-size: 1.2rem; cursor: pointer; color: #999; }
     .cart-total { text-align: right; font-weight: bold; font-size: 1.2rem; margin-top: 16px; }
-
-    /* MODO OSCURO */
     body.dark-mode { --bg-color: #1a1a1c; --white: #2c2c2e; --black-cherry: #f0e2e7; --card-border: rgba(255, 224, 235, 0.1); }
     body.dark-mode .hero-card, body.dark-mode .config-section, body.dark-mode .modal-content, body.dark-mode .auth-card, body.dark-mode .product-card-tienda { background: #2c2c2e; color: #f0e2e7; }
     body.dark-mode .categoria { background: #2c2c2e; color: #f0e2e7; }
     body.dark-mode .categoria span { color: #f0e2e7; }
-
-    /* REGLA DE SEGURIDAD OCULTAR DOCK EN LOGIN */
     #page-auth:not(.hidden-page) ~ #mainDock { display: none !important; }
-
     @keyframes pulse-glow { 0% { box-shadow: 0 0 0 0 rgba(190, 44, 85, 0.6); } 70% { box-shadow: 0 0 0 12px rgba(190, 44, 85, 0); } 100% { box-shadow: 0 0 0 0 rgba(190, 44, 85, 0); } }
   </style>
 </head>
 <body>
   <div class="app-container" id="app">
-
     <div id="page-auth">
       <div class="auth-container">
         <div class="auth-card">
@@ -125,18 +114,15 @@
             <svg viewBox="0 0 48 48" width="20" height="20"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59A14.5 14.5 0 0 1 9.5 24c0-1.59.28-3.14.76-4.59l-7.98-6.19A23.99 23.99 0 0 0 0 24c0 3.77.87 7.35 2.56 10.56l7.97-6.07z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
             Continuar con Google
           </button>
-          <div class="divider" style="text-align:center; color:#999; margin:16px 0; font-size:0.9rem;">o con correo electrónico</div>
+          <div class="divider">o con correo electrónico</div>
           <form id="authForm">
             <label>Correo electrónico</label>
-            <input type="email" id="authEmail" placeholder="tu@email.com" required>
+            <input type="email" id="authEmail" required>
             <label>Contraseña</label>
-            <input type="password" id="authPassword" placeholder="••••••••" required>
+            <input type="password" id="authPassword" required>
             <button type="submit" class="btn-primary" style="width:100%; margin-top:16px;" id="authSubmitBtn">Iniciar sesión</button>
           </form>
-          <div class="auth-switch" style="text-align:center; margin-top:16px; font-size:0.9rem;">
-            <span id="authSwitchText">¿No tienes cuenta? </span>
-            <a id="authSwitchLink" style="color:var(--perfect-rose); cursor:pointer;">Regístrate</a>
-          </div>
+          <div class="auth-switch"><span id="authSwitchText">¿No tienes cuenta? </span><a id="authSwitchLink">Regístrate</a></div>
           <div id="authError" style="color: var(--perfect-rose); margin-top: 12px; font-size:0.9rem; text-align:center;"></div>
         </div>
       </div>
@@ -148,140 +134,55 @@
           <h1 class="hero-title">Mi Despensa</h1>
           <div style="display: flex; align-items: center;">
             <p class="hero-subtitle user-greeting">Hola, <span id="user-name">Usuario</span></p>
-            <button id="btnOpenNotifications" class="notif-button">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-              <span id="notifBadge" class="notif-badge">0</span>
-            </button>
+            <button id="btnOpenNotifications" class="notif-button"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg><span id="notifBadge" class="notif-badge">0</span></button>
           </div>
         </div>
       </div>
-      <div class="section-header" style="display:flex; align-items:center; gap:8px; margin-bottom:16px;">
-        <h2 class="section-title" style="font-size:1.25rem; font-weight:normal; margin:0;">Categorías</h2>
-        <span class="status-dot" style="width:7px; height:7px; background:var(--perfect-rose); border-radius:50%;"></span>
-      </div>
+      <div class="section-header"><h2 class="section-title">Categorías</h2><span class="status-dot"></span></div>
       <div class="categoria-grid" id="contenedor-categorias"></div>
     </div>
 
-    <!-- ===== SECCIÓN DE TIENDA DINÁMICA ===== -->
     <div id="page-tienda-dinamica" class="hidden-page">
       <div class="tienda-header">
         <button class="btn-back" id="btn-back-dinamica">← Volver</button>
         <h2 id="tienda-dinamica-nombre">Cargando...</h2>
-        <button class="btn-carrito" id="btnOpenCartDinamico">
-          🛒 <span class="cart-badge" id="cartBadgeDinamico">0</span>
-        </button>
+        <button class="btn-carrito" id="btnOpenCartDinamico">🛒 <span class="cart-badge" id="cartBadgeDinamico">0</span></button>
       </div>
       <input type="text" id="search-input-dinamico" placeholder="🔍 Buscar en esta categoría..." style="width:100%; padding:12px; border-radius:28px; border:1.5px solid var(--card-border); background:var(--white); color:var(--black-cherry); margin-bottom:16px; font-family:var(--font-main);">
       <div class="product-grid-tienda" id="product-grid-dinamico"></div>
     </div>
 
     <div id="page-config" class="hidden-page">
-      <div class="hero-card" style="margin-top:20px;">
-        <div class="hero-info"><h1 class="hero-title">⚙️ Configuración</h1><p class="hero-subtitle" style="color:var(--perfect-rose);">Personaliza tu experiencia</p></div>
+      <div class="hero-card"><div class="hero-info"><h1 class="hero-title">⚙️ Configuración</h1><p class="hero-subtitle">Personaliza tu experiencia</p></div></div>
+      <div class="config-section">
+        <h2 class="config-title">👤 Tu perfil</h2>
+        <div class="config-item"><span>✏️ Cambiar mi apodo</span><button id="btnOpenNicknameModal" class="btn-nickname">Cambiar</button></div>
       </div>
-      <div class="config-section" style="background:var(--white); border-radius:28px; padding:20px; margin-bottom:16px;">
-        <h2 class="config-title" style="font-size:1.2rem; font-weight:600; color:var(--black-cherry); margin-top:0; margin-bottom:12px;">👤 Tu perfil</h2>
-        <div class="config-item" style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid #f0e1e6;">
-          <span>✏️ Cambiar mi apodo</span>
-          <button id="btnOpenNicknameModal" class="btn-nickname">Cambiar</button>
-        </div>
+      <div class="config-section">
+        <h2 class="config-title">General</h2>
+        <div class="config-item"><span>🌙 Modo Oscuro</span><label class="toggle-switch"><input type="checkbox" id="darkModeToggle"><span class="toggle-slider"></span></label></div>
+        <div class="config-item"><span>🔔 Notificaciones</span><label class="toggle-switch"><input type="checkbox" id="notificationsToggle" checked><span class="toggle-slider"></span></label></div>
       </div>
-      <div class="config-section" style="background:var(--white); border-radius:28px; padding:20px; margin-bottom:16px;">
-        <h2 class="config-title" style="font-size:1.2rem; font-weight:600; color:var(--black-cherry); margin-top:0; margin-bottom:12px;">General</h2>
-        <div class="config-item" style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid #f0e1e6;">
-          <span>🌙 Modo Oscuro</span>
-          <label class="toggle-switch"><input type="checkbox" id="darkModeToggle"><span class="toggle-slider"></span></label>
-        </div>
-        <div class="config-item" style="display:flex; justify-content:space-between; align-items:center; padding:12px 0;">
-          <span>🔔 Notificaciones</span>
-          <label class="toggle-switch"><input type="checkbox" id="notificationsToggle" checked><span class="toggle-slider"></span></label>
-        </div>
-      </div>
-      <div class="config-section" style="background:var(--white); border-radius:28px; padding:20px; margin-bottom:16px;">
-        <div class="config-item" style="display:flex; justify-content:center; padding:0; border-bottom:none;">
-          <button id="btnLogout" class="btn-primary" style="width:100%; border-radius:30px; animation:none;">Cerrar sesión</button>
-        </div>
-      </div>
+      <div class="config-section"><div class="config-item" style="padding:0;"><button id="btnLogout" class="btn-primary" style="width:100%; border-radius:30px; animation:none;">Cerrar sesión</button></div></div>
     </div>
   </div>
 
-  <!-- ===== DOCK FLOTANTE ===== -->
   <nav class="floating-dock hidden-page" id="mainDock">
     <button class="dock-item active" data-page="categorias"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></button>
     <button class="dock-add-btn" id="dockAddBtn">+</button>
-    <button class="dock-item" data-page="config"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+    <button class="dock-item" data-page="config"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l-.06.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   </nav>
 
-  <!-- ===== MODALES ===== -->
-  <div id="modalCategoria" class="modal hidden"><div class="modal-content"><h2>Nueva Categoría</h2><form id="formCategoria"><label>Nombre</label><input type="text" id="nombreCategoria" required><label>Imagen (opcional)</label><input type="file" id="imagenCategoria" accept="image/*"><div class="modal-buttons" style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;"><button type="button" class="btn-secondary" id="modalCancel">Cancelar</button><button type="submit" class="btn-primary">Guardar</button></div></form></div></div>
-  <div id="modalNickname" class="modal hidden"><div class="modal-content"><h2>✏️ Cambiar mi apodo</h2><p style="color:var(--perfect-rose); font-size:0.9rem;">El apodo se mostrará en tu saludo.</p><form id="formNickname"><label>Nuevo apodo</label><input type="text" id="inputNickname" placeholder="Ej. Papi, Mami, Diego..." required><div class="modal-buttons" style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;"><button type="button" class="btn-secondary" id="modalNickCancel">Cancelar</button><button type="submit" class="btn-primary">Guardar apodo</button></div></form></div></div>
-  <div id="modalNotificaciones" class="modal hidden"><div class="modal-content"><h2>🔔 Notificaciones</h2><div id="notifList" style="max-height:300px; overflow-y:auto; border-top:1px solid #f0e1e6; padding-top:10px;"></div><div class="modal-buttons" style="display:flex; justify-content:center; gap:10px; margin-top:20px;"><button type="button" class="btn-secondary" id="btnClearNotifications" style="background:var(--perfect-rose); color:white;">Marcar todas como leídas</button><button type="button" class="btn-secondary" id="modalNotifClose">Cerrar</button></div></div></div>
-
-  <!-- MODALES DE COMPRA DINÁMICOS -->
-  <div id="purchase-modal-dinamico" class="modal hidden"><div class="modal-content"><h2 style="text-align:center;">🛒 Comprar</h2><p style="text-align:center; font-size:1.2rem; margin:10px 0;" id="modal-product-name-dinamico">Producto</p><div style="display:flex; justify-content:center; align-items:center; gap:20px;"><button class="btn-secondary" id="btn-decrement-dinamico" style="font-size:1.5rem; padding:5px 15px;">-</button><span id="modal-quantity-dinamico" style="font-size:1.5rem; font-weight:bold;">1</span><button class="btn-secondary" id="btn-increment-dinamico" style="font-size:1.5rem; padding:5px 15px;">+</button></div><div class="modal-buttons" style="display:flex; justify-content:space-between; margin-top:20px;"><button class="btn-secondary" id="purchase-modal-dinamico-close">Cancelar</button><button class="btn-primary" id="btn-confirm-purchase-dinamico">Agregar al carrito</button></div></div></div>
-
-  <!-- MODAL CARRITO DINÁMICO -->
-  <div id="modalCarritoDinamico" class="modal hidden"><div class="modal-content"><h2 style="display:flex; gap:10px; align-items:center;">🛒 Carrito</h2><div id="cartListDinamico"></div><div id="cartTotalDinamico" style="text-align:right; font-weight:bold; font-size:1.2rem; margin-top:16px;"></div><div class="modal-buttons" style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;"><button class="btn-secondary" id="modalCarritoDinamicoClose">Cerrar</button></div></div></div>
-
-  <!-- MODAL AGREGAR PRODUCTO -->
-  <div id="modalAddProducto" class="modal hidden">
-    <div class="modal-content">
-      <h2>➕ Nuevo Producto</h2>
-      <form id="formAddProducto">
-        <label for="nombreAddProducto">Nombre</label>
-        <input type="text" id="nombreAddProducto" placeholder="Ej. Arroz, Detergente..." required>
-        <label for="precioAddProducto">Precio (₹)</label>
-        <input type="number" id="precioAddProducto" placeholder="100" step="0.01" required>
-        <label for="imagenAddProducto">Imagen (opcional)</label>
-        <input type="file" id="imagenAddProducto" accept="image/*">
-        <div class="modal-buttons" style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-          <button type="button" class="btn-secondary" id="modalAddProductoCancel">Cancelar</button>
-          <button type="submit" class="btn-primary">Guardar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL EDITAR PRODUCTO -->
-  <div id="modalEditarItem" class="modal hidden">
-    <div class="modal-content">
-      <h2>✏️ Editar Producto</h2>
-      <form id="formEditarItem">
-        <label for="nombreEditarItem">Nombre</label>
-        <input type="text" id="nombreEditarItem" placeholder="Ej. Arroz, Detergente..." required>
-        <label for="precioEditarItem">Precio (₹)</label>
-        <input type="number" id="precioEditarItem" placeholder="100" step="0.01" required>
-        <label for="imagenEditarItem">Imagen (opcional)</label>
-        <input type="file" id="imagenEditarItem" accept="image/*">
-        <div class="modal-buttons" style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-          <button type="button" class="btn-secondary" id="modalEditarItemCancel">Cancelar</button>
-          <button type="button" class="btn-secondary" id="btnEditarItemEliminar" style="background:#e2d0d7; color:var(--perfect-rose);">🗑️ Eliminar</button>
-          <button type="submit" class="btn-primary">Guardar cambios</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL EDITAR CATEGORÍA -->
-  <div id="modalEditarCategoria" class="modal hidden">
-    <div class="modal-content">
-      <h2>✏️ Editar Categoría</h2>
-      <form id="formEditarCategoria">
-        <label for="nombreEditarCategoria">Nombre</label>
-        <input type="text" id="nombreEditarCategoria" placeholder="Ej. Frutas, Verduras..." required>
-        <label for="imagenEditarCategoria">Imagen (opcional)</label>
-        <input type="file" id="imagenEditarCategoria" accept="image/*">
-        <div class="modal-buttons" style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-          <button type="button" class="btn-secondary" id="modalEditarCancel">Cancelar</button>
-          <button type="button" class="btn-secondary" id="btnEditarEliminar" style="background:#e2d0d7; color:var(--perfect-rose);">🗑️ Eliminar</button>
-          <button type="submit" class="btn-primary">Guardar cambios</button>
-        </div>
-      </form>
-    </div>
-  </div>
+  <div id="modalCategoria" class="modal hidden"><div class="modal-content"><h2>Nueva Categoría</h2><form id="formCategoria"><label>Nombre</label><input type="text" id="nombreCategoria" required><label>Imagen (opcional)</label><input type="file" id="imagenCategoria" accept="image/*"><div class="modal-buttons"><button type="button" class="btn-secondary" id="modalCancel">Cancelar</button><button type="submit" class="btn-primary">Guardar</button></div></form></div></div>
+  <div id="modalNickname" class="modal hidden"><div class="modal-content"><h2>✏️ Cambiar mi apodo</h2><form id="formNickname"><label>Nuevo apodo</label><input type="text" id="inputNickname" required><div class="modal-buttons"><button type="button" class="btn-secondary" id="modalNickCancel">Cancelar</button><button type="submit" class="btn-primary">Guardar apodo</button></div></form></div></div>
+  <div id="modalNotificaciones" class="modal hidden"><div class="modal-content"><h2>🔔 Notificaciones</h2><div id="notifList"></div><div class="modal-buttons"><button type="button" class="btn-secondary" id="btnClearNotifications" style="background:var(--perfect-rose); color:white;">Marcar todas como leídas</button><button type="button" class="btn-secondary" id="modalNotifClose">Cerrar</button></div></div></div>
+  <div id="purchase-modal-dinamico" class="modal hidden"><div class="modal-content"><h2>🛒 Comprar</h2><p id="modal-product-name-dinamico">Producto</p><div style="display:flex; justify-content:center; align-items:center; gap:20px;"><button class="btn-secondary" id="btn-decrement-dinamico" style="font-size:1.5rem; padding:5px 15px;">-</button><span id="modal-quantity-dinamico" style="font-size:1.5rem; font-weight:bold;">1</span><button class="btn-secondary" id="btn-increment-dinamico" style="font-size:1.5rem; padding:5px 15px;">+</button></div><div class="modal-buttons"><button class="btn-secondary" id="purchase-modal-dinamico-close">Cancelar</button><button class="btn-primary" id="btn-confirm-purchase-dinamico">Agregar al carrito</button></div></div></div>
+  <div id="modalCarritoDinamico" class="modal hidden"><div class="modal-content"><h2>🛒 Carrito</h2><div id="cartListDinamico"></div><div id="cartTotalDinamico"></div><div class="modal-buttons"><button class="btn-secondary" id="modalCarritoDinamicoClose">Cerrar</button></div></div></div>
+  <div id="modalAddProducto" class="modal hidden"><div class="modal-content"><h2>➕ Nuevo Producto</h2><form id="formAddProducto"><label>Nombre</label><input type="text" id="nombreAddProducto" required><label>Precio (₹)</label><input type="number" id="precioAddProducto" required><label>Imagen (opcional)</label><input type="file" id="imagenAddProducto" accept="image/*"><div class="modal-buttons"><button type="button" class="btn-secondary" id="modalAddProductoCancel">Cancelar</button><button type="submit" class="btn-primary">Guardar</button></div></form></div></div>
+  <div id="modalEditarItem" class="modal hidden"><div class="modal-content"><h2>✏️ Editar Producto</h2><form id="formEditarItem"><label>Nombre</label><input type="text" id="nombreEditarItem" required><label>Precio (₹)</label><input type="number" id="precioEditarItem" required><label>Imagen (opcional)</label><input type="file" id="imagenEditarItem" accept="image/*"><div class="modal-buttons"><button type="button" class="btn-secondary" id="modalEditarItemCancel">Cancelar</button><button type="button" class="btn-secondary" id="btnEditarItemEliminar" style="background:#e2d0d7; color:var(--perfect-rose);">🗑️ Eliminar</button><button type="submit" class="btn-primary">Guardar cambios</button></div></form></div></div>
+  <div id="modalEditarCategoria" class="modal hidden"><div class="modal-content"><h2>✏️ Editar Categoría</h2><form id="formEditarCategoria"><label>Nombre</label><input type="text" id="nombreEditarCategoria" required><label>Imagen (opcional)</label><input type="file" id="imagenEditarCategoria" accept="image/*"><div class="modal-buttons"><button type="button" class="btn-secondary" id="modalEditarCancel">Cancelar</button><button type="button" class="btn-secondary" id="btnEditarEliminar" style="background:#e2d0d7; color:var(--perfect-rose);">🗑️ Eliminar</button><button type="submit" class="btn-primary">Guardar cambios</button></div></form></div></div>
 
   <div class="toast-container" id="toastContainer"></div>
-
   <script src="app.js"></script>
 </body>
 </html>
