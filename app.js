@@ -299,8 +299,6 @@ function suscribirCategorias() {
             abrirModalEditarCategoria(id);
           });
         });
-    } else {
-        console.warn("⚠️ modalEditarCategoria no encontrado en el HTML.");
     }
 
   }, (error) => {
@@ -379,7 +377,6 @@ function suscribirTienda(categoriaId) {
       });
     });
 
-    // 🔥 CORREGIDO: El lápiz de editar producto ahora abre el modal real, no un alert
     document.querySelectorAll(`#${grid.id} .btn-editar-item`).forEach(btn => {
       btn.addEventListener('click', function(e) {
         e.stopPropagation();
@@ -544,7 +541,7 @@ formAddProducto.addEventListener('submit', function(e) {
 });
 
 // ==========================================
-// 🔥 LÓGICA PARA EDITAR PRODUCTOS (ELIMINA EL ALERT)
+// 🔥 LÓGICA PARA EDITAR PRODUCTOS
 // ==========================================
 function abrirModalEditarItem(tienda, id) {
     currentEditItemData.tienda = tienda;
