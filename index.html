@@ -1,288 +1,89 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FINDORA · Bienvenida</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>FINDORA · Bienvenida</title>
+  <!-- 🔥 RUTA CORREGIDA AL MANIFEST -->
+  <link rel="manifest" href="assets/manifest.json">
 
-    <!-- ========================================== -->
-    <!-- 🔔 CÓDIGO DE ONESIGNAL AGREGADO AQUÍ        -->
-    <!-- ========================================== -->
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script>
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(async function(OneSignal) {
-        await OneSignal.init({
-          appId: "93c96ee7-abc4-41a3-a51f-5255ef954cd1",
-          safari_web_id: "web.onesignal.auto.27d2eba6-7621-43e8-b8d4-d2a9de3b8fea",
-          notifyButton: {
-            enable: false, // Lo ponemos en false para usar tu botón de campanita personalizado
-          },
-        });
-      });
-    </script>
-    <!-- ========================================== -->
-
-    <style>
-        /* Reseteo base */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        html, body {
-            width: 100%;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
-            background-color: #2A0C1B;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Kiltier', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        .hero-slider-component {
-            position: relative;
-            width: 100%;
-            max-width: 370px; 
-            height: 100dvh;
-            overflow: hidden;
-            color: white;
-            background-color: #2A0C1B;
-        }
-
-        .hero-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=2070&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-            z-index: 1;
-        }
-
-        .hero-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, rgba(42, 12, 27, 0.4) 0%, rgba(42, 12, 27, 0.8) 100%);
-            z-index: 2;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 3;
-            width: 100%;
-            height: 100%;
-            padding: 40px 24px 40px 24px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .hero-header {
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            padding-top: 10px;
-        }
-        .hero-logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 700;
-            font-size: 18px;
-            letter-spacing: 1px;
-        }
-        .logo-icon {
-            width: 24px;
-            height: 24px;
-            background: #BE2C55;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 900;
-            font-size: 14px;
-        }
-        .hero-text-area {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding-bottom: 20px;
-        }
-        .hero-title {
-            font-size: 48px;
-            font-weight: 700;
-            line-height: 1.1;
-            letter-spacing: -1px;
-            text-transform: uppercase;
-            margin: 0;
-        }
-        .hero-subtitle {
-            margin-top: 30px;
-            font-size: 16px;
-            line-height: 1.5;
-            max-width: 90%;
-            font-weight: 400;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            color: #FFE0EB;
-        }
-
-        .slider-wrapper {
-            position: relative;
-            width: 100%;
-            height: 62px;
-            background-color: white;
-            border-radius: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10px;
-            user-select: none;
-            touch-action: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-        .slider-text {
-            color: #333;
-            font-weight: 700;
-            font-size: 16px;
-            letter-spacing: 0.5px;
-            z-index: 2;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            pointer-events: none;
-            transition: color 0.3s ease;
-        }
-        .slider-knob {
-            position: absolute;
-            left: 4px;
-            right: auto;
-            top: 4px;
-            width: 54px;
-            height: 54px;
-            background-color: #2A0C1B;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 3;
-            transition: box-shadow 0.2s ease, background-color 0.3s ease;
-        }
-        .slider-knob:active { box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        .slider-knob svg { width: 24px; height: 24px; fill: white; }
-
-        @media (max-height: 700px) {
-            .hero-title { font-size: 36px; }
-            .hero-subtitle { font-size: 14px; margin-top: 20px; }
-            .hero-content { padding: 20px 20px 20px 20px; }
-            .slider-wrapper { height: 56px; }
-            .slider-knob { width: 48px; height: 48px; }
-        }
-    </style>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; min-height: 100vh; background-color: #2A0C1B; display: flex; justify-content: center; align-items: center; font-family: 'Kiltier', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    .hero-slider-component { position: relative; width: 100%; max-width: 370px; height: 100dvh; overflow: hidden; color: white; background-color: #2A0C1B; }
+    .hero-bg { position: absolute; inset: 0; background-image: url('https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center; z-index: 1; }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(42, 12, 27, 0.4) 0%, rgba(42, 12, 27, 0.8) 100%); z-index: 2; }
+    .hero-content { position: relative; z-index: 3; width: 100%; height: 100%; padding: 40px 24px; display: flex; flex-direction: column; justify-content: space-between; }
+    .hero-header { display: flex; padding-top: 10px; }
+    .hero-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; letter-spacing: 1px; }
+    .logo-icon { width: 24px; height: 24px; background: #BE2C55; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 14px; }
+    .hero-text-area { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; padding-bottom: 20px; }
+    .hero-title { font-size: 48px; font-weight: 700; line-height: 1.1; letter-spacing: -1px; text-transform: uppercase; margin: 0; }
+    .hero-subtitle { margin-top: 30px; font-size: 16px; line-height: 1.5; max-width: 90%; font-weight: 400; text-shadow: 0 2px 4px rgba(0,0,0,0.3); color: #FFE0EB; }
+    .slider-wrapper { position: relative; width: 100%; height: 62px; background-color: white; border-radius: 40px; display: flex; align-items: center; justify-content: center; user-select: none; touch-action: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: background-color 0.3s ease, color 0.3s ease; }
+    .slider-text { color: #333; font-weight: 700; font-size: 16px; letter-spacing: 0.5px; z-index: 2; position: absolute; left: 50%; transform: translateX(-50%); pointer-events: none; transition: color 0.3s ease; }
+    .slider-knob { position: absolute; left: 4px; top: 4px; width: 54px; height: 54px; background-color: #2A0C1B; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 3; transition: box-shadow 0.2s ease, background-color 0.3s ease; }
+    .slider-knob svg { width: 24px; height: 24px; fill: white; }
+    @media (max-height: 700px) { .hero-title { font-size: 36px; } .hero-subtitle { font-size: 14px; margin-top: 20px; } .slider-wrapper { height: 56px; } .slider-knob { width: 48px; height: 48px; } }
+  </style>
 </head>
 <body>
-    <div class="hero-slider-component" id="sliderComponent">
-        <div class="hero-bg"></div>
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-            <div class="hero-header">
-                <div class="hero-logo">
-                    <div class="logo-icon">F</div>
-                    FINDORA
-                </div>
-            </div>
-            <div class="hero-text-area">
-                <h1 class="hero-title">TU<br>DESPENSA</h1>
-                <p class="hero-subtitle">Organiza tus compras y mantén tu hogar en orden.</p>
-            </div>
-            <div class="slider-wrapper" id="sliderContainer">
-                <span class="slider-text">Empezar</span>
-                <div class="slider-knob" id="sliderKnob">
-                    <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
-                </div>
-            </div>
+  <div class="hero-slider-component">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-header">
+        <div class="hero-logo"><div class="logo-icon">F</div>FINDORA</div>
+      </div>
+      <div class="hero-text-area">
+        <h1 class="hero-title">TU<br>DESPENSA</h1>
+        <p class="hero-subtitle">Organiza tus compras y mantén tu hogar en orden.</p>
+      </div>
+      <div class="slider-wrapper" id="sliderContainer">
+        <span class="slider-text">Empezar</span>
+        <div class="slider-knob" id="sliderKnob">
+          <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
         </div>
+      </div>
     </div>
+  </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const knob = document.getElementById('sliderKnob');
-            const container = document.getElementById('sliderContainer');
-            const sliderText = container.querySelector('.slider-text');
-            let isDragging = false;
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const knob = document.getElementById('sliderKnob');
+      const container = document.getElementById('sliderContainer');
+      const sliderText = container.querySelector('.slider-text');
+      let isDragging = false;
 
-            const onStart = (e) => {
-                isDragging = true;
-                knob.style.transition = 'none';
-                const rect = container.getBoundingClientRect();
-                const currentLeft = knob.getBoundingClientRect().left - rect.left;
-                knob.style.left = currentLeft + 'px';
-                knob.style.right = 'auto';
-            };
-
-            const onMove = (e) => {
-                if (!isDragging) return;
-                e.preventDefault();
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const rect = container.getBoundingClientRect();
-                let newLeft = clientX - rect.left - (knob.offsetWidth / 2);
-                const maxLeft = container.offsetWidth - knob.offsetWidth - 4;
-                const minLeft = 4;
-                if (newLeft < minLeft) newLeft = minLeft;
-                if (newLeft > maxLeft) newLeft = maxLeft;
-                knob.style.left = newLeft + 'px';
-            };
-
-            const onEnd = (e) => {
-                if (!isDragging) return;
-                isDragging = false;
-
-                const knobRect = knob.getBoundingClientRect();
-                const containerRect = container.getBoundingClientRect();
-                const knobLeft = knobRect.left - containerRect.left;
-                const threshold = containerRect.width - knob.offsetWidth - 10;
-
-                if (knobLeft > threshold) {
-                    knob.style.transition = 'all 0.3s ease';
-                    knob.style.backgroundColor = '#BE2C55';
-                    container.style.backgroundColor = '#BE2C55';
-                    sliderText.style.color = 'white';
-                    sliderText.textContent = '¡Listo!';
-
-                    setTimeout(() => {
-                        window.location.assign('app.html');
-                    }, 350); 
-                } else {
-                    knob.style.transition = 'all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55)';
-                    knob.style.left = '4px';
-                    knob.style.right = 'auto';
-                    container.style.backgroundColor = 'white';
-                    sliderText.style.color = '#333';
-                    sliderText.textContent = 'Empezar';
-                }
-            };
-
-            knob.addEventListener('mousedown', onStart);
-            document.addEventListener('mousemove', onMove);
-            document.addEventListener('mouseup', onEnd);
-
-            knob.addEventListener('touchstart', onStart, { passive: false });
-            document.addEventListener('touchmove', onMove, { passive: false });
-            document.addEventListener('touchend', onEnd);
-            document.addEventListener('touchcancel', onEnd);
-        });
-    </script>
+      const onStart = (e) => { isDragging = true; knob.style.transition = 'none'; const rect = container.getBoundingClientRect(); const currentLeft = knob.getBoundingClientRect().left - rect.left; knob.style.left = currentLeft + 'px'; knob.style.right = 'auto'; };
+      const onMove = (e) => { if (!isDragging) return; e.preventDefault(); const clientX = e.touches ? e.touches[0].clientX : e.clientX; const rect = container.getBoundingClientRect(); let newLeft = clientX - rect.left - (knob.offsetWidth / 2); const maxLeft = container.offsetWidth - knob.offsetWidth - 4; const minLeft = 4; if (newLeft < minLeft) newLeft = minLeft; if (newLeft > maxLeft) newLeft = maxLeft; knob.style.left = newLeft + 'px'; };
+      const onEnd = (e) => {
+        if (!isDragging) return; isDragging = false;
+        const knobLeft = knob.getBoundingClientRect().left - container.getBoundingClientRect().left;
+        const threshold = container.offsetWidth - knob.offsetWidth - 10;
+        if (knobLeft > threshold) {
+          knob.style.transition = 'all 0.3s ease';
+          knob.style.backgroundColor = '#BE2C55';
+          container.style.backgroundColor = '#BE2C55';
+          sliderText.style.color = 'white';
+          sliderText.textContent = '¡Listo!';
+          setTimeout(() => { window.location.assign('app.html'); }, 350);
+        } else {
+          knob.style.transition = 'all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55)';
+          knob.style.left = '4px';
+          container.style.backgroundColor = 'white';
+          sliderText.style.color = '#333';
+          sliderText.textContent = 'Empezar';
+        }
+      };
+      knob.addEventListener('mousedown', onStart);
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onEnd);
+      knob.addEventListener('touchstart', onStart, { passive: false });
+      document.addEventListener('touchmove', onMove, { passive: false });
+      document.addEventListener('touchend', onEnd);
+      document.addEventListener('touchcancel', onEnd);
+    });
+  </script>
 </body>
 </html>
