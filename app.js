@@ -78,7 +78,15 @@ const modalCarritoDinamico = document.getElementById('modalCarritoDinamico');
 const cartListDinamico = document.getElementById('cartListDinamico');
 const cartTotalDinamico = document.getElementById('cartTotalDinamico');
 
-// 🔥 REFERENCIAS DEL MODAL DE EDICIÓN (Si no existen en el HTML, serán null y no romperán la app)
+// DOM ELEMENTS - MODAL AGREGAR PRODUCTO (NUEVO)
+const modalAddProducto = document.getElementById('modalAddProducto');
+const formAddProducto = document.getElementById('formAddProducto');
+const nombreAddProducto = document.getElementById('nombreAddProducto');
+const precioAddProducto = document.getElementById('precioAddProducto');
+const imagenAddProducto = document.getElementById('imagenAddProducto');
+const modalAddProductoCancel = document.getElementById('modalAddProductoCancel');
+
+// DOM ELEMENTS - MODAL EDITAR CATEGORÍA
 const modalEditarCategoria = document.getElementById('modalEditarCategoria');
 const formEditarCategoria = document.getElementById('formEditarCategoria');
 const nombreEditarCategoria = document.getElementById('nombreEditarCategoria');
@@ -453,10 +461,87 @@ modalCarritoDinamico.addEventListener('click', (e) => { if (e.target === modalCa
 btnBackDinamico.addEventListener('click', () => { switchPage('categorias'); });
 
 // ==========================================
-// 🔥 LÓGICA DE EDICIÓN DE CATEGORÍAS (Solo se ejecuta si el modal existe en el HTML)
+// 🔥 BOTÓN + INTELIGENTE (Ahora abre el modal de agregar productos)
+// ==========================================
+dockAddBtn.addEventListener('click', function() {
+    if (!pageTienda.classList.contains('hidden-page') && currentTiendaId) {
+        // Si estamos en una tienda, abrir el nuevo modal de agregar productos
+        modalAddProducto.classList.remove('hidden');
+        nombreAddProducto.value = '';
+        precioAddProducto.value = '';
+        imagenAddProducto.value = '';
+        setTimeout(() => nombreAddProducto.focus(), 100);
+    } else {
+        // Si estamos en Categorías, abrir la creación de categoría
+        modalCategoria.classList.remove('hidden');
+        nombreCategoria.value = '';
+        imagenCategoria.value = '';
+        setTimeout(() => nombreCategoria.focus(), 100);
+    }
+});
+
+// ==========================================
+// 🔥 LÓGICA PARA GUARDAR PRODUCTOS DESDE EL MODAL
+// ==========================================
+modalAddProductoCancel.addEventListener('click', function() {
+    modalAddProducto.classList.add('hidden');
+    formAddProducto.reset();
+});
+
+modalAddProducto.addEventListener('click', function(e) {
+    if (e.target === modalAddProducto) {
+        modalAddProducto.classList.add('hidden');
+        formAddProducto.reset();
+    }
+});
+
+formAddProducto.addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (!currentTiendaId) {
+        alert("Error: No se detectó la tienda actual.");
+        return;
+    }
+    const nombre = nombreAddProducto.value.trim();
+    const precio = parseFloat(precioAddProducto.value.trim());
+    if (!nombre || isNaN(precio)) {
+        alert("Por favor, completa el nombre y el precio correctamente.");
+        return;
+    }
+    const file = imagenAddProducto.files[0];
+    const nombreMostrar = currentNickname || (currentUser ? currentUser.email : 'Invitado');
+
+    // Función para guardar el producto
+    const guardarProducto = (imagenBase64 = '') => {
+        getProductosRef(currentTiendaId).add({
+            nombre: nombre,
+            precio: precio,
+            imagen: imagenBase64,
+            agregadoPor: nombreMostrar,
+            fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            modalAddProducto.classList.add('hidden');
+            formAddProducto.reset();
+        }).catch(error => {
+            console.error("Error al agregar producto:", error);
+            alert("Error al guardar el producto: " + error.message);
+        });
+    };
+
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            guardarProducto(event.target.result);
+        };
+        reader.readAsDataURL(file);
+    } else {
+        guardarProducto('');
+    }
+});
+
+// ==========================================
+// 🔥 LÓGICA DE EDICIÓN DE CATEGORÍAS
 // ==========================================
 if (modalEditarCategoria) {
-
     function abrirModalEditarCategoria(id) {
       currentEditCategoryId = id;
       getCategoriasRef().doc(id).get().then((doc) => {
@@ -527,38 +612,6 @@ if (modalEditarCategoria) {
     modalEditarCancel.addEventListener('click', cerrarModalEditarCategoria);
     modalEditarCategoria.addEventListener('click', (e) => { if (e.target === modalEditarCategoria) cerrarModalEditarCategoria(); });
 }
-
-// ==========================================
-// BOTÓN + INTELIGENTE (Dinámico)
-// ==========================================
-dockAddBtn.addEventListener('click', function() {
-    if (!pageTienda.classList.contains('hidden-page') && currentTiendaId) {
-        const nombreCategoria = currentTiendaNombre;
-        const nuevoNombre = prompt(`Ingresa el nombre del nuevo producto para "${nombreCategoria}":`);
-        if (nuevoNombre && nuevoNombre.trim() !== '') {
-            const nuevoPrecio = prompt(`Ingresa el precio para "${nuevoNombre.trim()}":`);
-            if (nuevoPrecio && !isNaN(parseFloat(nuevoPrecio))) {
-                getProductosRef(currentTiendaId).add({
-                    nombre: nuevoNombre.trim(),
-                    precio: parseFloat(nuevoPrecio),
-                    imagen: '',
-                    agregadoPor: currentNickname || currentUser.email,
-                    fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
-                }).catch(error => {
-                    console.error("Error al agregar producto dinámico:", error);
-                    alert("Error al guardar producto.");
-                });
-            } else {
-                alert("Precio inválido.");
-            }
-        }
-    } else {
-        modalCategoria.classList.remove('hidden');
-        nombreCategoria.value = '';
-        imagenCategoria.value = '';
-        setTimeout(() => nombreCategoria.focus(), 100);
-    }
-});
 
 // ==========================================
 // NOTIFICACIONES INTERNAS
@@ -780,4 +833,4 @@ authSwitchLink.addEventListener('click', toggleAuthMode);
 btnGoogle.addEventListener('click', loginWithGoogle);
 btnLogout.addEventListener('click', logout);
 
-console.log('✅ App cargada. Lápiz protegido contra errores.');
+console.log('✅ App cargada. Modal de agregar productos activado.');
