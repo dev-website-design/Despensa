@@ -78,6 +78,14 @@ const modalCarritoDinamico = document.getElementById('modalCarritoDinamico');
 const cartListDinamico = document.getElementById('cartListDinamico');
 const cartTotalDinamico = document.getElementById('cartTotalDinamico');
 
+// 🔥 NUEVAS REFERENCIAS AÑADIDAS PARA QUE EL LÁPIZ PUEDA EDITAR
+const modalEditarCategoria = document.getElementById('modalEditarCategoria');
+const formEditarCategoria = document.getElementById('formEditarCategoria');
+const nombreEditarCategoria = document.getElementById('nombreEditarCategoria');
+const imagenEditarCategoria = document.getElementById('imagenEditarCategoria');
+const modalEditarCancel = document.getElementById('modalEditarCancel');
+const btnEditarEliminar = document.getElementById('btnEditarEliminar');
+
 // Variables de Estado Globales
 let isLogin = true;
 let currentUser = null;
@@ -95,6 +103,7 @@ let unsubscribeNotif = null;
 let currentNickname = null; 
 let currentProduct = null;       // Producto seleccionado en el modal de compra
 let currentQuantity = 1;
+let currentEditCategoryId = null; // 🔥 Variable para guardar el ID de la categoría que se está editando
 
 // ==========================================
 // NAVEGACIÓN DINÁMICA
@@ -141,11 +150,8 @@ window.addEventListener('hashchange', () => {
     if (isNavigating) return;
     const hash = window.location.hash.replace('#', '');
     if (hash.startsWith('tienda-')) {
-        // Si el usuario recarga la página estando en una tienda, intentamos restaurarla
         const id = hash.replace('tienda-', '');
         if (id) {
-            // Necesitamos obtener el nombre de la categoría para pasarlo a la tienda. 
-            // Hacemos una consulta simple para obtener el nombre basado en el ID.
             getCategoriasRef().doc(id).get().then((doc) => {
                 if (doc.exists) {
                     const nombre = doc.data().nombre;
@@ -266,11 +272,12 @@ function suscribirCategorias() {
       });
     });
 
+    // 🔥 CAMBIO ESENCIAL: Dejamos de usar el alert y llamamos al modal de edición
     document.querySelectorAll('.btn-editar').forEach(btn => {
       btn.addEventListener('click', function(e) {
         e.stopPropagation();
         const id = this.dataset.id;
-        alert(`Editar categoría: ${id}`);
+        abrirModalEditarCategoria(id);
       });
     });
   }, (error) => {
@@ -297,14 +304,12 @@ function agregarCategoria(nombre, imagenBase64) {
 }
 
 // ==========================================
-// 🛒 TIENDA DINÁMICA (RUTA CORREGIDA)
+// 🛒 TIENDA DINÁMICA
 // ==========================================
 function getProductosRef(categoriaId) {
-    // 🔥 CORREGIDO: Antes usaba 'categorias', ahora usa 'categorias_compartidas'
     return db.collection('categorias_compartidas').doc(categoriaId).collection('productos');
 }
 function getCarritoTiendaRef(categoriaId) {
-    // 🔥 CORREGIDO: Antes usaba 'categorias', ahora usa 'categorias_compartidas'
     return db.collection('categorias_compartidas').doc(categoriaId).collection('carrito');
 }
 
@@ -361,7 +366,6 @@ function suscribirTienda(categoriaId) {
     });
   }, (error) => { console.error('Error en tiempo real de productos dinámicos:', error); });
 
-  // Suscribir el carrito de la tienda dinámica
   const refCarrito = getCarritoTiendaRef(categoriaId);
   unsubscribeCarritoTienda = refCarrito.onSnapshot((snapshot) => {
     let html = '';
@@ -438,20 +442,90 @@ btnConfirmPurchaseDinamico.addEventListener('click', function() {
     }
 });
 
-// Botones del carrito
 btnOpenCartDinamico.addEventListener('click', () => { modalCarritoDinamico.classList.remove('hidden'); });
 document.getElementById('modalCarritoDinamicoClose').addEventListener('click', () => { modalCarritoDinamico.classList.add('hidden'); });
 modalCarritoDinamico.addEventListener('click', (e) => { if (e.target === modalCarritoDinamico) modalCarritoDinamico.classList.add('hidden'); });
 
-// Botón volver de la tienda
 btnBackDinamico.addEventListener('click', () => { switchPage('categorias'); });
+
+// ==========================================
+// 🔥 LÓGICA COMPLETA DE EDICIÓN DE CATEGORÍAS (Reemplaza al alert)
+// ==========================================
+function abrirModalEditarCategoria(id) {
+  currentEditCategoryId = id;
+  getCategoriasRef().doc(id).get().then((doc) => {
+    if (doc.exists) {
+      const data = doc.data();
+      nombreEditarCategoria.value = data.nombre || '';
+      imagenEditarCategoria.value = '';
+      modalEditarCategoria.classList.remove('hidden');
+      setTimeout(() => nombreEditarCategoria.focus(), 100);
+    }
+  }).catch(error => {
+    console.error("Error al cargar la categoría para editar:", error);
+    alert("No se pudo cargar la categoría.");
+  });
+}
+
+function cerrarModalEditarCategoria() {
+  modalEditarCategoria.classList.add('hidden');
+  formEditarCategoria.reset();
+  currentEditCategoryId = null;
+}
+
+function actualizarCategoria(id, nuevoNombre, nuevaImagenBase64) {
+  const ref = getCategoriasRef().doc(id);
+  const updateData = {
+    nombre: nuevoNombre.trim(),
+    editadoPor: currentNickname || currentUser.email,
+    editadoEn: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  if (nuevaImagenBase64) { updateData.imagen = nuevaImagenBase64; }
+  ref.update(updateData).then(() => {
+    cerrarModalEditarCategoria();
+  }).catch(error => {
+    console.error("Error al actualizar categoría:", error);
+    alert("Error al guardar los cambios: " + error.message);
+  });
+}
+
+btnEditarEliminar.addEventListener('click', function() {
+  if (!currentEditCategoryId) return;
+  if (confirm('¿Estás seguro de que quieres eliminar esta categoría?\nEsta acción no se puede deshacer.')) {
+    getCategoriasRef().doc(currentEditCategoryId).delete().then(() => {
+      cerrarModalEditarCategoria();
+    }).catch(error => {
+      console.error('Error al eliminar la categoría:', error);
+      alert('Error al eliminar: ' + error.message);
+    });
+  }
+});
+
+formEditarCategoria.addEventListener('submit', function(e) {
+  e.preventDefault();
+  if (!currentEditCategoryId) return;
+  const nombre = nombreEditarCategoria.value.trim();
+  if (!nombre) { alert("El nombre no puede estar vacío."); return; }
+  const file = imagenEditarCategoria.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      actualizarCategoria(currentEditCategoryId, nombre, event.target.result);
+    };
+    reader.readAsDataURL(file);
+  } else {
+    actualizarCategoria(currentEditCategoryId, nombre, null);
+  }
+});
+
+modalEditarCancel.addEventListener('click', cerrarModalEditarCategoria);
+modalEditarCategoria.addEventListener('click', (e) => { if (e.target === modalEditarCategoria) cerrarModalEditarCategoria(); });
 
 // ==========================================
 // BOTÓN + INTELIGENTE (Dinámico)
 // ==========================================
 dockAddBtn.addEventListener('click', function() {
     if (!pageTienda.classList.contains('hidden-page') && currentTiendaId) {
-        // Si estamos en una tienda, abrir modal (mejoraremos esto para que pueda subir imagenes)
         const nombreCategoria = currentTiendaNombre;
         const nuevoNombre = prompt(`Ingresa el nombre del nuevo producto para "${nombreCategoria}":`);
         if (nuevoNombre && nuevoNombre.trim() !== '') {
@@ -699,4 +773,4 @@ authSwitchLink.addEventListener('click', toggleAuthMode);
 btnGoogle.addEventListener('click', loginWithGoogle);
 btnLogout.addEventListener('click', logout);
 
-console.log('✅ App cargada. ¡Categorías Dinámicas activadas!');
+console.log('✅ App cargada. ¡Lápiz de edición activado y funcionando!');
