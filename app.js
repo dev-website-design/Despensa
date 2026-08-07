@@ -1,5 +1,5 @@
 // =====================================================
-// app.js - Arquitectura DINÁMICA de Categorías y Productos
+// app.js - Arquitectura DINÁMICA (Rutas corregidas)
 // =====================================================
 
 console.log("🚀 Cargando FINDORA...");
@@ -105,7 +105,6 @@ function switchPage(pageId, data = null) {
     if (isNavigating) return;
     isNavigating = true;
 
-    // Ocultar todas las páginas
     if (pageCategorias) pageCategorias.classList.add('hidden-page');
     if (pageConfig) pageConfig.classList.add('hidden-page');
     if (pageTienda) pageTienda.classList.add('hidden-page');
@@ -116,7 +115,6 @@ function switchPage(pageId, data = null) {
         pageConfig.classList.remove('hidden-page');
         sincronizarTogglesUI();
     } else if (pageId === 'tienda' && pageTienda) {
-        // Configurar la tienda dinámica con los datos de la categoría
         if (data && data.id && data.nombre) {
             currentTiendaId = data.id;
             currentTiendaNombre = data.nombre;
@@ -130,10 +128,11 @@ function switchPage(pageId, data = null) {
     const activeDock = document.querySelector(`.dock-item[data-page="${pageId}"]`);
     if (activeDock) activeDock.classList.add('active');
 
-    if (pageId !== 'tienda') {
-        window.location.hash = pageId;
-    } else {
+    // Gestión de Hash y Recarga
+    if (pageId === 'tienda') {
         window.location.hash = `tienda-${data.id}`;
+    } else {
+        window.location.hash = pageId;
     }
     setTimeout(() => { isNavigating = false; }, 100);
 }
@@ -142,15 +141,30 @@ window.addEventListener('hashchange', () => {
     if (isNavigating) return;
     const hash = window.location.hash.replace('#', '');
     if (hash.startsWith('tienda-')) {
-        // Esto no debería ejecutarse manualmente si entramos, pero si cargamos un hash directo
-        // Para simplificar, solo manejamos categorias y config
-        if (pageCategorias) pageCategorias.classList.add('hidden-page');
-        if (pageConfig) pageConfig.classList.add('hidden-page');
-        if (pageTienda) pageTienda.classList.add('hidden-page');
-        pageCategorias.classList.remove('hidden-page');
-        window.location.hash = 'categorias';
+        // Si el usuario recarga la página estando en una tienda, intentamos restaurarla
+        const id = hash.replace('tienda-', '');
+        if (id) {
+            // Necesitamos obtener el nombre de la categoría para pasarlo a la tienda. 
+            // Hacemos una consulta simple para obtener el nombre basado en el ID.
+            getCategoriasRef().doc(id).get().then((doc) => {
+                if (doc.exists) {
+                    const nombre = doc.data().nombre;
+                    switchPage('tienda', { id: id, nombre: nombre }, false);
+                } else {
+                    switchPage('categorias', false);
+                }
+            }).catch(() => {
+                switchPage('categorias', false);
+            });
+        } else {
+            switchPage('categorias', false);
+        }
     } else if (hash && document.getElementById('page-' + hash)) {
         if (hash !== 'tienda') switchPage(hash, false);
+    } else {
+        if (pageCategorias && pageCategorias.classList.contains('hidden-page')) {
+            switchPage('categorias', false);
+        }
     }
 });
 
@@ -195,7 +209,7 @@ function sincronizarTogglesUI() {
 // ==========================================
 // AUTENTICACIÓN
 // ==========================================
-function toggleAuthMode() { /* código igual que antes */ isLogin = !isLogin; authTitle.textContent = isLogin ? 'Iniciar Sesión' : 'Crear Cuenta'; authSubmitBtn.textContent = isLogin ? 'Iniciar sesión' : 'Registrarse'; authSwitchText.textContent = isLogin ? '¿No tienes cuenta? ' : '¿Ya tienes cuenta? '; authSwitchLink.textContent = isLogin ? 'Regístrate' : 'Inicia sesión'; authError.textContent = ''; }
+function toggleAuthMode() { isLogin = !isLogin; authTitle.textContent = isLogin ? 'Iniciar Sesión' : 'Crear Cuenta'; authSubmitBtn.textContent = isLogin ? 'Iniciar sesión' : 'Registrarse'; authSwitchText.textContent = isLogin ? '¿No tienes cuenta? ' : '¿Ya tienes cuenta? '; authSwitchLink.textContent = isLogin ? 'Regístrate' : 'Inicia sesión'; authError.textContent = ''; }
 async function handleAuthSubmit(e) { e.preventDefault(); const email = authEmail.value.trim(); const password = authPassword.value.trim(); if (!email || !password) { authError.textContent = 'Por favor, completa el correo y la contraseña.'; return; } authError.textContent = 'Cargando...'; try { if (isLogin) { await auth.signInWithEmailAndPassword(email, password); } else { await auth.createUserWithEmailAndPassword(email, password); } } catch (error) { console.error("❌ Error en handleAuthSubmit:", error); if (error.code === 'auth/email-already-in-use') authError.textContent = 'Este correo ya está registrado.'; else if (error.code === 'auth/user-not-found') authError.textContent = 'Usuario no encontrado.'; else if (error.code === 'auth/wrong-password') authError.textContent = 'Contraseña incorrecta.'; else authError.textContent = error.message || "Error al conectar con Firebase."; } }
 async function loginWithGoogle() { try { const provider = new firebase.auth.GoogleAuthProvider(); await auth.signInWithPopup(provider); } catch (error) { console.error("❌ Error en loginWithGoogle:", error); authError.textContent = error.message || "Error al iniciar con Google."; } }
 function logout() { auth.signOut(); }
@@ -205,7 +219,7 @@ async function requestNotificationPermission() {
   try {
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
-      const token = await messaging.getToken({ vapidKey: 'TU_VAPID_KEY_AQUI' }); // Recuerda reemplazar tu VAPID KEY
+      const token = await messaging.getToken({ vapidKey: 'TU_VAPID_KEY_AQUI' }); 
       const userRef = db.collection('usuarios').doc(currentUser.uid);
       await userRef.set({ fcmTokens: firebase.firestore.FieldValue.arrayUnion(token) }, { merge: true });
       console.log("📲 Token push guardado en Firestore:", token);
@@ -214,7 +228,7 @@ async function requestNotificationPermission() {
 }
 
 // ==========================================
-// CATEGORÍAS (Lectura de la raíz)
+// CATEGORÍAS
 // ==========================================
 function getCategoriasRef() { return db.collection('categorias_compartidas'); }
 
@@ -243,7 +257,6 @@ function suscribirCategorias() {
     });
     contenedor.innerHTML = html;
 
-    // 🚀 HACER CLIC EN CUALQUIER CATEGORÍA TE LLEVA A LA TIENDA DINÁMICA
     document.querySelectorAll('.categoria').forEach(card => {
       card.addEventListener('click', function(e) {
         if (e.target.closest('.btn-editar')) return;
@@ -257,7 +270,6 @@ function suscribirCategorias() {
       btn.addEventListener('click', function(e) {
         e.stopPropagation();
         const id = this.dataset.id;
-        // Aquí puedes meter la lógica de editar categoría que ya tenías antes
         alert(`Editar categoría: ${id}`);
       });
     });
@@ -285,13 +297,15 @@ function agregarCategoria(nombre, imagenBase64) {
 }
 
 // ==========================================
-// 🛒 TIENDA DINÁMICA (Subcolección de la categoría)
+// 🛒 TIENDA DINÁMICA (RUTA CORREGIDA)
 // ==========================================
 function getProductosRef(categoriaId) {
-    return db.collection('categorias').doc(categoriaId).collection('productos');
+    // 🔥 CORREGIDO: Antes usaba 'categorias', ahora usa 'categorias_compartidas'
+    return db.collection('categorias_compartidas').doc(categoriaId).collection('productos');
 }
 function getCarritoTiendaRef(categoriaId) {
-    return db.collection('categorias').doc(categoriaId).collection('carrito');
+    // 🔥 CORREGIDO: Antes usaba 'categorias', ahora usa 'categorias_compartidas'
+    return db.collection('categorias_compartidas').doc(categoriaId).collection('carrito');
 }
 
 function suscribirTienda(categoriaId) {
@@ -324,7 +338,6 @@ function suscribirTienda(categoriaId) {
     });
     grid.innerHTML = html;
 
-    // Evento COMPRAR de la tienda dinámica
     document.querySelectorAll(`#${grid.id} .btn-comprar-tienda`).forEach(btn => {
       btn.addEventListener('click', function() {
         const id = this.dataset.id;
@@ -338,7 +351,6 @@ function suscribirTienda(categoriaId) {
       });
     });
 
-    // Evento EDITAR de la tienda dinámica
     document.querySelectorAll(`#${grid.id} .btn-editar-item`).forEach(btn => {
       btn.addEventListener('click', function(e) {
         e.stopPropagation();
@@ -439,7 +451,7 @@ btnBackDinamico.addEventListener('click', () => { switchPage('categorias'); });
 // ==========================================
 dockAddBtn.addEventListener('click', function() {
     if (!pageTienda.classList.contains('hidden-page') && currentTiendaId) {
-        // Si estamos en una tienda, abrir modal para añadir productos a esa tienda específica
+        // Si estamos en una tienda, abrir modal (mejoraremos esto para que pueda subir imagenes)
         const nombreCategoria = currentTiendaNombre;
         const nuevoNombre = prompt(`Ingresa el nombre del nuevo producto para "${nombreCategoria}":`);
         if (nuevoNombre && nuevoNombre.trim() !== '') {
@@ -460,7 +472,6 @@ dockAddBtn.addEventListener('click', function() {
             }
         }
     } else {
-        // Si estamos en Categorías, abrir la creación de categoría
         modalCategoria.classList.remove('hidden');
         nombreCategoria.value = '';
         imagenCategoria.value = '';
@@ -469,7 +480,7 @@ dockAddBtn.addEventListener('click', function() {
 });
 
 // ==========================================
-// NOTIFICACIONES INTERNAS (Mantenidas igual)
+// NOTIFICACIONES INTERNAS
 // ==========================================
 function notificarNuevaCategoria(nombreCategoria, usuarioEmisor) {
   if (!currentUser) return; 
@@ -594,7 +605,7 @@ function guardarApodo(nuevoApodo) {
 }
 
 // ==========================================
-// MODALES DE LA APP (Nueva, Apodo, Notificaciones)
+// MODALES DE LA APP
 // ==========================================
 function abrirModal() { modalCategoria.classList.remove('hidden'); nombreCategoria.value = ''; imagenCategoria.value = ''; setTimeout(() => nombreCategoria.focus(), 100); }
 function cerrarModal() { modalCategoria.classList.add('hidden'); formCategoria.reset(); }
@@ -646,8 +657,13 @@ auth.onAuthStateChanged(user => {
     
     const currentHash = window.location.hash.replace('#', '');
     if (currentHash.startsWith('tienda-')) {
-        // Si el usuario cargó una tienda, no sabemos qué categoría era porque no guardamos estado. Volvemos a categorías.
-        switchPage('categorias', true);
+        const id = currentHash.replace('tienda-', '');
+        getCategoriasRef().doc(id).get().then((doc) => {
+            if (doc.exists) {
+                const nombre = doc.data().nombre;
+                switchPage('tienda', { id: id, nombre: nombre }, true);
+            } else { switchPage('categorias', true); }
+        }).catch(() => { switchPage('categorias', true); });
     } else {
         const targetPage = (currentHash && document.getElementById('page-' + currentHash)) ? currentHash : 'categorias';
         switchPage(targetPage, true);
