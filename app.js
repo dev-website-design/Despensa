@@ -1,5 +1,5 @@
 // =====================================================
-// app.js - Arquitectura DINÁMICA (Rutas corregidas)
+// app.js - Arquitectura DINÁMICA (Edición de categorías restaurada)
 // =====================================================
 
 console.log("🚀 Cargando FINDORA...");
@@ -78,11 +78,20 @@ const modalCarritoDinamico = document.getElementById('modalCarritoDinamico');
 const cartListDinamico = document.getElementById('cartListDinamico');
 const cartTotalDinamico = document.getElementById('cartTotalDinamico');
 
+// DOM ELEMENTS - EDITAR CATEGORÍA (RESTAURADOS)
+const modalEditarCategoria = document.getElementById('modalEditarCategoria');
+const formEditarCategoria = document.getElementById('formEditarCategoria');
+const nombreEditarCategoria = document.getElementById('nombreEditarCategoria');
+const imagenEditarCategoria = document.getElementById('imagenEditarCategoria');
+const modalEditarCancel = document.getElementById('modalEditarCancel');
+const btnEditarEliminar = document.getElementById('btnEditarEliminar');
+let currentEditCategoryId = null;
+
 // Variables de Estado Globales
 let isLogin = true;
 let currentUser = null;
-let currentTiendaId = null;      // ID de la categoría que estamos viendo
-let currentTiendaNombre = null;  // Nombre de la categoría que estamos viendo
+let currentTiendaId = null;      
+let currentTiendaNombre = null;  
 let userNotificationsEnabled = true;
 let settingsListenersAttached = false;
 const processedToastIds = new Set();
@@ -93,7 +102,7 @@ let unsubscribeCarritoTienda = null;
 let unsubscribeUser = null;
 let unsubscribeNotif = null;
 let currentNickname = null; 
-let currentProduct = null;       // Producto seleccionado en el modal de compra
+let currentProduct = null;       
 let currentQuantity = 1;
 
 // ==========================================
@@ -128,7 +137,6 @@ function switchPage(pageId, data = null) {
     const activeDock = document.querySelector(`.dock-item[data-page="${pageId}"]`);
     if (activeDock) activeDock.classList.add('active');
 
-    // Gestión de Hash y Recarga
     if (pageId === 'tienda') {
         window.location.hash = `tienda-${data.id}`;
     } else {
@@ -141,11 +149,8 @@ window.addEventListener('hashchange', () => {
     if (isNavigating) return;
     const hash = window.location.hash.replace('#', '');
     if (hash.startsWith('tienda-')) {
-        // Si el usuario recarga la página estando en una tienda, intentamos restaurarla
         const id = hash.replace('tienda-', '');
         if (id) {
-            // Necesitamos obtener el nombre de la categoría para pasarlo a la tienda. 
-            // Hacemos una consulta simple para obtener el nombre basado en el ID.
             getCategoriasRef().doc(id).get().then((doc) => {
                 if (doc.exists) {
                     const nombre = doc.data().nombre;
@@ -228,7 +233,7 @@ async function requestNotificationPermission() {
 }
 
 // ==========================================
-// CATEGORÍAS
+// CATEGORÍAS (CON EDICIÓN RESTAURADA)
 // ==========================================
 function getCategoriasRef() { return db.collection('categorias_compartidas'); }
 
@@ -266,11 +271,12 @@ function suscribirCategorias() {
       });
     });
 
+    // 🔥 CORRECCIÓN: Aquí se restaura la llamada al modal en lugar del alert()
     document.querySelectorAll('.btn-editar').forEach(btn => {
       btn.addEventListener('click', function(e) {
         e.stopPropagation();
         const id = this.dataset.id;
-        alert(`Editar categoría: ${id}`);
+        abrirModalEditarCategoria(id); // Ahora abre el modal en lugar del alert
       });
     });
   }, (error) => {
@@ -279,32 +285,83 @@ function suscribirCategorias() {
   });
 }
 
-function agregarCategoria(nombre, imagenBase64) {
-  const ref = getCategoriasRef();
-  const nombreMostrar = currentNickname || (currentUser ? currentUser.email : 'Invitado');
-  ref.add({
-    nombre: nombre.trim(),
-    imagen: imagenBase64 || '',
-    agregadoPor: nombreMostrar, 
-    fechaCreacion: firebase.firestore.FieldValue.serverTimestamp()
-  }).then(() => {
-    notificarNuevaCategoria(nombre, nombreMostrar);
+// ==========================================
+// LÓGICA PARA EDITAR CATEGORÍAS (RESTAURADA)
+// ==========================================
+function abrirModalEditarCategoria(id) {
+  currentEditCategoryId = id;
+  getCategoriasRef().doc(id).get().then((doc) => {
+    if (doc.exists) {
+      const data = doc.data();
+      nombreEditarCategoria.value = data.nombre || '';
+      imagenEditarCategoria.value = ''; 
+      modalEditarCategoria.classList.remove('hidden');
+      setTimeout(() => nombreEditarCategoria.focus(), 100);
+    }
   }).catch(error => {
-    console.error('Error al agregar categoria:', error);
-    if (error.code === 'permission-denied') alert("⚠️ ERROR DE PERMISOS. Revisa las reglas de Firestore.");
-    else alert('Error al guardar: ' + error.message);
+    console.error("Error al cargar la categoría para editar:", error);
+    alert("No se pudo cargar la categoría para editar.");
   });
 }
 
+function cerrarModalEditarCategoria() {
+  modalEditarCategoria.classList.add('hidden');
+  formEditarCategoria.reset();
+  currentEditCategoryId = null;
+}
+
+function actualizarCategoria(id, nuevoNombre, nuevaImagenBase64) {
+  const ref = getCategoriasRef().doc(id);
+  const updateData = {
+    nombre: nuevoNombre.trim(),
+    editadoPor: currentNickname || currentUser.email,
+    editadoEn: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  if (nuevaImagenBase64) { updateData.imagen = nuevaImagenBase64; }
+  ref.update(updateData).then(() => { cerrarModalEditarCategoria(); }).catch(error => {
+    console.error("Error al actualizar categoría:", error);
+    alert("Error al guardar los cambios: " + error.message);
+  });
+}
+
+btnEditarEliminar.addEventListener('click', function() {
+    if (!currentEditCategoryId) return;
+    if (confirm('¿Estás seguro de que quieres eliminar esta categoría?\nEsta acción no se puede deshacer.')) {
+        getCategoriasRef().doc(currentEditCategoryId).delete().then(() => {
+            console.log("🗑️ Categoría eliminada correctamente.");
+            cerrarModalEditarCategoria();
+        }).catch(error => {
+            console.error('Error al eliminar la categoría:', error);
+            alert('Error al eliminar: ' + error.message);
+        });
+    }
+});
+
+formEditarCategoria.addEventListener('submit', function(e) {
+  e.preventDefault();
+  if (!currentEditCategoryId) return;
+  const submitBtn = this.querySelector('button[type="submit"]');
+  if (submitBtn) submitBtn.disabled = true;
+  const nombre = nombreEditarCategoria.value.trim();
+  if (!nombre) { alert("El nombre no puede estar vacío."); if (submitBtn) submitBtn.disabled = false; return; }
+  const file = imagenEditarCategoria.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (event) => { actualizarCategoria(currentEditCategoryId, nombre, event.target.result); if (submitBtn) submitBtn.disabled = false; };
+    reader.readAsDataURL(file);
+  } else { actualizarCategoria(currentEditCategoryId, nombre, null); if (submitBtn) submitBtn.disabled = false; }
+});
+
+modalEditarCancel.addEventListener('click', cerrarModalEditarCategoria);
+modalEditarCategoria.addEventListener('click', (e) => { if (e.target === modalEditarCategoria) cerrarModalEditarCategoria(); });
+
 // ==========================================
-// 🛒 TIENDA DINÁMICA (RUTA CORREGIDA)
+// 🛒 TIENDA DINÁMICA
 // ==========================================
 function getProductosRef(categoriaId) {
-    // 🔥 CORREGIDO: Antes usaba 'categorias', ahora usa 'categorias_compartidas'
     return db.collection('categorias_compartidas').doc(categoriaId).collection('productos');
 }
 function getCarritoTiendaRef(categoriaId) {
-    // 🔥 CORREGIDO: Antes usaba 'categorias', ahora usa 'categorias_compartidas'
     return db.collection('categorias_compartidas').doc(categoriaId).collection('carrito');
 }
 
@@ -361,7 +418,6 @@ function suscribirTienda(categoriaId) {
     });
   }, (error) => { console.error('Error en tiempo real de productos dinámicos:', error); });
 
-  // Suscribir el carrito de la tienda dinámica
   const refCarrito = getCarritoTiendaRef(categoriaId);
   unsubscribeCarritoTienda = refCarrito.onSnapshot((snapshot) => {
     let html = '';
@@ -438,12 +494,10 @@ btnConfirmPurchaseDinamico.addEventListener('click', function() {
     }
 });
 
-// Botones del carrito
 btnOpenCartDinamico.addEventListener('click', () => { modalCarritoDinamico.classList.remove('hidden'); });
 document.getElementById('modalCarritoDinamicoClose').addEventListener('click', () => { modalCarritoDinamico.classList.add('hidden'); });
 modalCarritoDinamico.addEventListener('click', (e) => { if (e.target === modalCarritoDinamico) modalCarritoDinamico.classList.add('hidden'); });
 
-// Botón volver de la tienda
 btnBackDinamico.addEventListener('click', () => { switchPage('categorias'); });
 
 // ==========================================
@@ -451,7 +505,6 @@ btnBackDinamico.addEventListener('click', () => { switchPage('categorias'); });
 // ==========================================
 dockAddBtn.addEventListener('click', function() {
     if (!pageTienda.classList.contains('hidden-page') && currentTiendaId) {
-        // Si estamos en una tienda, abrir modal (mejoraremos esto para que pueda subir imagenes)
         const nombreCategoria = currentTiendaNombre;
         const nuevoNombre = prompt(`Ingresa el nombre del nuevo producto para "${nombreCategoria}":`);
         if (nuevoNombre && nuevoNombre.trim() !== '') {
@@ -699,4 +752,4 @@ authSwitchLink.addEventListener('click', toggleAuthMode);
 btnGoogle.addEventListener('click', loginWithGoogle);
 btnLogout.addEventListener('click', logout);
 
-console.log('✅ App cargada. ¡Categorías Dinámicas activadas!');
+console.log('✅ App cargada. Edición de categorías restaurada.');
