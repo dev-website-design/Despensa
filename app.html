@@ -237,6 +237,26 @@
     </div>
   </div>
 
+  <!-- ===== NUEVO MODAL PARA EDITAR PRODUCTOS ===== -->
+  <div id="modalEditarItem" class="modal hidden">
+    <div class="modal-content">
+      <h2>✏️ Editar Producto</h2>
+      <form id="formEditarItem">
+        <label for="nombreEditarItem">Nombre</label>
+        <input type="text" id="nombreEditarItem" placeholder="Ej. Arroz, Detergente..." required>
+        <label for="precioEditarItem">Precio (₹)</label>
+        <input type="number" id="precioEditarItem" placeholder="100" step="0.01" required>
+        <label for="imagenEditarItem">Imagen (opcional)</label>
+        <input type="file" id="imagenEditarItem" accept="image/*">
+        <div class="modal-buttons" style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+          <button type="button" class="btn-secondary" id="modalEditarItemCancel">Cancelar</button>
+          <button type="button" class="btn-secondary" id="btnEditarItemEliminar" style="background:#e2d0d7; color:var(--perfect-rose);">🗑️ Eliminar</button>
+          <button type="submit" class="btn-primary">Guardar cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- ===== MODAL PARA EDITAR CATEGORÍA ===== -->
   <div id="modalEditarCategoria" class="modal hidden">
     <div class="modal-content">
