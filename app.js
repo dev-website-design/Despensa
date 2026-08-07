@@ -1,5 +1,5 @@
 // =====================================================
-// app.js - Arquitectura DINÁMICA (Rutas corregidas)
+// app.js - Arquitectura DINÁMICA (Modal Editar Producto)
 // =====================================================
 
 console.log("🚀 Cargando FINDORA...");
@@ -78,13 +78,22 @@ const modalCarritoDinamico = document.getElementById('modalCarritoDinamico');
 const cartListDinamico = document.getElementById('cartListDinamico');
 const cartTotalDinamico = document.getElementById('cartTotalDinamico');
 
-// DOM ELEMENTS - MODAL AGREGAR PRODUCTO (NUEVO)
+// DOM ELEMENTS - MODAL AGREGAR PRODUCTO
 const modalAddProducto = document.getElementById('modalAddProducto');
 const formAddProducto = document.getElementById('formAddProducto');
 const nombreAddProducto = document.getElementById('nombreAddProducto');
 const precioAddProducto = document.getElementById('precioAddProducto');
 const imagenAddProducto = document.getElementById('imagenAddProducto');
 const modalAddProductoCancel = document.getElementById('modalAddProductoCancel');
+
+// DOM ELEMENTS - MODAL EDITAR PRODUCTO (NUEVO)
+const modalEditarItem = document.getElementById('modalEditarItem');
+const formEditarItem = document.getElementById('formEditarItem');
+const nombreEditarItem = document.getElementById('nombreEditarItem');
+const precioEditarItem = document.getElementById('precioEditarItem');
+const imagenEditarItem = document.getElementById('imagenEditarItem');
+const modalEditarItemCancel = document.getElementById('modalEditarItemCancel');
+const btnEditarItemEliminar = document.getElementById('btnEditarItemEliminar');
 
 // DOM ELEMENTS - MODAL EDITAR CATEGORÍA
 const modalEditarCategoria = document.getElementById('modalEditarCategoria');
@@ -112,6 +121,9 @@ let currentNickname = null;
 let currentProduct = null;       
 let currentQuantity = 1;
 let currentEditCategoryId = null; 
+
+// Variables para gestionar la edición de un producto (NUEVO)
+let currentEditItemData = { tienda: null, id: null };
 
 // ==========================================
 // NAVEGACIÓN DINÁMICA
@@ -279,7 +291,6 @@ function suscribirCategorias() {
       });
     });
 
-    // 🔥 SI EL MODAL EXISTE, ACTIVAMOS EL LÁPIZ. SI NO, IGNORAMOS ESTO Y EL LOGIN SIGUE FUNCIONANDO.
     if (modalEditarCategoria) {
         document.querySelectorAll('.btn-editar').forEach(btn => {
           btn.addEventListener('click', function(e) {
@@ -289,7 +300,7 @@ function suscribirCategorias() {
           });
         });
     } else {
-        console.warn("⚠️ modalEditarCategoria no encontrado en el HTML. El botón de editar no hará nada.");
+        console.warn("⚠️ modalEditarCategoria no encontrado en el HTML.");
     }
 
   }, (error) => {
@@ -368,12 +379,13 @@ function suscribirTienda(categoriaId) {
       });
     });
 
+    // 🔥 CORREGIDO: El lápiz de editar producto ahora abre el modal real, no un alert
     document.querySelectorAll(`#${grid.id} .btn-editar-item`).forEach(btn => {
       btn.addEventListener('click', function(e) {
         e.stopPropagation();
         const id = this.dataset.id;
         const catId = this.dataset.categoria;
-        alert(`Editar producto ${id} en la categoría ${catId}`);
+        abrirModalEditarItem(catId, id);
       });
     });
   }, (error) => { console.error('Error en tiempo real de productos dinámicos:', error); });
@@ -461,18 +473,16 @@ modalCarritoDinamico.addEventListener('click', (e) => { if (e.target === modalCa
 btnBackDinamico.addEventListener('click', () => { switchPage('categorias'); });
 
 // ==========================================
-// 🔥 BOTÓN + INTELIGENTE (Ahora abre el modal de agregar productos)
+// 🔥 BOTÓN + INTELIGENTE
 // ==========================================
 dockAddBtn.addEventListener('click', function() {
     if (!pageTienda.classList.contains('hidden-page') && currentTiendaId) {
-        // Si estamos en una tienda, abrir el nuevo modal de agregar productos
         modalAddProducto.classList.remove('hidden');
         nombreAddProducto.value = '';
         precioAddProducto.value = '';
         imagenAddProducto.value = '';
         setTimeout(() => nombreAddProducto.focus(), 100);
     } else {
-        // Si estamos en Categorías, abrir la creación de categoría
         modalCategoria.classList.remove('hidden');
         nombreCategoria.value = '';
         imagenCategoria.value = '';
@@ -481,20 +491,18 @@ dockAddBtn.addEventListener('click', function() {
 });
 
 // ==========================================
-// 🔥 LÓGICA PARA GUARDAR PRODUCTOS DESDE EL MODAL
+// 🔥 LÓGICA PARA AGREGAR PRODUCTOS
 // ==========================================
 modalAddProductoCancel.addEventListener('click', function() {
     modalAddProducto.classList.add('hidden');
     formAddProducto.reset();
 });
-
 modalAddProducto.addEventListener('click', function(e) {
     if (e.target === modalAddProducto) {
         modalAddProducto.classList.add('hidden');
         formAddProducto.reset();
     }
 });
-
 formAddProducto.addEventListener('submit', function(e) {
     e.preventDefault();
     if (!currentTiendaId) {
@@ -510,7 +518,6 @@ formAddProducto.addEventListener('submit', function(e) {
     const file = imagenAddProducto.files[0];
     const nombreMostrar = currentNickname || (currentUser ? currentUser.email : 'Invitado');
 
-    // Función para guardar el producto
     const guardarProducto = (imagenBase64 = '') => {
         getProductosRef(currentTiendaId).add({
             nombre: nombre,
@@ -529,12 +536,91 @@ formAddProducto.addEventListener('submit', function(e) {
 
     if (file) {
         const reader = new FileReader();
-        reader.onload = (event) => {
-            guardarProducto(event.target.result);
-        };
+        reader.onload = (event) => { guardarProducto(event.target.result); };
         reader.readAsDataURL(file);
     } else {
         guardarProducto('');
+    }
+});
+
+// ==========================================
+// 🔥 LÓGICA PARA EDITAR PRODUCTOS (ELIMINA EL ALERT)
+// ==========================================
+function abrirModalEditarItem(tienda, id) {
+    currentEditItemData.tienda = tienda;
+    currentEditItemData.id = id;
+    const ref = getProductosRef(tienda).doc(id);
+    
+    ref.get().then((doc) => {
+        if (doc.exists) {
+            const data = doc.data();
+            nombreEditarItem.value = data.nombre || '';
+            precioEditarItem.value = data.precio || '';
+            imagenEditarItem.value = '';
+            modalEditarItem.classList.remove('hidden');
+            setTimeout(() => nombreEditarItem.focus(), 100);
+        }
+    }).catch(error => {
+        console.error("Error al cargar el producto para editar:", error);
+        alert("No se pudo cargar el producto.");
+    });
+}
+
+function cerrarModalEditarItem() {
+    modalEditarItem.classList.add('hidden');
+    formEditarItem.reset();
+    currentEditItemData = { tienda: null, id: null };
+}
+
+function actualizarItem(tienda, id, nuevoNombre, nuevoPrecio, nuevaImagenBase64) {
+    const ref = getProductosRef(tienda).doc(id);
+    const updateData = {
+        nombre: nuevoNombre.trim(),
+        precio: parseFloat(nuevoPrecio)
+    };
+    if (nuevaImagenBase64) { updateData.imagen = nuevaImagenBase64; }
+    
+    ref.update(updateData).then(() => {
+        cerrarModalEditarItem();
+    }).catch(error => {
+        console.error("Error al actualizar producto:", error);
+        alert("Error al guardar los cambios: " + error.message);
+    });
+}
+
+function eliminarItem(tienda, id) {
+    const ref = getProductosRef(tienda).doc(id);
+    if (confirm('¿Estás seguro de que quieres eliminar este producto?\nEsta acción no se puede deshacer.')) {
+        ref.delete().then(() => {
+            cerrarModalEditarItem();
+        }).catch(error => {
+            console.error('Error al eliminar el producto:', error);
+            alert('Error al eliminar: ' + error.message);
+        });
+    }
+}
+
+modalEditarItemCancel.addEventListener('click', cerrarModalEditarItem);
+modalEditarItem.addEventListener('click', (e) => { if (e.target === modalEditarItem) cerrarModalEditarItem(); });
+btnEditarItemEliminar.addEventListener('click', function() {
+    if (currentEditItemData.tienda && currentEditItemData.id) {
+        eliminarItem(currentEditItemData.tienda, currentEditItemData.id);
+    }
+});
+formEditarItem.addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (!currentEditItemData.tienda || !currentEditItemData.id) return;
+    const nombre = nombreEditarItem.value.trim();
+    const precio = precioEditarItem.value.trim();
+    if (!nombre || !precio) { alert("El nombre y el precio no pueden estar vacíos."); return; }
+    const file = imagenEditarItem.files[0];
+    const { tienda, id } = currentEditItemData;
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => { actualizarItem(tienda, id, nombre, precio, event.target.result); };
+        reader.readAsDataURL(file);
+    } else {
+        actualizarItem(tienda, id, nombre, precio, null);
     }
 });
 
@@ -600,9 +686,7 @@ if (modalEditarCategoria) {
       const file = imagenEditarCategoria.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = (event) => {
-          actualizarCategoria(currentEditCategoryId, nombre, event.target.result);
-        };
+        reader.onload = (event) => { actualizarCategoria(currentEditCategoryId, nombre, event.target.result); };
         reader.readAsDataURL(file);
       } else {
         actualizarCategoria(currentEditCategoryId, nombre, null);
@@ -833,4 +917,4 @@ authSwitchLink.addEventListener('click', toggleAuthMode);
 btnGoogle.addEventListener('click', loginWithGoogle);
 btnLogout.addEventListener('click', logout);
 
-console.log('✅ App cargada. Modal de agregar productos activado.');
+console.log('✅ App cargada. Modales de añadir y editar productos activados.');
