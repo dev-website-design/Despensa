@@ -118,7 +118,7 @@ function switchPage(pageId, updateHistory = true) {
     if (pageFrutas) pageFrutas.classList.add('hidden-page');
     if (pageCocina) pageCocina.classList.add('hidden-page');
     if (pageSalon) pageSalon.classList.add('hidden-page');
-    
+
     if (pageId === 'categorias' && pageCategorias) {
         pageCategorias.classList.remove('hidden-page');
     } else if (pageId === 'config' && pageConfig) {
@@ -134,7 +134,7 @@ function switchPage(pageId, updateHistory = true) {
         pageSalon.classList.remove('hidden-page');
         suscribirSalones(); 
     }
-    
+
     dockItems.forEach(item => item.classList.remove('active'));
     const activeDock = document.querySelector(`.dock-item[data-page="${pageId}"]`);
     if (activeDock) activeDock.classList.add('active');
@@ -427,7 +427,7 @@ function suscribirFrutas() {
       const id = doc.id;
       const tieneImagen = data.imagen && data.imagen.startsWith('data:image');
       const imgHtml = tieneImagen ? `<img src="${data.imagen}" alt="${data.nombre}" class="product-image" onerror="this.src='https://via.placeholder.com/100?text=Producto'">` : `<div style="height:90px; display:flex; align-items:center; justify-content:center; color:#888;">Sin imagen</div>`;
-      
+
       html += `
         <div class="product-card-tienda">
           <span class="heart-icon">♡</span>
@@ -442,7 +442,7 @@ function suscribirFrutas() {
       `;
     });
     grid.innerHTML = html;
-    
+
     document.querySelectorAll('#product-grid-frutas .btn-comprar-tienda').forEach(btn => {
       btn.addEventListener('click', function() {
         const id = this.dataset.id;
@@ -481,7 +481,7 @@ function suscribirCocinas() {
       const id = doc.id;
       const tieneImagen = data.imagen && data.imagen.startsWith('data:image');
       const imgHtml = tieneImagen ? `<img src="${data.imagen}" alt="${data.nombre}" class="product-image" onerror="this.src='https://via.placeholder.com/100?text=Producto'">` : `<div style="height:90px; display:flex; align-items:center; justify-content:center; color:#888;">Sin imagen</div>`;
-      
+
       html += `
         <div class="product-card-tienda">
           <span class="heart-icon">♡</span>
@@ -496,7 +496,7 @@ function suscribirCocinas() {
       `;
     });
     grid.innerHTML = html;
-    
+
     document.querySelectorAll('#product-grid-cocina .btn-comprar-tienda').forEach(btn => {
       btn.addEventListener('click', function() {
         const id = this.dataset.id;
@@ -535,7 +535,7 @@ function suscribirSalones() {
       const id = doc.id;
       const tieneImagen = data.imagen && data.imagen.startsWith('data:image');
       const imgHtml = tieneImagen ? `<img src="${data.imagen}" alt="${data.nombre}" class="product-image" onerror="this.src='https://via.placeholder.com/100?text=Producto'">` : `<div style="height:90px; display:flex; align-items:center; justify-content:center; color:#888;">Sin imagen</div>`;
-      
+
       html += `
         <div class="product-card-tienda">
           <span class="heart-icon">♡</span>
@@ -550,7 +550,7 @@ function suscribirSalones() {
       `;
     });
     grid.innerHTML = html;
-    
+
     document.querySelectorAll('#product-grid-salon .btn-comprar-tienda').forEach(btn => {
       btn.addEventListener('click', function() {
         const id = this.dataset.id;
@@ -621,7 +621,7 @@ function suscribirCarritos() {
   // FRUTAS
   const refFrutas = getCarritoFrutasRef();
   unsubscribeCarritoFrutas = refFrutas.onSnapshot((snapshot) => {
-    let html = '<p style="color: var(--perfect-rose); text-align: center; padding: 20px 0;">El carrito está vacío.</p>';
+    let html = '';
     let total = 0;
     let count = 0;
     snapshot.forEach(doc => {
@@ -635,6 +635,12 @@ function suscribirCarritos() {
         </div>
       `;
     });
+
+    // ⚠️ CORRECCIÓN APLICADA: Solo mostrar el mensaje de vacío si no hay items
+    if (count === 0) {
+        html = '<p style="color: var(--perfect-rose); text-align: center; padding: 20px 0;">El carrito está vacío.</p>';
+    }
+
     document.getElementById('cartListFrutas').innerHTML = html;
     document.getElementById('cartTotalFrutas').textContent = `Total: ₹ ${total}`;
     const badge = document.getElementById('cartBadgeFrutas');
@@ -644,7 +650,7 @@ function suscribirCarritos() {
   // COCINA
   const refCocina = getCarritoCocinaRef();
   unsubscribeCarritoCocina = refCocina.onSnapshot((snapshot) => {
-    let html = '<p style="color: var(--perfect-rose); text-align: center; padding: 20px 0;">El carrito está vacío.</p>';
+    let html = '';
     let total = 0;
     let count = 0;
     snapshot.forEach(doc => {
@@ -658,6 +664,12 @@ function suscribirCarritos() {
         </div>
       `;
     });
+
+    // ⚠️ CORRECCIÓN APLICADA
+    if (count === 0) {
+        html = '<p style="color: var(--perfect-rose); text-align: center; padding: 20px 0;">El carrito está vacío.</p>';
+    }
+
     document.getElementById('cartListCocina').innerHTML = html;
     document.getElementById('cartTotalCocina').textContent = `Total: ₹ ${total}`;
     const badge = document.getElementById('cartBadgeCocina');
@@ -667,7 +679,7 @@ function suscribirCarritos() {
   // SALÓN
   const refSalon = getCarritoSalonRef();
   unsubscribeCarritoSalon = refSalon.onSnapshot((snapshot) => {
-    let html = '<p style="color: var(--perfect-rose); text-align: center; padding: 20px 0;">El carrito está vacío.</p>';
+    let html = '';
     let total = 0;
     let count = 0;
     snapshot.forEach(doc => {
@@ -681,6 +693,12 @@ function suscribirCarritos() {
         </div>
       `;
     });
+
+    // ⚠️ CORRECCIÓN APLICADA
+    if (count === 0) {
+        html = '<p style="color: var(--perfect-rose); text-align: center; padding: 20px 0;">El carrito está vacío.</p>';
+    }
+
     document.getElementById('cartListSalon').innerHTML = html;
     document.getElementById('cartTotalSalon').textContent = `Total: ₹ ${total}`;
     const badge = document.getElementById('cartBadgeSalon');
@@ -700,7 +718,7 @@ function suscribirCarritos() {
         if (ref) ref.delete().catch(err => console.error("Error al eliminar del carrito:", err));
       }
     }
-    
+
     // 🔥 EVENTO PARA EDITAR PRODUCTOS
     if (e.target.classList.contains('btn-editar-item')) {
         const id = e.target.dataset.id;
@@ -716,7 +734,7 @@ function agregarAlCarrito(tienda, producto, cantidad) {
   if (tienda === 'frutas') ref = getCarritoFrutasRef();
   else if (tienda === 'cocina') ref = getCarritoCocinaRef();
   else if (tienda === 'salon') ref = getCarritoSalonRef();
-  
+
   ref.where('nombre', '==', producto.name).get().then((snapshot) => {
     let batch = db.batch();
     let existe = false;
@@ -988,7 +1006,7 @@ formEditarItem.addEventListener('submit', function(e) {
 
   const nombre = nombreEditarItem.value.trim();
   const precio = precioEditarItem.value.trim();
-  
+
   if (!nombre || !precio) {
     alert("El nombre y el precio no pueden estar vacíos.");
     if (submitBtn) submitBtn.disabled = false;
@@ -1192,34 +1210,34 @@ auth.onAuthStateChanged(user => {
   if (unsubscribeSalones) { unsubscribeSalones(); unsubscribeSalones = null; }
   if (unsubscribeUser) { unsubscribeUser(); unsubscribeUser = null; }
   if (unsubscribeNotif) { unsubscribeNotif(); unsubscribeNotif = null; }
-  
+
   currentUser = user;
   if (user) {
     console.log("✅ Usuario autenticado:", user.email);
     pageAuth.classList.add('hidden-page');
-    
+
     const currentHash = window.location.hash.replace('#', '');
     const targetPage = (currentHash && document.getElementById('page-' + currentHash)) ? currentHash : 'categorias';
     switchPage(targetPage, true);
-    
+
     suscribirPerfil(user);
     suscribirCategorias();
     suscribirNotificaciones(user);
     suscribirCarritos();
     requestNotificationPermission();
-    
+
     if (dock) dock.classList.remove('hidden-page');
     sincronizarTogglesUI();
   } else {
     console.log("ℹ️ Usuario NO autenticado.");
     pageAuth.classList.remove('hidden-page');
-    
+
     if (pageCategorias) pageCategorias.classList.add('hidden-page');
     if (pageConfig) pageConfig.classList.add('hidden-page');
     if (pageFrutas) pageFrutas.classList.add('hidden-page');
     if (pageCocina) pageCocina.classList.add('hidden-page');
     if (pageSalon) pageSalon.classList.add('hidden-page');
-    
+
     contenedor.innerHTML = '';
     userNameSpan.textContent = 'Invitado';
     currentNickname = null;
